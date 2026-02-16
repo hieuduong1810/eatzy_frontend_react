@@ -1,0 +1,21 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "dev:admin": {
+            "cache": false,
+            "persistent": true
+        },
+        "dev:customer": {
+            "cache": false,
+            "persistent": true
+        },
+        "dev:driver": {
+            "cache": false,
+            "persistent": true
+        },
+        "dev:restaurant": {
+            "cache": false,
+            "persistent": true
+        }
+    }
+}

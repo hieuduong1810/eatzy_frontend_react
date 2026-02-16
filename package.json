@@ -1,0 +1,47 @@
+{
+  "name": "base-react-vite-hoidanit",
+  "author": {
+    "name": "Hỏi Dân IT & Eric",
+    "url": "https://hoidanit.vn"
+  },
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "packageManager": "pnpm@10.27.0",
+  "scripts": {
+    "dev": "turbo run dev:admin dev:customer dev:driver dev:restaurant",
+    "dev:admin": "vite --config vite.admin.config.js",
+    "dev:customer": "vite --config vite.customer.config.js",
+    "dev:driver": "vite --config vite.driver.config.js",
+    "dev:restaurant": "vite --config vite.restaurant.config.js",
+    "start": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@stomp/stompjs": "^7.3.0",
+    "axios": "^1.13.5",
+    "lucide-react": "^0.563.0",
+    "mapbox-gl": "^3.18.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-map-gl": "^8.1.0",
+    "react-router-dom": "^7.13.0",
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.7.0",
+    "sockjs-client": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "@vitejs/plugin-react-swc": "3.7.0",
+    "concurrently": "^9.2.1",
+    "eslint": "8.57.0",
+    "eslint-plugin-react": "7.34.2",
+    "eslint-plugin-react-hooks": "4.6.2",
+    "eslint-plugin-react-refresh": "0.4.7",
+    "turbo": "^2.8.7",
+    "vite": "5.2.12"
+  }
+}

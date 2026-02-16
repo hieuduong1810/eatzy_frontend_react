@@ -1,0 +1,29 @@
+/* =============================================
+   RESTAURANT LAYOUT — Glassmorphism Sidebar
+   ============================================= */
+
+.resto-root {
+    height: 100vh;
+    /* Fixed height */
+    display: flex;
+    background: var(--color-gray-50);
+    overflow: hidden;
+    /* Prevent body scroll */
+}
+
+/* Main content */
+.resto-main {
+    flex: 1;
+    margin-left: 112px;
+    /* Match AdminLayout margin (80px + gap) */
+    height: 100%;
+    /* Fill root */
+    overflow-y: auto;
+    /* Scroll internally */
+    /* overflow-x: hidden;  Not typically needed if content fits, but keep if issues arise */
+    max-width: 100%;
+}
+
+/* Optional: If we want to push content when expanded, we usually don't in glassmorphism overlays
+   unless we want it to shift. AdminLayout doesn't shift either.
+*/

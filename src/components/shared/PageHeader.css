@@ -1,0 +1,38 @@
+/* =============================================
+   PAGE HEADER
+   ============================================= */
+
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.page-header-left {
+    min-width: 0;
+}
+
+.page-header-title {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-dark);
+    letter-spacing: -0.025em;
+    margin-bottom: var(--space-1);
+    line-height: 1.2;
+}
+
+.page-header-subtitle {
+    font-size: var(--font-size-md);
+    color: var(--color-gray-500);
+    font-weight: 500;
+}
+
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}

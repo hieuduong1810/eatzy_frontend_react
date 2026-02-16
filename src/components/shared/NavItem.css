@@ -1,0 +1,75 @@
+/* =============================================
+   NAV ITEM - Liquid Glass Navigation Item
+   ============================================= */
+
+.nav-item {
+    position: relative;
+    overflow: hidden;
+    /* backdrop-filter removed to ensure transparency */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    color: var(--color-gray-600);
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: var(--space-3);
+    gap: var(--space-3);
+    user-select: none;
+}
+
+.nav-item:hover {
+    background: transparent;
+    color: var(--color-gray-900);
+}
+
+.nav-item.active {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    color: var(--color-gray-900);
+    font-weight: 600;
+}
+
+/* Collapsed state - center icon */
+.nav-item.collapsed {
+    justify-content: center;
+    padding: var(--space-3);
+}
+
+/* Icon */
+.nav-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform var(--transition-base);
+}
+
+.nav-item:hover .nav-item-icon {
+    transform: scale(1.1);
+}
+
+/* Text */
+.nav-item-text {
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color var(--transition-base);
+}
+
+/* Logout variant */
+.nav-item.logout:hover {
+    background: transparent;
+    box-shadow: inset 0 0 12px 8px rgba(239, 68, 68, 0.35);
+    color: var(--color-red);
+}
+
+.nav-item.logout:hover .nav-item-text {
+    color: var(--color-red);
+}

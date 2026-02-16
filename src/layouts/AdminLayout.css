@@ -1,0 +1,24 @@
+/* =============================================
+   ADMIN LAYOUT
+   ============================================= */
+
+.admin-layout {
+    min-height: 100vh;
+    display: flex;
+    background-color: var(--color-gray-50);
+}
+
+.admin-content {
+    flex: 1;
+    margin-left: 112px;
+    /* 80px sidebar + 24px left + 8px gap */
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.admin-page {
+    flex: 1;
+    min-width: 0;
+}

@@ -1,0 +1,177 @@
+/* =============================================
+   SIDEBAR - Liquid Glass Navigation
+   ============================================= */
+
+.sidebar {
+    position: fixed;
+    left: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-3xl);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+    z-index: var(--z-sidebar);
+    transition: all var(--transition-smooth);
+}
+
+/* Collapsed state */
+.sidebar.collapsed {
+    width: 80px;
+    top: 96px;
+    bottom: 96px;
+    background: linear-gradient(135deg, rgba(120, 200, 65, 0.2) 0%, rgba(180, 229, 13, 0.15) 100%);
+    box-shadow: 0 15px 25px -10px rgba(0, 0, 0, 0.12), 0 0 20px -10px rgba(120, 200, 65, 0.08);
+}
+
+/* Expanded state */
+.sidebar.expanded {
+    width: 288px;
+    top: 24px;
+    bottom: 24px;
+    background: linear-gradient(135deg, rgba(120, 200, 65, 0.15) 0%, rgba(180, 229, 13, 0.1) 50%, rgba(120, 200, 65, 0.08) 100%);
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15), 0 0 80px rgba(120, 200, 65, 0.1);
+}
+
+/* Animated liquid background */
+.sidebar-bg-effect {
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+    pointer-events: none;
+    transition: transform 0.8s ease-out;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(120, 200, 65, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(180, 229, 13, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(120, 200, 65, 0.1) 0%, transparent 50%);
+    filter: blur(1px);
+}
+
+.sidebar.expanded .sidebar-bg-effect {
+    transform: scale(1.1) rotate(2deg);
+}
+
+.sidebar.collapsed .sidebar-bg-effect {
+    transform: scale(1);
+}
+
+/* Profile Section */
+.sidebar-profile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    box-shadow: inset 0 0 12px 8px rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-profile:hover {
+    box-shadow: inset 0 0 24px 16px rgba(255, 255, 255, 0.6) !important;
+}
+
+.sidebar-profile-hover-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(120, 200, 65, 0.1) 100%);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+}
+
+.sidebar-profile:hover .sidebar-profile-hover-overlay {
+    opacity: 1;
+}
+
+.sidebar-avatar {
+    position: relative;
+    height: 48px;
+    width: 48px;
+    border-radius: var(--radius-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 0 12px 8px rgba(255, 255, 255, 0.3);
+    transition: transform var(--transition-base);
+    flex-shrink: 0;
+    color: var(--color-gray-700);
+}
+
+.sidebar-profile:hover .sidebar-avatar {
+    transform: scale(1.1);
+}
+
+.sidebar.collapsed .sidebar-avatar {
+    margin: 0 auto;
+}
+
+.sidebar-profile-info {
+    position: relative;
+    margin-left: var(--space-4);
+    min-width: 0;
+}
+
+.sidebar-profile-name {
+    font-weight: 600;
+    font-size: var(--font-size-md);
+    color: var(--color-gray-800);
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-profile-email {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Navigation Section */
+.sidebar-nav {
+    position: relative;
+    flex: 1;
+    padding: var(--space-6) var(--space-3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-nav-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-600);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar.expanded .sidebar-nav-label {
+    padding: 0 var(--space-4);
+}
+
+.sidebar.collapsed .sidebar-nav-label {
+    text-align: center;
+}
+
+/* Bottom Section - Logout */
+.sidebar-bottom {
+    position: relative;
+    padding: var(--space-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+}

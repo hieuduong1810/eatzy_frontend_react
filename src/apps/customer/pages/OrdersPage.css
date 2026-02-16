@@ -1,0 +1,226 @@
+/* OrdersPage.css */
+.cust-orders-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+}
+
+@media (max-width: 1200px) {
+    .cust-orders-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .cust-orders-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cust-history-card {
+    position: relative;
+    height: 380px;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.cust-history-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.cust-history-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    transition: transform 0.5s ease;
+}
+
+.cust-history-card:hover .cust-history-bg {
+    transform: scale(1.05);
+}
+
+.cust-history-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.85) 70%, rgba(18, 18, 18, 0.98) 100%);
+    z-index: 2;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Badges */
+.cust-history-badges {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.cust-history-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cust-history-count {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Main Content */
+.cust-history-content {
+    color: white;
+}
+
+.cust-history-price-label {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 2px;
+    font-weight: 500;
+}
+
+.cust-history-price {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cust-history-name {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+}
+
+.cust-history-address {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    opacity: 0.8;
+    margin-bottom: 20px;
+}
+
+/* Columns Info */
+.cust-history-details {
+    display: flex;
+    gap: 32px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 20px;
+}
+
+.cust-history-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.cust-history-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0.6;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+.cust-history-val {
+    font-size: 15px;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.cust-history-items {
+    font-size: 14px;
+    font-weight: 500;
+    font-style: italic;
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* Footer */
+.cust-history-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.cust-history-visit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px 8px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: background 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cust-history-visit:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.cust-history-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    opacity: 0.6;
+    font-weight: 500;
+}
+
+/* Loading */
+.cust-loading-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cust-toolbar-orders {
+    background: #f8fafc;
+    /* Ensure solid background */
+    z-index: 10;
+    padding: 12px 0;
+    margin-bottom: 10px;
+    top: 0;
+    /* Override global 72px to stick to the top of the scroll container */
+}

@@ -1,0 +1,382 @@
+/* ReportsMenuView.css */
+
+.rmv-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-family: var(--font-family);
+}
+
+/* --- Stats Grid --- */
+.rmv-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.rmv-stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--color-gray-200);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.rmv-icon-bg {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    opacity: 0.1;
+    transform: scale(2);
+}
+
+/* Specific Card Styles */
+.rmv-stat-card.gray {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+}
+
+.rmv-stat-card.green {
+    background: #ecfccb;
+    border-color: #d9f99d;
+}
+
+.rmv-stat-card.red {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.rmv-stat-card.black {
+    background: #111827;
+    border: none;
+    color: white;
+}
+
+.rmv-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--color-gray-500);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.rmv-stat-card.black .rmv-label {
+    color: #9CA3AF;
+}
+
+.rmv-value {
+    font-size: 32px;
+    font-weight: 800;
+    font-family: "Antonio", sans-serif;
+    color: var(--color-gray-900);
+    line-height: 1;
+}
+
+.rmv-stat-card.black .rmv-value {
+    color: #84cc16;
+}
+
+.rmv-subtext {
+    font-size: 11px;
+    color: var(--color-gray-500);
+    margin-top: auto;
+}
+
+.rmv-stat-card.black .rmv-subtext {
+    color: #9CA3AF;
+}
+
+.rmv-icon-top-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+
+/* --- Charts Row --- */
+.rmv-charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.rmv-chart-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--color-gray-200);
+    min-height: 350px;
+}
+
+.rmv-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin-bottom: 24px;
+}
+
+/* Donut Chart Logic */
+.rmv-donut-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+}
+
+.rmv-donut-chart {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    position: relative;
+    /* Conic gradient set inline in JSX */
+}
+
+.rmv-donut-hole {
+    position: absolute;
+    inset: 50px;
+    /* Thickness determined here */
+    background: white;
+    border-radius: 50%;
+}
+
+.rmv-donut-legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.rmv-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-gray-600);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* Revenue List Chart */
+.rmv-rev-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.rmv-rev-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rmv-rev-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-gray-800);
+}
+
+.rmv-rev-meta {
+    font-size: 12px;
+    color: var(--color-gray-400);
+    font-weight: 600;
+}
+
+.rmv-rev-val {
+    color: var(--color-gray-900);
+    font-weight: 800;
+    margin-left: 8px;
+}
+
+.rmv-progress-bg {
+    height: 6px;
+    background: #f3f4f6;
+    border-radius: 3px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.rmv-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+/* --- Item Performance --- */
+.rmv-perf-section {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--color-gray-200);
+}
+
+.rmv-perf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.rmv-perf-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rmv-perf-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #ecfccb;
+    color: #4d7c0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rmv-perf-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.rmv-perf-subtitle {
+    font-size: 12px;
+    color: var(--color-gray-500);
+    margin: 0;
+}
+
+.rmv-toggle-group {
+    display: flex;
+    background: #f3f4f6;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.rmv-toggle-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-gray-500);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.rmv-toggle-btn.active {
+    background: white;
+    color: var(--color-gray-900);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Perf Grid */
+.rmv-perf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+/* Perf Card */
+.rmv-item-card {
+    border: 1px solid var(--color-gray-100);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    /* min-width: 200px; */
+}
+
+.rmv-rank-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 16px;
+    /* Emoji size */
+}
+
+.rmv-trend {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-gray-400);
+    background: var(--color-gray-50);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.rmv-item-content {
+    margin-top: 24px;
+}
+
+.rmv-item-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rmv-item-cat {
+    font-size: 11px;
+    color: var(--color-gray-400);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.rmv-item-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px dashed var(--color-gray-200);
+    padding-top: 12px;
+}
+
+.rmv-stat-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.rmv-stat-val-sm {
+    font-size: 10px;
+    color: var(--color-gray-400);
+}
+
+.rmv-stat-val-lg {
+    font-size: 14px;
+    font-weight: 800;
+    color: #4d7c0f;
+    /* Green for revenue */
+}
+
+.rmv-stat-val-lg-black {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--color-gray-900);
+}

@@ -1,0 +1,451 @@
+/* =============================================
+   REDESIGN V2: FINAL PATCH (Split Header & Grid)
+   ============================================= */
+
+/* ── Split Header (Image 1 Style) ── */
+.cust-detail-header-split {
+    display: flex;
+    max-width: 1200px;
+    margin: 40px auto 40px;
+    padding: 0 40px;
+    gap: 48px;
+    align-items: center;
+}
+
+.cust-header-info-col {
+    flex: 0 0 45%;
+}
+
+.cust-header-img-col {
+    flex: 1;
+}
+
+.cust-header-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.95;
+    margin-bottom: 12px;
+    color: #1A1A1A;
+}
+
+.cust-header-subtitle {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 24px;
+}
+
+.cust-header-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 32px;
+}
+
+.cust-icon-grey {
+    color: #888;
+}
+
+/* Rating Badge Box */
+.cust-header-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #FAFAFA;
+    border: 1px solid #EEE;
+    padding: 6px 6px 6px 16px;
+    border-radius: 99px;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cust-header-rating-badge:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.cust-rating-icon {
+    width: 24px;
+    height: 24px;
+    background: #1A1A1A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cust-rating-val {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'Oswald', sans-serif;
+    line-height: 1;
+}
+
+.cust-rating-text-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.cust-rating-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 0.05em;
+}
+
+.cust-rating-count {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1A1A1A;
+}
+
+.cust-rating-arrow {
+    width: 28px;
+    height: 28px;
+    background: #F0F0F0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Banner Image */
+.cust-header-banner-img {
+    height: 320px;
+    border-radius: 200px 24px 24px 24px;
+    /* Unique curve as in design */
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.cust-header-banner-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cust-save-btn {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Content Container ── */
+.cust-detail-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+/* ── Sticky Tabs ── */
+.cust-detail-tabs-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    padding: 24px 0 0;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cust-detail-tabs-list {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 0 24px 12px;
+    overflow-x: auto;
+}
+
+.cust-tab-link {
+    font-family: 'Oswald', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #BBB;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: none;
+    padding: 0;
+    border: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.cust-tab-link:hover {
+    color: #888;
+}
+
+.cust-tab-link--active {
+    color: #1A1A1A;
+    font-weight: 700;
+}
+
+.cust-tabs-divider {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid #DDD;
+    margin-top: 0;
+    max-width: 1200px;
+}
+
+/* Category Headers */
+.cust-menu-section {
+    margin-bottom: 48px;
+}
+
+.cust-cat-header-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-left: 8px;
+}
+
+.cust-menu-cat-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #1A1A1A;
+    margin: 0;
+    border: none;
+}
+
+.cust-cat-count-pill {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #999;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* ── Grid Layout V2 ── */
+.cust-menu-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+@media (max-width: 1024px) {
+    .cust-menu-grid-v2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cust-detail-header-split {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cust-header-info-col {
+        flex: auto;
+    }
+
+    .cust-header-meta-row {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .cust-menu-grid-v2 {
+        grid-template-columns: 1fr;
+    }
+
+    .cust-detail-header-split {
+        padding: 0 20px;
+    }
+}
+
+/* ── Dish Card V2 (Image 2 style) ── */
+.cust-dish-card-v2 {
+    border-radius: 32px;
+    overflow: hidden;
+    background: transparent;
+    transition: transform 0.2s;
+    /* Aspect Ratio for card */
+    aspect-ratio: 3/4;
+}
+
+.cust-dish-card-v2:hover {
+    transform: translateY(-4px);
+}
+
+.cust-dish-card-overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+    overflow: hidden;
+    background: #000;
+    isolation: isolate;
+}
+
+.cust-dish-card-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+    transition: transform 0.5s;
+}
+
+.cust-dish-card-overlay:hover img {
+    transform: scale(1.05);
+    opacity: 0.8;
+}
+
+.cust-dish-overlay-grad {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.cust-dish-info-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    z-index: 5;
+    transition: all 0.2s;
+}
+
+.cust-dish-info-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.cust-dish-overlay-content {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    right: 24px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.cust-dish-overlay-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+}
+
+.cust-dish-overlay-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cust-dish-overlay-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Price Pill (Image 2) */
+.cust-dish-price-pill {
+    background: white;
+    color: #78C841;
+    /* Green Text */
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Green Add Button (Image 2) */
+.cust-dish-add-btn-green {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #78C841;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(120, 200, 65, 0.4);
+    transition: transform 0.2s;
+}
+
+.cust-dish-add-btn-green:hover {
+    transform: scale(1.1);
+    background: #6ab838;
+}
+
+.cust-qty-ctrl-green {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    padding: 4px;
+    height: 44px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cust-qty-ctrl-green button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    border: none;
+    font-weight: bold;
+    color: #1A1A1A;
+    cursor: pointer;
+}
+
+.cust-qty-ctrl-green button:hover {
+    background: #eee;
+}
+
+.cust-qty-ctrl-green span {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 700;
+    color: #1A1A1A;
+}

@@ -1,0 +1,11 @@
+/* =============================================
+   DASHBOARD PAGE
+   ============================================= */
+
+.dashboard-page {
+    padding: var(--space-8);
+    padding-bottom: 128px;
+    max-width: 1400px;
+    background: rgba(249, 250, 251, 0.5);
+    min-height: 100vh;
+}

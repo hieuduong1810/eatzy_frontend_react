@@ -1,0 +1,44 @@
+.wp-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ecfccb;
+    /* lime-100 */
+    color: #3f6212;
+    /* lime-700 */
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.wp-header-title {
+    font-size: 42px;
+    font-weight: 900;
+    color: #111827;
+    /* gray-900 */
+    line-height: 1;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    /* font-family: 'Oswald', sans-serif; Optional if available */
+}
+
+.wp-header-subtitle {
+    font-size: 15px;
+    color: #6b7280;
+    /* gray-500 */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 400;
+}
+
+.wp-header-count {
+    color: #65a30d;
+    /* lime-600 */
+    font-weight: 600;
+}

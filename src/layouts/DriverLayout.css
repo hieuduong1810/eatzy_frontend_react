@@ -1,0 +1,115 @@
+/* =============================================
+   DRIVER LAYOUT
+   ============================================= */
+
+.driver-root {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.driver-content {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+}
+
+/* Bottom Navigation Bar */
+.driver-bottombar-wrapper {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 94%;
+    max-width: 520px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.driver-bottombar {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border-radius: 999px;
+    padding: 8px;
+    border: 1px solid var(--color-gray-200);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.driver-tab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    flex: 1;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--color-gray-400);
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.driver-tab--active {
+    flex: 2.5;
+    color: white;
+}
+
+.driver-tab-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--color-primary);
+    border-radius: 999px;
+    z-index: 0;
+    animation: tabPillIn 0.4s ease forwards;
+}
+
+@keyframes tabPillIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.driver-tab-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 8px;
+}
+
+.driver-tab:not(.driver-tab--active):hover {
+    background: var(--color-gray-50);
+}
+
+.driver-tab-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: tabLabelIn 0.3s ease 0.1s both;
+}
+
+@keyframes tabLabelIn {
+    from {
+        opacity: 0;
+        width: 0;
+    }
+
+    to {
+        opacity: 1;
+        width: auto;
+    }
+}

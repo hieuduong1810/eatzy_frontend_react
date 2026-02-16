@@ -1,0 +1,395 @@
+/* ReportsOrdersView.css */
+
+.rov-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-family: var(--font-family);
+}
+
+/* --- Stats Grid --- */
+.rov-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.rov-stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--color-gray-200);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 140px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* Total Orders (Black Card) */
+.rov-stat-card.black {
+    background: #111827;
+    color: white;
+    border: none;
+}
+
+/* Revenue (Lime Card) */
+.rov-stat-card.lime {
+    background: #ecfccb;
+    /* Lime 100 */
+    border-color: #d9f99d;
+}
+
+.rov-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-gray-500);
+    letter-spacing: 0.5px;
+}
+
+.rov-stat-card.black .rov-label {
+    color: #9CA3AF;
+}
+
+.rov-stat-card.lime .rov-label {
+    color: #4d7c0f;
+}
+
+.rov-value {
+    font-size: 36px;
+    font-weight: 800;
+    font-family: "Antonio", sans-serif;
+    color: var(--color-gray-900);
+    line-height: 1.2;
+    margin-top: 8px;
+}
+
+.rov-stat-card.black .rov-value {
+    color: #84cc16;
+    /* Lime 500 */
+}
+
+.rov-stat-card.lime .rov-value {
+    color: #365314;
+    /* Lime 900 */
+    font-size: 32px;
+}
+
+.rov-subtext {
+    font-size: 12px;
+    color: var(--color-gray-500);
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rov-stat-card.black .rov-subtext {
+    color: #9CA3AF;
+}
+
+.rov-stat-card.lime .rov-subtext {
+    color: #4d7c0f;
+    font-weight: 600;
+}
+
+.rov-val-blue {
+    color: #3b82f6;
+}
+
+.rov-val-red {
+    color: #ef4444;
+}
+
+
+/* --- Charts Row --- */
+.rov-charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.rov-chart-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--color-gray-200);
+    min-height: 300px;
+}
+
+.rov-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin-bottom: 24px;
+}
+
+/* Hourly Chart */
+.rov-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 180px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.rov-bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.rov-bar-fill {
+    width: 24px;
+    background: #111827;
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: height 0.5s ease;
+}
+
+.rov-bar-label {
+    font-size: 10px;
+    color: var(--color-gray-400);
+}
+
+.rov-chart-footer {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--color-gray-500);
+    text-align: center;
+}
+
+/* Source Chart (Simulated) */
+.rov-source-chart {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.rov-source-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.rov-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-gray-700);
+    font-weight: 600;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot.green {
+    background: #84cc16;
+}
+
+.dot.black {
+    background: #111827;
+}
+
+/* --- Orders List --- */
+.rov-list-section {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--color-gray-200);
+}
+
+.rov-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.rov-list-title-group h3 {
+    font-size: 20px;
+    font-family: "Antonio", sans-serif;
+    font-weight: 500;
+    color: var(--color-gray-900);
+    margin: 0 0 4px 0;
+}
+
+.rov-list-subtitle {
+    font-size: 13px;
+    color: var(--color-gray-500);
+}
+
+.rov-search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 12px;
+    color: var(--color-gray-400);
+    width: 280px;
+}
+
+.rov-search-box input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+    color: var(--color-gray-900);
+}
+
+/* Table */
+.rov-table {
+    width: 100%;
+}
+
+.rov-table-header {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 3fr 1.5fr;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-gray-200);
+    color: var(--color-gray-400);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.rov-list-item {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 3fr 1.5fr;
+    padding: 16px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-gray-100);
+    transition: background 0.2s;
+}
+
+.rov-list-item:hover {
+    background: #f9fafb;
+}
+
+.rov-col-customer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rov-avatar-frame {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #fefce8;
+    /* Yellow-50 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ca8a04;
+    font-size: 18px;
+}
+
+.rov-c-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.rov-c-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--color-gray-900);
+}
+
+.rov-c-date {
+    font-size: 11px;
+    color: var(--color-gray-500);
+}
+
+.rov-order-code {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rov-code-badge {
+    background: var(--color-gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-gray-600);
+    width: fit-content;
+}
+
+.rov-code-val {
+    font-weight: 700;
+    color: var(--color-gray-900);
+    font-size: 13px;
+}
+
+.rov-items-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rov-item-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+
+.rov-item-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.rov-item-count {
+    font-size: 11px;
+    color: var(--color-gray-500);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.rov-item-desc {
+    font-size: 13px;
+    color: var(--color-gray-900);
+    font-weight: 600;
+}
+
+.rov-status-col {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.rov-price-val {
+    font-weight: 700;
+    color: #16a34a;
+    font-size: 14px;
+}
+
+.rov-status-text {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #ca8a04;
+    /* Yellow for pending/wait */
+    margin-top: 4px;
+}

@@ -1,0 +1,347 @@
+/* Floating Button */
+.cart-floating-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #84cc16;
+    /* Lime Green */
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(132, 204, 22, 0.4);
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.2s ease;
+    animation: slideUp 0.3s ease-out;
+}
+
+.cart-floating-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(132, 204, 22, 0.5);
+    background: #65a30d;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.cart-float-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cart-float-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: white;
+    color: #84cc16;
+    font-size: 10px;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cart-float-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.cart-float-label {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.9;
+    text-transform: uppercase;
+}
+
+.cart-float-price {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+/* Modal */
+.cart-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s;
+}
+
+.cart-modal-container {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    max-height: 85vh;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: scaleIn 0.2s;
+    margin: 16px;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.cart-modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+}
+
+.cart-header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+}
+
+.cart-res-name {
+    font-size: 12px;
+    color: #666;
+    margin-left: 8px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cart-modal-close {
+    background: #f3f4f6;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #4b5563;
+}
+
+.cart-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    min-height: 150px;
+}
+
+.cart-items-list {
+    padding: 16px;
+}
+
+.cart-item-row {
+    display: flex;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px dashed #eee;
+    gap: 12px;
+}
+
+.cart-item-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.cart-item-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.cart-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+}
+
+.cart-item-desc {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cart-item-options {
+    margin: 2px 0 0 0;
+    font-size: 11px;
+    color: #888;
+    font-style: italic;
+    line-height: 1.3;
+}
+
+.cart-item-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.cart-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+}
+
+.cart-qty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qty-btn-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.qty-btn-circle.minus {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.qty-btn-circle.minus:hover {
+    background: #e5e7eb;
+}
+
+.qty-btn-circle.plus {
+    background: #84cc16;
+    /* Lime Green matching floating btn */
+    color: white;
+}
+
+.qty-btn-circle.plus:hover {
+    background: #65a30d;
+}
+
+.qty-val {
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+.cart-modal-footer {
+    padding: 16px 20px 24px 20px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.02);
+}
+
+.cart-subtotal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #444;
+}
+
+.cart-subtotal-val {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111;
+}
+
+.cart-checkout-btn {
+    width: 100%;
+    background: #84cc16;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-transform: uppercase;
+}
+
+.cart-checkout-btn:hover {
+    background: #65a30d;
+}
+
+/* Empty State */
+.cart-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af;
+    gap: 12px;
+    padding: 40px;
+}

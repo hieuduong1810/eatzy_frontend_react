@@ -1,0 +1,672 @@
+/* History Page Styles */
+
+/* Header */
+.history-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-8);
+}
+
+.history-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #ecfccb;
+    /* lime-100 */
+    color: #3f6212;
+    /* lime-800 */
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 8px;
+    width: fit-content;
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.5px;
+}
+
+.history-title {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--color-gray-900);
+    font-family: "Antonio", sans-serif;
+    line-height: 1;
+    margin-bottom: var(--space-2);
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+}
+
+.history-subtitle {
+    font-size: 15px;
+    color: var(--color-gray-500);
+    font-weight: 500;
+}
+
+.history-count {
+    color: #84CC16;
+    font-weight: 700;
+}
+
+.history-actions {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 8px;
+}
+
+.resto-page {
+    padding: var(--space-6);
+    background-color: #f9fafb;
+    min-height: 100vh;
+}
+
+/* History Modal Styles (HM) */
+
+/* HM Header */
+.hm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.hm-title {
+    font-family: "Antonio", sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    line-height: 1;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.hm-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hm-id-badge {
+    background: var(--color-gray-100);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--color-gray-800);
+}
+
+.hm-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--color-gray-500);
+}
+
+.hm-close-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-gray-100);
+    color: var(--color-gray-500);
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.hm-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hm-close-btn:hover {
+    background: var(--color-gray-200);
+    color: var(--color-gray-800);
+}
+
+/* HM Body */
+.hm-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #f9fafb;
+    /* Light gray body background */
+    margin: -24px -32px -32px -32px;
+    /* Pull out to edges */
+    padding: 24px 32px;
+    min-height: 400px;
+}
+
+.hm-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* very subtle */
+    /* or no shadow if just cards on gray */
+}
+
+/* HM Row Grid */
+.hm-row-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Sub-card headers */
+.hm-card-header-sm {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.hm-icon-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-gray-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-500);
+    border: 1px solid var(--color-gray-100);
+}
+
+.hm-card-label {
+    font-weight: 800;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--color-gray-400);
+    letter-spacing: 0.5px;
+}
+
+/* User Info */
+.hm-user-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin-bottom: 8px;
+}
+
+.hm-sub-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-gray-400);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.hm-user-phone {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-gray-800);
+}
+
+.hm-plate-number {
+    font-size: 12px;
+    color: var(--color-gray-500);
+    font-weight: 600;
+    margin-top: 2px;
+    background: var(--color-gray-100);
+    padding: 1px 6px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.hm-user-details-row {
+    display: flex;
+    gap: 32px;
+}
+
+/* Table Item Styles */
+.qty-badge-sm {
+    background: #f7fee7;
+    /* lime-50 */
+    color: #4d7c0f;
+    /* lime-700 */
+    border: 1px solid #d9f99d;
+    /* lime-200 */
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 6px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.item-name-table {
+    font-weight: 700;
+    color: var(--color-gray-700);
+    font-size: 13px;
+}
+
+/* Delivery Route */
+.hm-card-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.hm-route-container {
+    display: flex;
+    gap: 24px;
+    padding-left: 8px;
+}
+
+.hm-timeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+}
+
+.hm-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.hm-dot.pickup {
+    background: #bef264;
+    /* lime-300 */
+    border: 2px solid #ecfccb;
+}
+
+.hm-dot.dropoff {
+    background: #fca5a5;
+    /* red-300 */
+    border: 2px solid #fee2e2;
+}
+
+.hm-line {
+    width: 2px;
+    height: 60px;
+    /* fixed height for connector */
+    background: repeating-linear-gradient(to bottom, #e5e7eb, #e5e7eb 4px, transparent 4px, transparent 8px);
+}
+
+.hm-route-details {
+    flex: 1;
+}
+
+.hm-stop-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.hm-stop-label.pickup {
+    color: #65a30d;
+}
+
+.hm-stop-label.dropoff {
+    color: #dc2626;
+}
+
+.hm-stop-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--color-gray-900);
+}
+
+.hm-stop-address {
+    font-size: 12px;
+    color: var(--color-gray-500);
+}
+
+/* Guarantee Banner */
+.hm-guarantee-banner {
+    background: #ecfccb;
+    /* lime-100 */
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #365314;
+    /* lime-900 */
+    font-weight: 500;
+}
+
+.hm-shield-icon {
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4d7c0f;
+}
+
+.hm-link {
+    font-weight: 700;
+    color: #4d7c0f;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Items List */
+.hm-icon-box {
+    color: var(--color-gray-400);
+}
+
+.hm-badge-black {
+    background: #111827;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.hm-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.hm-item-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.hm-item-qty {
+    background: var(--color-gray-100);
+    color: var(--color-gray-800);
+    font-weight: 700;
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.hm-item-details {
+    flex: 1;
+}
+
+.hm-item-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--color-gray-900);
+}
+
+.hm-item-opt {
+    font-size: 12px;
+    color: var(--color-gray-500);
+}
+
+.hm-item-price {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--color-gray-900);
+}
+
+/* Payment Section */
+.hm-payment-section {
+    padding: 0 16px;
+}
+
+.hm-pay-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--color-gray-600);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.hm-pay-row.discount {
+    color: #16a34a;
+}
+
+.hm-pay-row.method {
+    align-items: center;
+    margin-top: 16px;
+}
+
+.hm-method-badge {
+    background: var(--color-gray-100);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    text-transform: uppercase;
+}
+
+.hm-method-text {
+    font-weight: 700;
+    color: var(--color-gray-900);
+    text-transform: uppercase;
+}
+
+.hm-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+}
+
+.hm-total-row span:last-child {
+    font-size: 24px;
+    color: #84CC16;
+    font-family: "Antonio", sans-serif;
+}
+
+.hm-date-sub {
+    text-align: right;
+    font-size: 11px;
+    color: var(--color-gray-400);
+    margin-top: 4px;
+}
+
+/* Profit Content */
+.hm-profit-content {
+    padding-top: 8px;
+}
+
+.hm-sep {
+    border-top: 1px dashed var(--color-gray-200);
+    margin: 12px 0;
+}
+
+.hm-pay-row.net-income {
+    font-size: 16px;
+    color: var(--color-gray-900);
+    font-weight: 700;
+}
+
+.hm-pay-row.net-income span:last-child {
+    color: #84CC16;
+    font-size: 20px;
+    font-family: "Antonio", sans-serif;
+}
+
+/* Existing Table Styles */
+.res-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.res-img-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-200);
+}
+
+.res-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.res-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.res-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--color-gray-900);
+}
+
+.res-meta {
+    font-size: 12px;
+    color: var(--color-gray-500);
+    margin-top: 2px;
+}
+
+.res-contact-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.items-badge {
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    width: fit-content;
+    margin-bottom: 2px;
+}
+
+.amount-text {
+    font-weight: 700;
+    color: var(--color-gray-900);
+    font-size: 14px;
+}
+
+.payment-method {
+    font-size: 11px;
+    color: var(--color-gray-500);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.res-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-icon-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--color-gray-200);
+    background: white;
+    color: var(--color-gray-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-icon-action:hover {
+    background: var(--color-gray-50);
+    color: var(--color-primary);
+    border-color: var(--color-primary-200);
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-secondary {
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+.btn-secondary:hover {
+    background: var(--color-gray-50);
+}
+
+.btn-primary {
+    background: var(--color-gray-900);
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+/* Status Badge - Small Size */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: none;
+    letter-spacing: 0px;
+    width: fit-content;
+    border: 1px solid transparent;
+}
+
+.status-badge.success {
+    background: #ecfccb;
+    color: #4d7c0f;
+    border-color: #d9f99d;
+}
+
+.status-badge.warning {
+    background: #fef9c3;
+    color: #a16207;
+    border-color: #fde047;
+}
+
+.status-badge.error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.status-badge.default {
+    background: #f3f4f6;
+    color: #4b5563;
+    border-color: #e5e7eb;
+}

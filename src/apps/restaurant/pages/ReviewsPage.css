@@ -1,0 +1,314 @@
+/* Reviews Page Styles */
+.resto-reviews-page {
+    padding: var(--space-6);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.resto-reviews-header {
+    margin-bottom: var(--space-8);
+}
+
+.resto-reviews-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+}
+
+.resto-reviews-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--color-gray-900);
+    text-transform: uppercase;
+    font-family: "Antonio", sans-serif;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.badge-feedback {
+    background-color: #ecfccb;
+    /* Light lime/green */
+    color: #4d7c0f;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.badge-pending {
+    background-color: #ffedd5;
+    /* Light orange */
+    color: #c2410c;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.resto-reviews-subtitle {
+    color: var(--color-gray-500);
+    font-size: var(--font-size-md);
+}
+
+/* Content Layout (2 Columns) */
+.resto-reviews-content {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: var(--space-8);
+    align-items: start;
+}
+
+/* Left Column: Stats Card */
+.reviews-stats-card {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-8);
+    border: 1px solid var(--color-gray-100);
+    /* box-shadow: 0 4px 20px rgba(0,0,0,0.03); */
+}
+
+.overall-rating-section {
+    text-align: center;
+    margin-bottom: var(--space-8);
+    background: #FAFAFA;
+    padding: var(--space-6);
+    border-radius: 20px;
+}
+
+.trophy-icon {
+    font-size: 24px;
+    margin: 0 8px;
+}
+
+.big-rating-number {
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--color-gray-900);
+    line-height: 1;
+    font-family: "Antonio", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rating-label {
+    text-transform: uppercase;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--color-gray-800);
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-1);
+}
+
+.rating-subtext {
+    color: var(--color-gray-500);
+    font-size: 13px;
+}
+
+.rating-breakdown-title {
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--color-gray-900);
+    margin-bottom: var(--space-4);
+    font-family: "Antonio", sans-serif;
+}
+
+.rating-bar-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    font-size: 13px;
+    color: var(--color-gray-500);
+}
+
+.rating-star-label {
+    width: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.rating-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--color-gray-100);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    background: var(--color-gray-900);
+    /* Black fill as in screenshot */
+    border-radius: 4px;
+}
+
+.rating-count-label {
+    width: 30px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.detailed-scores-title {
+    margin-top: var(--space-8);
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--color-gray-900);
+    margin-bottom: var(--space-4);
+    font-family: "Antonio", sans-serif;
+}
+
+/* Right Column: Reviews List */
+.reviews-list-section {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-8);
+    border: 1px solid var(--color-gray-100);
+    min-height: 600px;
+}
+
+.reviews-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.reviews-count-heading {
+    font-size: 24px;
+    font-family: "Antonio", sans-serif;
+    font-weight: 500;
+    color: var(--color-gray-900);
+}
+
+.reviews-count-number {
+    font-weight: 800;
+    /* font-size: 28px; */
+    margin-right: 8px;
+}
+
+.reviews-filter-dropdown {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-gray-200);
+    background: var(--color-gray-50);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-gray-700);
+    cursor: pointer;
+}
+
+.reviews-search-input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border-radius: 12px;
+    background: var(--color-gray-50);
+    border: none;
+    font-size: 14px;
+    margin-bottom: var(--space-6);
+    /* Icon positioning handled in JSX wrapper */
+}
+
+/* Review Card */
+.review-card {
+    border-bottom: 1px solid var(--color-gray-100);
+    padding: var(--space-6) 0;
+}
+
+.review-card:last-child {
+    border-bottom: none;
+}
+
+.review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-4);
+}
+
+.review-user-info {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.review-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--color-gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gray-400);
+}
+
+.review-user-details h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.review-order-id {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-gray-400);
+    text-transform: uppercase;
+}
+
+.review-meta {
+    text-align: right;
+}
+
+.review-stars {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 4px;
+    justify-content: flex-end;
+}
+
+.review-date {
+    font-size: 11px;
+    color: var(--color-gray-400);
+    font-weight: 500;
+}
+
+.review-content-box {
+    background: var(--color-gray-50);
+    padding: var(--space-4) var(--space-6);
+    /* 16px 24px */
+    border-radius: 12px;
+    /* Pill-like shape */
+    margin-left: 56px;
+    /* Align with text, offset by avatar size (40) + gap (16) */
+    margin-bottom: var(--space-3);
+    color: var(--color-gray-800);
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.review-reply-action {
+    margin-left: 56px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #84CC16;
+    /* Apple Green */
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.review-reply-action:hover {
+    text-decoration: underline;
+}
