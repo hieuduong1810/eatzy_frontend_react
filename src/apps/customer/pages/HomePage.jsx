@@ -189,7 +189,7 @@ export default function HomePage() {
                 </section>
 
                 {/* ── Featured Restaurants ── */}
-                <section className="cust-section">
+                {/* <section className="cust-section">
                     <div className="cust-section-header">
                         <h2 className="cust-section-title">
                             <Star size={20} />
@@ -224,7 +224,7 @@ export default function HomePage() {
                             </div>
                         ))}
                     </div>
-                </section>
+                </section> */}
 
                 {/* ── Near You List ── */}
                 <section className="cust-section">

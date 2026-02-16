@@ -278,7 +278,8 @@
 }
 
 .cust-sidebar-menu {
-    position: absolute;
+    position: fixed;
+    z-index: 205;
     top: 56px;
     /* Centered visually with button */
     left: 24px;

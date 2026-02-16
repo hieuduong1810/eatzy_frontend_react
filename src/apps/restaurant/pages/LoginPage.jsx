@@ -4,12 +4,14 @@ import { Eye, EyeOff } from "lucide-react";
 import AuthLayout from "../../../components/shared/AuthLayout";
 import authApi from "../../../api/authApi";
 import { authActions } from "../../../stores/authStore";
+import { useNotification } from "../../../contexts/NotificationContext";
 
 const RestaurantLoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "../orders";
 
+    const { showNotification } = useNotification();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -40,6 +42,7 @@ const RestaurantLoginPage = () => {
                 }
 
                 authActions.setLogin(accessToken, user);
+                showNotification("Đăng nhập thành công!", "Chào mừng đối tác", "success");
                 navigate(from, { replace: true });
             } else {
                 setError("Phản hồi không hợp lệ từ máy chủ");

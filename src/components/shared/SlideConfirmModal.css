@@ -1,0 +1,336 @@
+/* SlideConfirmModal.css */
+
+.scm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    /* Slightly lighter background */
+    backdrop-filter: blur(12px);
+    /* Increased blur */
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.scm-container-glass {
+    position: relative;
+    width: 95%;
+    max-width: 440px;
+    background: rgba(255, 255, 255, 0.6);
+    /* More transparency */
+    backdrop-filter: blur(24px);
+    /* Stronger blur */
+    border-radius: 24px;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        inset 0 0 16px 8px rgba(255, 255, 255, 0.3);
+    /* Inner glow */
+    padding: 0;
+    overflow: hidden;
+    animation: slideUp 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        transform: translateY(110vh);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(110vh);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.scm-overlay.closing {
+    animation: fadeOut 1.5s ease-in forwards;
+}
+
+.scm-container-glass.closing {
+    animation: slideDown 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Header */
+.scm-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scm-icon-box {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    /* Prevent shrink */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 0 10px 0 rgba(255, 255, 255, 0.3);
+}
+
+.scm-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.scm-close-btn-glass {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #4b5563;
+}
+
+.scm-close-btn-glass:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.scm-close-btn-glass:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Body */
+.scm-content-body {
+    padding: 24px;
+}
+
+.scm-desc {
+    color: #374151;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 24px;
+    font-weight: 400;
+}
+
+.scm-swipe-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.scm-instruction {
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Details Box */
+.scm-details-box {
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.scm-detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.scm-detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.detail-label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #374151;
+    font-weight: 600;
+}
+
+/* Loading State */
+.scm-processing-state {
+    padding: 32px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.scm-spinner-wrapper {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.scm-loading-spinner-lg {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.scm-processing-text {
+    color: #374151;
+    font-weight: 500;
+    animation: pulseText 1.5s infinite ease-in-out;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulseText {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Theme Utilities */
+/* Warning (Amber) */
+.border-amber {
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.bg-amber-soft {
+    background-color: rgba(255, 251, 235, 0.5);
+}
+
+.accent-amber::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(249, 115, 22, 0.1));
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Blue (Info) */
+.border-blue {
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.bg-blue-soft {
+    background-color: rgba(239, 246, 255, 0.5);
+}
+
+.accent-blue::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Red (Danger) */
+.border-red {
+    border-color: rgba(248, 113, 113, 0.3);
+}
+
+.bg-red-soft {
+    background-color: rgba(254, 242, 242, 0.5);
+}
+
+.accent-red::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(248, 113, 113, 0.1), rgba(236, 72, 153, 0.1));
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Green (Success) */
+.border-emerald {
+    border-color: rgba(52, 211, 153, 0.3);
+}
+
+.bg-emerald-soft {
+    background-color: rgba(236, 253, 245, 0.5);
+}
+
+.accent-emerald::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(16, 185, 129, 0.1));
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Utility to ensure flex items center */
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.gap-3 {
+    gap: 12px;
+}

@@ -3,22 +3,28 @@ import AdminApp from "./apps/admin/AdminApp";
 import DriverApp from "./apps/driver/DriverApp";
 import RestaurantApp from "./apps/restaurant/RestaurantApp";
 import CustomerApp from "./apps/customer/CustomerApp";
+import { NotificationProvider } from "./contexts/NotificationContext";
+import { WebSocketProvider } from "./contexts/WebSocketContext";
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/driver/*" element={<DriverApp />} />
-      <Route path="/home/*" element={<DriverApp />} />
-      <Route path="/history/*" element={<DriverApp />} />
-      <Route path="/wallet/*" element={<DriverApp />} />
-      <Route path="/profile/*" element={<DriverApp />} />
+    <NotificationProvider>
+      <WebSocketProvider>
+        <Routes>
+          <Route path="/driver/*" element={<DriverApp />} />
+          <Route path="/home/*" element={<DriverApp />} />
+          <Route path="/history/*" element={<DriverApp />} />
+          <Route path="/wallet/*" element={<DriverApp />} />
+          <Route path="/profile/*" element={<DriverApp />} />
 
-      <Route path="/restaurant/*" element={<RestaurantApp />} />
-      <Route path="/customer/*" element={<CustomerApp />} />
+          <Route path="/restaurant/*" element={<RestaurantApp />} />
+          <Route path="/customer/*" element={<CustomerApp />} />
 
-      {/* Admin App as root */}
-      <Route path="/*" element={<AdminApp />} />
-    </Routes>
+          {/* Admin App as root */}
+          <Route path="/*" element={<AdminApp />} />
+        </Routes>
+      </WebSocketProvider>
+    </NotificationProvider>
   );
 };
 

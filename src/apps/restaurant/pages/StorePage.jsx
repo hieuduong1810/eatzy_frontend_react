@@ -24,6 +24,7 @@ const StorePage = () => {
                 // Normalize data structure
                 const normalizedStore = {
                     ...data,
+                    isOpen: data.status === "OPEN",
                     coverUrl: data.coverImageUrl,
                     imageUrl: data.avatarUrl,
                     phone: data.contactPhone,

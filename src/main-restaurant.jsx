@@ -2,15 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import RestaurantApp from "./apps/restaurant/RestaurantApp.jsx";
+import { NotificationProvider } from "./contexts/NotificationContext.jsx";
 import { WebSocketProvider } from "./contexts/WebSocketContext.jsx";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <BrowserRouter>
-            <WebSocketProvider>
-                <RestaurantApp />
-            </WebSocketProvider>
+            <NotificationProvider>
+                <WebSocketProvider>
+                    <RestaurantApp />
+                </WebSocketProvider>
+            </NotificationProvider>
         </BrowserRouter>
     </React.StrictMode>
 );

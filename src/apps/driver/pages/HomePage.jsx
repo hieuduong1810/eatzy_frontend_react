@@ -11,9 +11,15 @@ import { mockOffers, mockActiveOrder } from "../data/mockDriverData";
 import driverAppApi from "../../../api/driver/driverAppApi";
 import "../DriverApp.css";
 
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
+
 const HomePage = () => {
     const [online, setOnline] = useState(false);
     const [locateVersion, setLocateVersion] = useState(0);
+
+    // Modal state
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isTogglingStatus, setIsTogglingStatus] = useState(false);
 
     // Mock offer state
     const [currentOffer, setCurrentOffer] = useState(null);
@@ -86,8 +92,16 @@ const HomePage = () => {
         }
     };
 
-    const handleToggleOnline = async () => {
+    const handleToggleOnline = () => {
+        setIsConfirmOpen(true);
+    };
+
+    const confirmToggleOnline = async () => {
+        setIsTogglingStatus(true);
         try {
+            // Minimum 1s delay for UX
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
             if (online) {
                 await driverAppApi.goOffline();
                 setOnline(false);
@@ -97,7 +111,10 @@ const HomePage = () => {
             }
         } catch (error) {
             console.error("Failed to toggle status", error);
-            // Optionally revert state if it was optimistic
+            toast.error("Không thể thay đổi trạng thái");
+        } finally {
+            setIsTogglingStatus(false);
+            setIsConfirmOpen(false);
         }
     };
 
@@ -150,7 +167,6 @@ const HomePage = () => {
                         // If status is DELIVERED/CANCELLED/REJECTED, clear active order?
                         if (["DELIVERED", "CANCELLED", "REJECTED", "COMPLETED"].includes(updatedOrder.orderStatus)) {
                             setActiveOrder(null);
-                            toast.info(`Order #${updatedOrder.id} finished: ${updatedOrder.orderStatus}`);
                         } else {
                             // Update structure to match local state
                             const mappedOrder = {
@@ -173,7 +189,6 @@ const HomePage = () => {
                                 }
                             };
                             setActiveOrder(mappedOrder);
-                            toast.info(`Order status updated: ${updatedOrder.orderStatus}`);
                         }
                     }
                 }
@@ -218,13 +233,10 @@ const HomePage = () => {
         try {
             if (newStage === "PICKED_UP") {
                 await driverAppApi.markOrderAsPickedUp(activeOrder.id);
-                toast.success("Order picked up!");
             } else if (newStage === "ARRIVED") {
                 await driverAppApi.markOrderAsArrived(activeOrder.id);
-                toast.success("Arrived at delivery location/Picking up!");
             } else if (newStage === "DELIVERED") {
                 await driverAppApi.markOrderAsDelivered(activeOrder.id);
-                toast.success("Order delivered successfully!");
                 setActiveOrder(null);
                 return;
             }
@@ -296,6 +308,18 @@ const HomePage = () => {
                 countdown={countdown}
                 onAccept={acceptOffer}
                 onReject={rejectOffer}
+            />
+
+            <SlideConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmToggleOnline}
+                title={online ? "Tắt trạng thái hoạt động" : "Bắt đầu làm việc"}
+                description={online
+                    ? "Bạn sẽ không nhận được đơn hàng mới. Bạn có chắc chắn muốn nghỉ ngơi không?"
+                    : "Bạn đã sẵn sàng nhận đơn và giao hàng chưa?"}
+                isLoading={isTogglingStatus}
+                type={online ? "warning" : "success"}
             />
         </div>
     );

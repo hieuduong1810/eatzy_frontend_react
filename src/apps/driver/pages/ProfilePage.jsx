@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Star, Award, Phone, Mail, Bike, Calendar, ChevronRight, HelpCircle, Info, LogOut, UserCircle, Settings } from "lucide-react";
 import driverAppApi from "../../../api/driver/driverAppApi";
+import authApi from "../../../api/authApi";
+import { authActions } from "../../../stores/authStore";
 import "../DriverApp.css";
 
 const menuItems = [
@@ -11,9 +14,19 @@ const menuItems = [
     { icon: Info, label: "Về Eatzy", desc: "Phiên bản 2.0.0" },
 ];
 
+import { useNotification } from "../../../contexts/NotificationContext";
+
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
+
 const ProfilePage = () => {
+    const navigate = useNavigate();
+    const { showNotification } = useNotification();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Logout Modal State
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useEffect(() => {
         fetchProfile();
@@ -50,15 +63,21 @@ const ProfilePage = () => {
         }
     };
 
-    const handleLogout = async () => {
+    const processLogout = async () => {
+        setIsLoggingOut(true);
         try {
-            await driverAppApi.goOffline();
+            await Promise.all([
+                authApi.logout(),
+                new Promise(resolve => setTimeout(resolve, 1000))
+            ]);
         } catch (error) {
-            console.error("Logout error:", error);
+            console.error("Logout API failed", error);
         } finally {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("auth_user");
-            window.location.href = "/login";
+            authActions.logout();
+            showNotification("Đăng xuất thành công!", "Hẹn gặp lại", "success");
+            navigate("/login");
+            setIsLoggingOut(false);
+            setIsLogoutModalOpen(false);
         }
     };
 
@@ -144,11 +163,21 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Logout */}
-                <button className="profile-logout-btn" onClick={handleLogout}>
+                <button className="profile-logout-btn" onClick={() => setIsLogoutModalOpen(true)}>
                     <LogOut size={18} />
                     <span>Đăng xuất</span>
                 </button>
             </div>
+
+            <SlideConfirmModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={processLogout}
+                title="Đăng xuất"
+                description="Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng tài xế không?"
+                isLoading={isLoggingOut}
+                type="danger"
+            />
         </div>
     );
 };

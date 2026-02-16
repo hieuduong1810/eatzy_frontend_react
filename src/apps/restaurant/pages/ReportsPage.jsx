@@ -163,7 +163,9 @@ const ReportsPage = () => {
             {/* Header */}
             <div className="rp-header">
                 <div className="rp-title-group">
-                    <span className="rp-badge">Restaurant Analytics</span>
+                    <span className="rp-badge">
+                        <BarChart3 size={14} /> RESTAURANT ANALYTICS
+                    </span>
                     <h1 className="rp-title">Reports Center</h1>
                 </div>
                 <div className="rp-controls">

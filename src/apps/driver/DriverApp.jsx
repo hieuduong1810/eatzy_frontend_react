@@ -13,30 +13,28 @@ import ProfilePage from "./pages/ProfilePage";
  * so we wrap each page individually inside the layout.
  */
 const WithDriverLayout = ({ children }) => (
-    <ProtectedRoute loginPath="/driver/login">
+    <ProtectedRoute loginPath="/login">
         <DriverLayout>{children}</DriverLayout>
     </ProtectedRoute>
 );
 
-import { WebSocketProvider } from "../../contexts/WebSocketContext";
+// import { WebSocketProvider } from "../../contexts/WebSocketContext";
 
 const DriverApp = () => {
+    console.log("DriverApp Render. Path:", window.location.pathname);
     return (
-        <WebSocketProvider>
-            <Routes>
-                {/* Public routes */}
-                <Route path="login" element={<LoginPage />} />
-                <Route path="register" element={<RegisterPage />} />
+        <Routes>
+            {/* Public routes */}
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
 
-                {/* Protected routes with layout */}
-                {/* Protected routes with layout */}
-                <Route path="/home" element={<WithDriverLayout><HomePage /></WithDriverLayout>} />
-                <Route path="/history" element={<WithDriverLayout><HistoryPage /></WithDriverLayout>} />
-                <Route path="/wallet" element={<WithDriverLayout><WalletPage /></WithDriverLayout>} />
-                <Route path="/profile" element={<WithDriverLayout><ProfilePage /></WithDriverLayout>} />
-                <Route path="*" element={<Navigate to="/home" replace />} />
-            </Routes>
-        </WebSocketProvider>
+            {/* Protected routes with layout */}
+            <Route path="/home" element={<WithDriverLayout><HomePage /></WithDriverLayout>} />
+            <Route path="/history" element={<WithDriverLayout><HistoryPage /></WithDriverLayout>} />
+            <Route path="/wallet" element={<WithDriverLayout><WalletPage /></WithDriverLayout>} />
+            <Route path="/profile" element={<WithDriverLayout><ProfilePage /></WithDriverLayout>} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+        </Routes>
     );
 };
 

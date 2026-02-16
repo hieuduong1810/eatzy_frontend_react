@@ -21,27 +21,27 @@ const WithRestaurantLayout = ({ children }) => (
     </ProtectedRoute>
 );
 
-import { WebSocketProvider } from "../../contexts/WebSocketContext";
+// import { WebSocketProvider } from "../../contexts/WebSocketContext";
+// import { NotificationProvider } from "../../contexts/NotificationContext";
+import "react-toastify/dist/ReactToastify.css";
 
 const RestaurantApp = () => {
     return (
-        <WebSocketProvider>
-            <Routes>
-                {/* Public routes */}
-                <Route path="login" element={<LoginPage />} />
-                <Route path="register" element={<RegisterPage />} />
+        <Routes>
+            {/* Public routes */}
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
 
-                {/* Protected routes with layout */}
-                <Route path="orders" element={<WithRestaurantLayout><OrdersPage /></WithRestaurantLayout>} />
-                <Route path="menu" element={<WithRestaurantLayout><MenuPage /></WithRestaurantLayout>} />
-                <Route path="history" element={<WithRestaurantLayout><HistoryPage /></WithRestaurantLayout>} />
-                <Route path="reviews" element={<WithRestaurantLayout><ReviewsPage /></WithRestaurantLayout>} />
-                <Route path="store" element={<WithRestaurantLayout><StorePage /></WithRestaurantLayout>} />
-                <Route path="reports" element={<WithRestaurantLayout><ReportsPage /></WithRestaurantLayout>} />
-                <Route path="wallet" element={<WithRestaurantLayout><WalletPage /></WithRestaurantLayout>} />
-                <Route path="*" element={<Navigate to="../orders" replace />} />
-            </Routes>
-        </WebSocketProvider>
+            {/* Protected routes with layout */}
+            <Route path="orders" element={<WithRestaurantLayout><OrdersPage /></WithRestaurantLayout>} />
+            <Route path="menu" element={<WithRestaurantLayout><MenuPage /></WithRestaurantLayout>} />
+            <Route path="history" element={<WithRestaurantLayout><HistoryPage /></WithRestaurantLayout>} />
+            <Route path="reviews" element={<WithRestaurantLayout><ReviewsPage /></WithRestaurantLayout>} />
+            <Route path="store" element={<WithRestaurantLayout><StorePage /></WithRestaurantLayout>} />
+            <Route path="reports" element={<WithRestaurantLayout><ReportsPage /></WithRestaurantLayout>} />
+            <Route path="wallet" element={<WithRestaurantLayout><WalletPage /></WithRestaurantLayout>} />
+            <Route path="*" element={<Navigate to="../orders" replace />} />
+        </Routes>
     );
 };
 

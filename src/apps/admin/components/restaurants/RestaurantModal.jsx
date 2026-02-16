@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Play, Pause, Clock, Lock, MapPin, Phone, Percent, Image, Upload, CheckCircle } from "lucide-react";
+import { X, Power, Activity as Pulse, Clock, Lock, MapPin, Phone, Percent, Image, Upload, CheckCircle, Pause } from "lucide-react";
 import "./RestaurantModal.css";
 
 const RestaurantModal = ({ isOpen, onClose, restaurant = null }) => {
@@ -73,28 +73,28 @@ const RestaurantModal = ({ isOpen, onClose, restaurant = null }) => {
                         </div>
                         <div className="status-grid">
                             <button
-                                className={`status-btn ${formData.status === 'open' ? 'active' : ''}`}
+                                className={`status-btn open ${formData.status === 'open' ? 'active' : ''}`}
                                 onClick={() => handleChange('status', 'open')}
                             >
-                                <Play size={20} />
-                                <span>OPEN</span>
+                                <Power size={20} />
+                                <span>Open</span>
                             </button>
                             <button
-                                className={`status-btn ${formData.status === 'closed' ? 'active' : ''}`}
+                                className={`status-btn closed ${formData.status === 'closed' ? 'active' : ''}`}
                                 onClick={() => handleChange('status', 'closed')}
                             >
-                                <Pause size={20} />
-                                <span>CLOSED</span>
+                                <Power size={20} />
+                                <span>Closed</span>
                             </button>
                             <button
-                                className={`status-btn ${formData.status === 'pending' ? 'active' : ''}`}
+                                className={`status-btn pending ${formData.status === 'pending' ? 'active' : ''}`}
                                 onClick={() => handleChange('status', 'pending')}
                             >
                                 <Clock size={20} />
                                 <span>PENDING</span>
                             </button>
                             <button
-                                className={`status-btn ${formData.status === 'locked' ? 'active' : ''}`}
+                                className={`status-btn locked ${formData.status === 'locked' ? 'active' : ''}`}
                                 onClick={() => handleChange('status', 'locked')}
                             >
                                 <Lock size={20} />

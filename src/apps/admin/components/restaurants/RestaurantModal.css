@@ -90,21 +90,27 @@
 .status-btn {
     border: 1px solid #e5e7eb;
     background: white;
-    border-radius: 16px;
-    padding: 16px 8px;
+    border-radius: 99px !important;
+    padding: 20px 32px !important;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    /* Horizontal layout */
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 12px;
     cursor: pointer;
     transition: all 0.2s;
     color: #9ca3af;
+    min-width: 120px;
+    /* Ensure minimum width */
 }
 
 .status-btn span {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
+    font-size: 14px;
+    /* Larger text */
+    font-weight: 800;
+    text-transform: capitalize;
+    /* "Open" vs "OPEN" */
 }
 
 .status-btn:hover {
@@ -112,14 +118,39 @@
     background: #f9fafb;
 }
 
-.status-btn.active {
-    border-color: #bef264;
-    /* lime-300 */
-    background: #f7fee7;
-    /* lime-50 */
-    color: #65a30d;
-    /* lime-600 */
-    box-shadow: 0 4px 6px -1px rgba(132, 204, 22, 0.1);
+/* Active State - Default (Open) */
+.status-btn.open.active {
+    border-color: #84cc16;
+    /* lime-500 */
+    background: #84cc16;
+    /* lime-500 - Solid Green */
+    color: white;
+    box-shadow: 0 4px 12px rgba(132, 204, 22, 0.4);
+    /* Green glow */
+}
+
+/* Active State - Closed */
+.status-btn.closed.active {
+    border-color: #ef4444;
+    /* red-500 */
+    background: #ef4444;
+    /* red-500 - Solid Red */
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    /* Red glow */
+}
+
+/* Other states if needed */
+.status-btn.pending.active {
+    border-color: #fbbf24;
+    background: #fbbf24;
+    color: white;
+}
+
+.status-btn.locked.active {
+    border-color: #ef4444;
+    background: #ef4444;
+    color: white;
 }
 
 /* Inputs */

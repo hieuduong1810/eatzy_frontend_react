@@ -4,12 +4,14 @@ import { Eye, EyeOff } from "lucide-react";
 import AuthLayout from "../../../components/shared/AuthLayout";
 import authApi from "../../../api/authApi";
 import { authActions } from "../../../stores/authStore";
+import { useNotification } from "../../../contexts/NotificationContext";
 
 const DriverLoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "/home";
 
+    const { showNotification } = useNotification();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +34,7 @@ const DriverLoginPage = () => {
 
             if (accessToken && user) {
                 authActions.setLogin(accessToken, user);
+                showNotification("Đăng nhập thành công!", "Chào mừng trở lại", "success");
 
                 // Role-based redirection
                 const roleName = user.role?.name || "";

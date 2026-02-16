@@ -101,7 +101,9 @@ const MenuPage = () => {
                 {/* Header with Title and Actions */}
                 <div className="resto-menu-header-row">
                     <div className="resto-menu-title">
-                        <div className="badge-warning badge mb-2">MENU EDITOR</div>
+                        <div className="menu-badge">
+                            <Settings size={14} /> MENU EDITOR
+                        </div>
                         <h1>MENU MANAGEMENT</h1>
                         <p className="resto-menu-subtitle">Quản lý món ăn, phân loại và tùy chọn</p>
                     </div>

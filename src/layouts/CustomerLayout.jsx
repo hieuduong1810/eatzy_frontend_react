@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Home, History, Heart, User, Truck, ShoppingBag, Search, X, MapPin, Package, Menu, LogOut } from "lucide-react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Home, History, Heart, User, Truck, ShoppingBag, Search, X, MapPin, Package, Menu, LogOut, ArrowLeft } from "lucide-react";
 import { useCart } from "../apps/customer/context/CartContext";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import CartOverlay from "../apps/customer/components/CartOverlay";
 import CurrentOrderOverlay from "../apps/customer/components/CurrentOrderOverlay";
 import LocationPickerModal from "../apps/customer/components/LocationPickerModal"; // Import Modal
-import OrderNotification from "../components/shared/notifications/OrderNotification";
-import "../components/shared/notifications/OrderNotification.css";
+import { useNotification } from "../contexts/NotificationContext";
 import { mockOrders } from "../apps/customer/data/mockCustomerData";
 import { useAuthStore, authActions } from "../stores/authStore";
 import { useLocationStore } from "../stores/locationStore";
@@ -15,7 +14,9 @@ import authApi from "../api/authApi";
 import customerApi from "../api/customer/customerApi";
 import "./CustomerLayout.css";
 
-const CustomerLayout = () => {
+import SlideConfirmModal from "../components/shared/SlideConfirmModal";
+
+const CustomerLayout = ({ children }) => {
     const [cartOpen, setCartOpen] = useState(false);
     const [currentOrderOpen, setCurrentOrderOpen] = useState(false);
     const [locationPickerOpen, setLocationPickerOpen] = useState(false); // New state
@@ -28,6 +29,10 @@ const CustomerLayout = () => {
     const { location: userLocation } = useLocationStore(); // Renamed to avoid conflict
     const locationRoute = useLocation();
     const isDetailPage = locationRoute.pathname.includes('/restaurant/');
+
+    // Logout Modal State
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     // Active order is now managed by state and API
     // const activeOrder = ... (removed mock)
@@ -43,7 +48,7 @@ const CustomerLayout = () => {
             lastScrollY.current = y;
         };
         window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll, { passive: true });
     }, []);
 
     const mobileNavTabs = [
@@ -73,21 +78,32 @@ const CustomerLayout = () => {
         handleCloseMenu();
     };
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
+        setIsLogoutModalOpen(true);
+    };
+
+    const processLogout = async () => {
+        setIsLoggingOut(true);
         try {
-            await authApi.logout();
+            await Promise.all([
+                authApi.logout(),
+                new Promise(resolve => setTimeout(resolve, 1000))
+            ]);
         } catch (error) {
             console.error("Logout failed", error);
         } finally {
             authActions.logout();
+            showNotification("Đăng xuất thành công!", "Hẹn gặp lại", "success");
             handleCloseMenu();
             navigate("/login");
+            setIsLoggingOut(false);
+            setIsLogoutModalOpen(false);
         }
     };
 
     // WebSocket for notifications
     const { client, isConnected } = useWebSocket();
-    const [notification, setNotification] = useState(null);
+    const { showNotification } = useNotification();
     const [driverLocations, setDriverLocations] = useState({}); // Stores latest driver locations
 
     useEffect(() => {
@@ -119,15 +135,7 @@ const CustomerLayout = () => {
                 }
 
                 if (msg) {
-                    setNotification({
-                        title,
-                        message: msg,
-                        type,
-                        timestamp: Date.now()
-                    });
-
-                    // Auto hide after 5s
-                    setTimeout(() => setNotification(null), 5000);
+                    showNotification(title, msg, type);
                 }
             }
         });
@@ -209,21 +217,58 @@ const CustomerLayout = () => {
 
     return (
         <div className="cust-root">
-            {/* Notification */}
-            {notification && (
-                <OrderNotification
-                    title={notification.title}
-                    message={notification.message}
-                    type={notification.type}
-                    timestamp={notification.timestamp}
-                    onClose={() => setNotification(null)}
-                />
-            )}
+
 
             {/* ── Desktop/Mobile Header ── */}
             <header className={`cust-header ${isDetailPage ? 'cust-header--detail' : ''}`}>
                 <div className="cust-header-inner">
-                    {/* ... (keep menu btn, logo, location, search) ... */}
+                    {/* ── Left side: Menu, Logo, Location, Search ── */}
+                    {isDetailPage ? (
+                        <button className="cust-menu-btn" onClick={() => navigate(-1)}>
+                            <ArrowLeft size={20} />
+                        </button>
+                    ) : (
+                        <button className="cust-menu-btn" onClick={() => setMenuOpen(true)}>
+                            <Menu size={20} />
+                        </button>
+                    )}
+
+                    <div className="cust-header-logo" onClick={() => navigate('/home')}>
+                        <img
+                            src="https://res.cloudinary.com/durzk8qz6/image/upload/v1771055848/itc1bfm5hvwdhsmrngt0.png"
+                            alt="Eatzy Logo"
+                            className="cust-logo-img"
+                        />
+                    </div>
+
+                    {!isDetailPage && (
+                        <>
+                            <button className="cust-location-btn" onClick={() => setLocationPickerOpen(true)}>
+                                <MapPin size={18} />
+                                <div className="cust-location-text">
+                                    <span className="cust-location-label">Giao đến</span>
+                                    <span className="cust-location-addr">
+                                        {userLocation?.address ? userLocation.address.split(',')[0] : "Chọn địa chỉ giao hàng"}
+                                    </span>
+                                </div>
+                            </button>
+
+                            <div className="cust-header-search">
+                                <Search size={18} className="cust-search-icon" />
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm món ăn, nhà hàng..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                {searchQuery && (
+                                    <button className="cust-search-clear" onClick={() => setSearchQuery("")}>
+                                        <X size={14} />
+                                    </button>
+                                )}
+                            </div>
+                        </>
+                    )}
 
                     {/* ── Right side: Current Order + Cart ── */}
                     <div className="cust-header-right">
@@ -273,11 +318,60 @@ const CustomerLayout = () => {
                 </div>
             </header>
 
-            {/* ... (keep sidebar) ... */}
+            {/* ── Sidebar Menu ── */}
+            {menuOpen && (
+                <>
+                    <div
+                        className={`cust-sidebar-overlay ${isClosing ? 'cust-sidebar-overlay--closing' : ''}`}
+                        onClick={handleCloseMenu}
+                    />
+                    <div className={`cust-sidebar-menu ${isClosing ? 'cust-sidebar-menu--closing' : ''}`}>
+                        <div className="cust-sidebar-profile">
+                            <div className="cust-sidebar-avatar">
+                                <User size={24} />
+                            </div>
+                            <div className="cust-sidebar-info">
+                                <div className="cust-sidebar-name">{user?.name || "Khách hàng"}</div>
+                                <div className="cust-sidebar-email">{user?.email || "Chưa đăng nhập"}</div>
+                            </div>
+                        </div>
+
+                        <div className="cust-sidebar-section">
+                            <span className="cust-sidebar-section-label">Menu</span>
+                            {menuItems.map((item, index) => {
+                                const Icon = item.icon;
+                                return (
+                                    <button
+                                        key={index}
+                                        className="cust-sidebar-item"
+                                        onClick={() => handleMenuNav(item.to)}
+                                    >
+                                        <Icon size={20} />
+                                        <span>{item.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {isAuthenticated ? (
+                            <button className="cust-sidebar-item cust-sidebar-item--logout" onClick={handleLogout}>
+                                <LogOut size={20} />
+                                <span>Đăng xuất</span>
+                            </button>
+                        ) : (
+                            <button className="cust-sidebar-item" onClick={() => navigate('/login')}>
+                                <LogOut size={20} />
+                                <span>Đăng nhập</span>
+                            </button>
+                        )}
+                    </div>
+                </>
+            )}
+
 
             {/* ── Main Content ── */}
             <main className="cust-content">
-                <Outlet />
+                {children}
             </main>
 
             {/* ── Modals ── */}
@@ -313,7 +407,17 @@ const CustomerLayout = () => {
                     )
                 )}
             </nav>
-        </div>
+
+            <SlideConfirmModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={processLogout}
+                title="Đăng xuất"
+                description="Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng không?"
+                isLoading={isLoggingOut}
+                type="danger"
+            />
+        </div >
     );
 };
 

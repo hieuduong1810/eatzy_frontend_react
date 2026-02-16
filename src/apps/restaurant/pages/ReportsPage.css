@@ -14,17 +14,21 @@
 }
 
 .rp-badge {
-    color: #65a30d;
-    /* lime-600 */
-    background: #ecfccb;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #ecfccb;
     /* lime-100 */
+    color: #3f6212;
+    /* lime-800 */
     font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
     width: fit-content;
-    margin-bottom: 4px;
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.5px;
 }
 
 .rp-title {

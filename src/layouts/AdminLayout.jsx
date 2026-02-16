@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import AdminSidebar from "../apps/admin/components/AdminSidebar";
+
+import AdminSidebar from "../components/shared/Sidebar";
 import "./AdminLayout.css";
 import { useWebSocket } from "../contexts/WebSocketContext";
-import OrderNotification from "../components/shared/notifications/OrderNotification";
-import "../components/shared/notifications/OrderNotification.css";
+import { useNotification } from "../contexts/NotificationContext";
 
-const AdminLayout = () => {
+const AdminLayout = ({ children }) => {
     const { client, isConnected } = useWebSocket();
-    const [notification, setNotification] = useState(null);
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         if (!client || !isConnected) return;
@@ -30,13 +29,7 @@ const AdminLayout = () => {
                 }
 
                 if (msg) {
-                    setNotification({
-                        title,
-                        message: msg,
-                        type,
-                        timestamp: Date.now()
-                    });
-                    setTimeout(() => setNotification(null), 5000);
+                    showNotification(title, msg, type);
                 }
             }
         });
@@ -44,32 +37,16 @@ const AdminLayout = () => {
         return () => {
             subscription.unsubscribe();
         };
-    }, [client, isConnected]);
+    }, [client, isConnected, showNotification]);
 
     return (
         <div className="admin-root">
-            {notification && (
-                <OrderNotification
-                    title={notification.title}
-                    message={notification.message}
-                    type={notification.type}
-                    timestamp={notification.timestamp}
-                    onClose={() => setNotification(null)}
-                />
-            )}
             <AdminSidebar />
             <div className="admin-main">
                 <header className="admin-header">
-                    <h2 className="admin-header-title">Admin Dashboard</h2>
-                    <div className="admin-header-actions">
-                        {/* Add header actions here if needed */}
-                        <div className="admin-user-info">
-                            <span>Admin User</span>
-                        </div>
-                    </div>
                 </header>
                 <div className="admin-content">
-                    <Outlet />
+                    {children}
                 </div>
             </div>
         </div>

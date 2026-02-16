@@ -12,6 +12,8 @@ import {
     ShieldCheck,
     Ticket,
 } from "lucide-react";
+import { authActions } from "../../stores/authStore";
+import authApi from "../../api/authApi";
 import NavItem from "./NavItem";
 import "./Sidebar.css";
 
@@ -26,10 +28,19 @@ const menuItems = [
     { id: "permissions", icon: ShieldCheck, text: "Quản lý phân quyền" },
 ];
 
+import { useNotification } from "../../contexts/NotificationContext";
+
+import SlideConfirmModal from "./SlideConfirmModal";
+
 const Sidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [hovered, setHovered] = useState(false);
+    const { showNotification } = useNotification();
+
+    // Logout Modal State
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     // Derive active section from path
     const pathSegments = location.pathname.split("/");
@@ -40,9 +51,24 @@ const Sidebar = () => {
     };
 
     const handleLogout = () => {
-        // TODO: implement logout logic
-        if (window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
-            console.log("Logging out...");
+        setIsLogoutModalOpen(true);
+    };
+
+    const processLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            await Promise.all([
+                authApi.logout(),
+                new Promise(resolve => setTimeout(resolve, 1000))
+            ]);
+        } catch (error) {
+            console.error("Logout user failed", error);
+        } finally {
+            authActions.logout();
+            showNotification("Đăng xuất thành công!", "Hẹn gặp lại", "success");
+            navigate("/login");
+            setIsLoggingOut(false);
+            setIsLogoutModalOpen(false);
         }
     };
 
@@ -105,6 +131,16 @@ const Sidebar = () => {
                     isLogout
                 />
             </div>
+
+            <SlideConfirmModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={processLogout}
+                title="Đăng xuất"
+                description="Bạn có chắc chắn muốn đăng xuất khỏi quản trị?"
+                isLoading={isLoggingOut}
+                type="danger"
+            />
         </div>
     );
 };

@@ -68,7 +68,9 @@ const ReviewsPage = () => {
             {/* Header */}
             <div className="resto-reviews-header">
                 <div className="resto-reviews-title-row">
-                    <span className="badge-feedback">CUSTOMER FEEDBACK</span>
+                    <span className="badge-feedback">
+                        <MessageSquare size={14} /> CUSTOMER FEEDBACK
+                    </span>
                     {/* <span className="badge-pending">2 CHƯA PHẢN HỒI</span> */}
                 </div>
                 <h1 className="resto-reviews-title">REVIEWS & FEEDBACK</h1>

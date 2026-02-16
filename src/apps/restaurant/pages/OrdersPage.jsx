@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Clock, ShoppingBag, ChefHat, Truck, MapPin, X, CheckCircle, User, AlertCircle, Power } from "lucide-react";
+import { Clock, ShoppingBag, ChefHat, Truck, MapPin, X, CheckCircle, User, AlertCircle, Power, ClipboardList } from "lucide-react";
 import restaurantAppApi from "../../../api/restaurant/restaurantAppApi";
 import Modal from "../../../components/shared/Modal";
 import { useWebSocket } from "../../../contexts/WebSocketContext";
 import "./OrdersPage.css";
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
 
 const formatVnd = (n) => Intl.NumberFormat("vi-VN").format(n) + "đ";
 
@@ -14,8 +15,45 @@ const OrdersPage = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+    const [isTogglingStatus, setIsTogglingStatus] = useState(false);
 
     const { client, isConnected } = useWebSocket();
+    // ... (keep useEffects)
+
+    // ... (keep fetch functions)
+
+    const handleToggleStatus = () => {
+        setIsConfirmOpen(true);
+    };
+
+    const handleConfirmToggle = async () => {
+        setIsTogglingStatus(true);
+        try {
+            if (isRestaurantOpen) {
+                // Closing - wait for API and minimum 1s delay
+                await Promise.all([
+                    restaurantAppApi.closeRestaurant(),
+                    new Promise(resolve => setTimeout(resolve, 1000))
+                ]);
+                setIsRestaurantOpen(false);
+            } else {
+                // Opening - wait for API and minimum 1s delay
+                await Promise.all([
+                    restaurantAppApi.openRestaurant(),
+                    new Promise(resolve => setTimeout(resolve, 1000))
+                ]);
+                setIsRestaurantOpen(true);
+            }
+            setIsConfirmOpen(false);
+        } catch (error) {
+            console.error("Failed to toggle restaurant status:", error);
+            toast.error("Failed to update status");
+        } finally {
+            setIsTogglingStatus(false);
+        }
+    };
 
     useEffect(() => {
         fetchOrders();
@@ -49,15 +87,15 @@ const OrdersPage = () => {
                     }
 
                     // Show toast
-                    const msg = notification.message || `Order #${notification.orderId} updated`;
-                    toast.info(msg, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
+                    // const msg = notification.message || `Order #${notification.orderId} updated`;
+                    // toast.info(msg, {
+                    //     position: "top-right",
+                    //     autoClose: 5000,
+                    //     hideProgressBar: false,
+                    //     closeOnClick: true,
+                    //     pauseOnHover: true,
+                    //     draggable: true,
+                    // });
                 }
             }
         });
@@ -72,7 +110,7 @@ const OrdersPage = () => {
             const res = await restaurantAppApi.getMyRestaurant();
             if (res && res.data) {
                 const data = res.data.data || res.data;
-                setIsRestaurantOpen(data.isOpen);
+                setIsRestaurantOpen(data.status === "OPEN");
             }
         } catch (error) {
             console.error("Failed to fetch restaurant status:", error);
@@ -97,7 +135,8 @@ const OrdersPage = () => {
                     items: o.orderItems?.map(oi => ({
                         quantity: oi.quantity,
                         name: oi.dish?.name,
-                        price: oi.dish?.price
+                        price: oi.dish?.price,
+                        options: oi.orderItemOptions?.map(opt => opt.menuOption?.name).filter(Boolean) || []
                     })) || []
                 }));
 
@@ -134,27 +173,14 @@ const OrdersPage = () => {
             setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
             handleCloseModal();
             fetchOrders(); // Refresh to be sure
-            toast.success(`Order #${orderId} updated successfully!`);
+            // toast.success(`Order #${orderId} updated successfully!`);
         } catch (error) {
             console.error("Failed to update status:", error);
             toast.error("Failed to update order status");
         }
     };
 
-    const handleToggleStatus = async () => {
-        try {
-            if (isRestaurantOpen) {
-                await restaurantAppApi.closeRestaurant();
-                setIsRestaurantOpen(false);
-            } else {
-                await restaurantAppApi.openRestaurant();
-                setIsRestaurantOpen(true);
-            }
-        } catch (error) {
-            console.error("Failed to toggle restaurant status:", error);
-            alert("Failed to change restaurant status");
-        }
-    };
+
 
     // Columns configuration
     const columns = [
@@ -162,22 +188,25 @@ const OrdersPage = () => {
             key: "PENDING",
             title: "PENDING",
             statusFilter: (s) => ["NEW", "PENDING", "PLACED"].includes(s),
-            icon: ShoppingBag,
-            colorClass: "col-pending"
+            icon: ClipboardList,
+            colorTheme: "yellow",
+            emptyText: "Không có đơn hàng mới"
         },
         {
             key: "IN_PROGRESS",
             title: "IN PROGRESS",
             statusFilter: (s) => ["CONFIRMED", "PREPARING", "DRIVER_ASSIGNED"].includes(s),
             icon: ChefHat,
-            colorClass: "col-inprogress"
+            colorTheme: "blue",
+            emptyText: "Không có đơn đang chuẩn bị"
         },
         {
             key: "WAITING",
             title: "WAITING FOR DRIVER",
             statusFilter: (s) => ["READY", "READY_FOR_PICKUP"].includes(s),
             icon: Truck,
-            colorClass: "col-waiting"
+            colorTheme: "lime",
+            emptyText: "Chưa có đơn chờ tài xế"
         }
     ];
 
@@ -187,26 +216,18 @@ const OrdersPage = () => {
         <div className="resto-orders-page">
             <div className="resto-page-header-row">
                 <div>
-                    <div className="live-orders-badge"><Clock size={12} /> LIVE ORDERS</div>
+                    <div className="live-orders-badge">
+                        <ClipboardList size={12} /> LIVE ORDERS
+                    </div>
                     <h1 className="resto-page-title">RESTAURANT</h1>
                     <p className="resto-page-subtitle">Manage incoming orders and kitchen workflow.</p>
                 </div>
                 <button
-                    className={`btn-store-status ${isRestaurantOpen ? 'open' : 'closed'}`}
+                    className={`btn-store-status ${isRestaurantOpen ? 'active' : 'closed'}`}
                     onClick={handleToggleStatus}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontWeight: '600',
-                        transition: 'all 0.2s'
-                    }}
                 >
-                    <Power size={20} strokeWidth={3} /> {isRestaurantOpen ? 'Open' : 'Closed'}
+                    <Power size={20} />
+                    <span>{isRestaurantOpen ? 'Open' : 'Closed'}</span>
                 </button>
             </div>
 
@@ -214,20 +235,24 @@ const OrdersPage = () => {
                 {columns.map((col) => {
                     const colOrders = orders.filter(o => col.statusFilter(o.status));
                     return (
-                        <div key={col.key} className={`kanban-column ${col.colorClass}`}>
-                            <div className="kanban-col-header">
-                                <span className="kanban-col-title">{col.title}</span>
-                                <span className="kanban-col-count">{colOrders.length}</span>
+                        <div key={col.key} className={`kanban-column`}>
+                            <div className="kanban-col-header-wrapper">
+                                <div className={`kanban-col-header border-${col.colorTheme}`}>
+                                    <h3 className="kanban-col-title">{col.title}</h3>
+                                    <div className={`kanban-col-count bg-${col.colorTheme}`}>
+                                        {colOrders.length}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="kanban-col-body">
+                            <div className="kanban-col-body custom-scrollbar">
                                 {colOrders.length > 0 ? (
                                     colOrders.map(order => (
                                         <OrderCard key={order.id} order={order} onClick={() => handleOrderClick(order)} />
                                     ))
                                 ) : (
                                     <div className="empty-state-column">
-                                        <div className="opacity-50"><col.icon size={32} /></div>
-                                        <div>No orders</div>
+                                        <div className="opacity-30"><col.icon size={64} /></div>
+                                        <div className="text-sm text-gray-400">{col.emptyText}</div>
                                     </div>
                                 )}
                             </div>
@@ -244,6 +269,18 @@ const OrdersPage = () => {
                     onUpdateStatus={handleStatusUpdate}
                 />
             )}
+
+            <SlideConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={handleConfirmToggle}
+                title={isRestaurantOpen ? "Tắt ứng dụng" : "Mở ứng dụng"}
+                description={isRestaurantOpen
+                    ? "Tắt ứng dụng sẽ ngừng nhận đơn hàng mới. Bạn có chắc chắn muốn đóng cửa hàng không?"
+                    : "Bạn có chắc chắn muốn mở cửa hàng để bắt đầu nhận đơn hàng mới không?"}
+                isLoading={isTogglingStatus}
+                type={isRestaurantOpen ? "warning" : "success"}
+            />
         </div>
     );
 };
@@ -319,12 +356,16 @@ const OrderModal = ({ isOpen, onClose, order, onUpdateStatus }) => {
     const commission = order.total * 0.1;
     const netEarning = order.total - commission;
 
+    const OrderTitle = (
+        <div>
+            <span className="order-detail-label">ORDER DETAILS</span>
+            <h2 className="order-detail-id">#{order.id}</h2>
+        </div>
+    );
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
-            <div className="order-modal-header">
-                <span className="order-detail-label">ORDER DETAILS</span>
-                <h2 className="order-detail-id">#{order.id}</h2>
-            </div>
+        <Modal isOpen={isOpen} onClose={onClose} title={OrderTitle} size="xl">
+            {/* Removed local header */}
 
             <div className="modal-body-layout">
                 {/* Left Column: Info & Items */}
@@ -362,7 +403,14 @@ const OrderModal = ({ isOpen, onClose, order, onUpdateStatus }) => {
                                 <div key={i} className="modal-item-row">
                                     <div className="item-left">
                                         <span className="item-qty-badge">{item.quantity}x</span>
-                                        <span className="item-name">{item.name}</span>
+                                        <div>
+                                            <span className="item-name">{item.name}</span>
+                                            {item.options && item.options.length > 0 && (
+                                                <div className="item-options-text">
+                                                    {item.options.join(", ")}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="item-right">
                                         <div className="item-total-price">{formatVnd(item.price * item.quantity)}</div>
