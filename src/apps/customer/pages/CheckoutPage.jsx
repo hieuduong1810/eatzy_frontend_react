@@ -10,6 +10,7 @@ import "../CustomerApp.css";
 import "./CheckoutPage.css";
 import { useLocationStore } from "../../../stores/locationStore";
 import customerApi from "../../../api/customer/customerApi";
+import { useCart } from "../context/CartContext";
 
 // ─── MOCK DATA ───────────────────────────────────────────────────────────────
 
@@ -77,6 +78,7 @@ const CheckoutPage = () => {
     const { state: navigationState } = useLocation();
     const [restaurant, setRestaurant] = useState(navigationState?.restaurant || MOCK_RESTAURANT);
     const items = navigationState?.items || MOCK_ITEMS;
+    const { deleteRestaurantCart } = useCart();
 
     // Fetch restaurant details (especially coordinates)
     useEffect(() => {
@@ -165,6 +167,7 @@ const CheckoutPage = () => {
     const [deliveryFeeBase, setDeliveryFeeBase] = useState(25000); // Default fallback
 
     // Calculate Delivery Fee
+    // Calculate Delivery Fee
     useEffect(() => {
         const selectedP = pickupPoints.find(p => p.selected);
         if (restaurant?.id && restaurant.id !== "r1" && selectedP) {
@@ -177,12 +180,24 @@ const CheckoutPage = () => {
             console.log("Calculating delivery fee...", payload);
             customerApi.calculateDeliveryFee(payload)
                 .then(res => {
-                    const fee = res.data?.data || res.data?.result || res.data;
-                    if (typeof fee === 'number') {
-                        setDeliveryFeeBase(fee);
+                    // Response structure from OrderController: ResDeliveryFeeDTO
+                    // usually accessible directly via res.data if the interceptor doesn't unwrap it, 
+                    // or res.data.data if using a standard response wrapper.
+                    // Based on previous patterns: res.data might be the DTO directly or wrapped.
+                    const feeData = res.data?.data || res.data;
+                    console.log("Delivery Fee Response:", feeData);
+
+                    if (feeData && typeof feeData.deliveryFee === 'number') {
+                        setDeliveryFeeBase(feeData.deliveryFee);
+                    } else if (typeof feeData === 'number') {
+                        setDeliveryFeeBase(feeData);
                     }
                 })
-                .catch(err => console.error("Failed to calculate delivery fee:", err));
+                .catch(err => {
+                    console.error("Failed to calculate delivery fee:", err);
+                    // Fallback to default if API fails
+                    setDeliveryFeeBase(25000);
+                });
         }
     }, [restaurant?.id, pickupPoints]);
 
@@ -328,6 +343,89 @@ const CheckoutPage = () => {
 
     // Get selected pickup point for display
     const selectedPickup = pickupPoints.find(p => p.selected) || pickupPoints[0] || {};
+
+    // Handle Complete Order
+    const handleCompleteOrder = async () => {
+        if (!restaurant?.id || restaurant.id === "r1") {
+            alert("This is a mock restaurant. Cannot place real orders.");
+            return;
+        }
+        if (!pickupPoints.find(p => p.selected)) {
+            alert("Please select a delivery address.");
+            return;
+        }
+
+        const user = JSON.parse(localStorage.getItem("auth_user"));
+        if (!user || !user.id) {
+            alert("Please login to place an order.");
+            return;
+        }
+
+        if (!items || items.length === 0) {
+            alert("Your cart is empty. Please add items to order.");
+            return;
+        }
+
+        const selectedP = pickupPoints.find(p => p.selected);
+
+        // Prepare Order DTO
+        // See ReqOrderDTO.java for fields
+        const orderDTO = {
+            customer: { id: user.id },
+            restaurant: { id: restaurant.id },
+            deliveryAddress: selectedP.address, // Correct field name
+            deliveryLatitude: selectedP.lat,
+            deliveryLongitude: selectedP.lng,
+            specialInstructions: note,
+            subtotal: subtotal,
+            deliveryFee: deliveryFeeBase, // Use the base fee or the discounted fee depending on backend logic. Usually base.
+            totalAmount: totalAmount,
+            paymentMethod: paymentMethod.toUpperCase(), // E.g., CASH, VNPAY, EATZY_WALLET
+            orderItems: items.map(item => ({
+                dish: { id: item.id },
+                quantity: item.quantity,
+                orderItemOptions: item.selectedOptions?.map(opt => ({
+                    menuOption: { id: opt.id }
+                })) || []
+            })),
+            vouchers: [] // Add voucher logic here if needed
+        };
+
+        if (selectedShippingVoucher) {
+            orderDTO.vouchers.push({ id: selectedShippingVoucher.id });
+        }
+        if (selectedDiscountVoucher) {
+            orderDTO.vouchers.push({ id: selectedDiscountVoucher.id });
+        }
+
+        try {
+            console.log("Creating order with DTO:", orderDTO);
+            const res = await customerApi.createOrder(orderDTO);
+            console.log("Order created successfully:", res.data);
+
+            // Navigate to success page or order history
+            // Usually returns ResOrderDTO which has the ID
+            const orderId = res.data?.data?.id || res.data?.id;
+
+            // Clear cart for this restaurant
+            if (restaurant?.id) {
+                await deleteRestaurantCart(restaurant.id);
+            }
+
+            // Dispatch event to update cart in CustomerApp (CartButton)
+            window.dispatchEvent(new Event('cart-updated'));
+
+            // Use sessionStorage to pass success state (more robust than location.state)
+            sessionStorage.setItem('orderSuccess', JSON.stringify({ success: true, orderId: orderId }));
+
+            navigate("/customer/home");
+
+        } catch (error) {
+            console.error("Failed to create order:", error);
+            const errMsg = error.response?.data?.message || error.message || "Failed to create order.";
+            alert(`Order creation failed: ${errMsg}`);
+        }
+    };
 
     return (
         <div className="ck-design-container">
@@ -630,7 +728,6 @@ const CheckoutPage = () => {
                     <div className="ck-map-wrapper">
                         {(() => {
                             const mapPickup = { lat: restaurant?.latitude || 10.7731, lng: restaurant?.longitude || 106.7030 };
-                            console.log("MapBox Pickup Props:", mapPickup);
                             return (
                                 <DeliveryMapView
                                     pickup={mapPickup}
@@ -671,7 +768,7 @@ const CheckoutPage = () => {
                     </div>
 
                     <div className="ck-right-footer-sticky">
-                        <button className="ck-complete-btn">
+                        <button className="ck-complete-btn" onClick={handleCompleteOrder}>
                             COMPLETE ORDER <span className="ck-btn-price">{formatVnd(totalAmount)}</span>
                         </button>
                     </div>

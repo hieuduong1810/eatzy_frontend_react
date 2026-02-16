@@ -56,6 +56,14 @@ const restaurantAppApi = {
     closeRestaurant: () => {
         const url = "/api/v1/restaurants/close";
         return axiosClient.post(url);
+    },
+    acceptOrder: (orderId) => {
+        const url = `/api/v1/orders/${orderId}/restaurant/accept`;
+        return axiosClient.patch(url);
+    },
+    markOrderAsReady: (orderId) => {
+        const url = `/api/v1/orders/${orderId}/restaurant/ready`;
+        return axiosClient.patch(url);
     }
 };
 

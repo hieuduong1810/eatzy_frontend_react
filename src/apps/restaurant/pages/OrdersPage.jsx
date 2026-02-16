@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Clock, ShoppingBag, ChefHat, Truck, MapPin, X, CheckCircle, User, AlertCircle, Power } from "lucide-react";
 import restaurantAppApi from "../../../api/restaurant/restaurantAppApi";
 import Modal from "../../../components/shared/Modal";
+import { useWebSocket } from "../../../contexts/WebSocketContext";
 import "./OrdersPage.css";
 
 const formatVnd = (n) => Intl.NumberFormat("vi-VN").format(n) + "đ";
@@ -13,6 +15,8 @@ const OrdersPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(false);
 
+    const { client, isConnected } = useWebSocket();
+
     useEffect(() => {
         fetchOrders();
         fetchRestaurantStatus();
@@ -22,6 +26,46 @@ const OrdersPage = () => {
         }, 30000); // 30s
         return () => clearInterval(interval);
     }, []);
+
+    // WebSocket Effect
+    useEffect(() => {
+        if (!client || !isConnected) return;
+
+        console.log("OrdersPage: Subscribing to /user/queue/orders");
+        const subscription = client.subscribe('/user/queue/orders', (message) => {
+            if (message.body) {
+                const notification = JSON.parse(message.body);
+                console.log('OrdersPage received:', notification);
+
+                // Handle various order updates
+                if (['NEW_ORDER', 'ORDER_STATUS_CHANGED', 'ORDER_ASSIGNED', 'ORDER_UPDATE'].includes(notification.type)) {
+                    // Refresh orders list
+                    fetchOrders();
+
+                    // Play sound for NEW_ORDER only
+                    if (notification.type === 'NEW_ORDER') {
+                        const audio = new Audio('/sounds/notification.mp3');
+                        audio.play().catch(e => console.log("Audio play failed", e));
+                    }
+
+                    // Show toast
+                    const msg = notification.message || `Order #${notification.orderId} updated`;
+                    toast.info(msg, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [client, isConnected]);
 
     const fetchRestaurantStatus = async () => {
         try {
@@ -79,14 +123,21 @@ const OrdersPage = () => {
 
     const handleStatusUpdate = async (orderId, newStatus) => {
         try {
-            await restaurantAppApi.updateOrderStatus(orderId, newStatus);
+            if (newStatus === "CONFIRMED") {
+                await restaurantAppApi.acceptOrder(orderId);
+            } else if (newStatus === "READY") {
+                await restaurantAppApi.markOrderAsReady(orderId);
+            } else {
+                await restaurantAppApi.updateOrderStatus(orderId, newStatus);
+            }
             // Optimistic update or refetch
             setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
             handleCloseModal();
             fetchOrders(); // Refresh to be sure
+            toast.success(`Order #${orderId} updated successfully!`);
         } catch (error) {
             console.error("Failed to update status:", error);
-            alert("Failed to update order status");
+            toast.error("Failed to update order status");
         }
     };
 
@@ -117,14 +168,14 @@ const OrdersPage = () => {
         {
             key: "IN_PROGRESS",
             title: "IN PROGRESS",
-            statusFilter: (s) => ["CONFIRMED", "PREPARING"].includes(s),
+            statusFilter: (s) => ["CONFIRMED", "PREPARING", "DRIVER_ASSIGNED"].includes(s),
             icon: ChefHat,
             colorClass: "col-inprogress"
         },
         {
             key: "WAITING",
             title: "WAITING FOR DRIVER",
-            statusFilter: (s) => ["READY", "READY_FOR_PICKUP", "DRIVER_ASSIGNED"].includes(s),
+            statusFilter: (s) => ["READY", "READY_FOR_PICKUP"].includes(s),
             icon: Truck,
             colorClass: "col-waiting"
         }
@@ -260,7 +311,7 @@ const OrderModal = ({ isOpen, onClose, order, onUpdateStatus }) => {
 
     // Determine content based on status
     const isPending = order.status === "NEW" || order.status === "PENDING";
-    const isInProgress = order.status === "CONFIRMED" || order.status === "PREPARING";
+    const isInProgress = order.status === "CONFIRMED" || order.status === "PREPARING" || order.status === "DRIVER_ASSIGNED";
     const isWaiting = order.status === "READY" || order.status === "READY_FOR_PICKUP";
 
     // Calculate Restaurant Net Earning (Generic 10% commission logic or use backend if available)

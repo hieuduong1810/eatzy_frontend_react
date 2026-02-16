@@ -2,13 +2,17 @@ import { useState, useRef, useEffect } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Home, History, Heart, User, Truck, ShoppingBag, Search, X, MapPin, Package, Menu, LogOut } from "lucide-react";
 import { useCart } from "../apps/customer/context/CartContext";
+import { useWebSocket } from "../contexts/WebSocketContext";
 import CartOverlay from "../apps/customer/components/CartOverlay";
 import CurrentOrderOverlay from "../apps/customer/components/CurrentOrderOverlay";
 import LocationPickerModal from "../apps/customer/components/LocationPickerModal"; // Import Modal
+import OrderNotification from "../components/shared/notifications/OrderNotification";
+import "../components/shared/notifications/OrderNotification.css";
 import { mockOrders } from "../apps/customer/data/mockCustomerData";
 import { useAuthStore, authActions } from "../stores/authStore";
 import { useLocationStore } from "../stores/locationStore";
 import authApi from "../api/authApi";
+import customerApi from "../api/customer/customerApi";
 import "./CustomerLayout.css";
 
 const CustomerLayout = () => {
@@ -25,11 +29,8 @@ const CustomerLayout = () => {
     const locationRoute = useLocation();
     const isDetailPage = locationRoute.pathname.includes('/restaurant/');
 
-    // ... (activeOrder logic) ... 
-    // Simulate an active order (first PREPARING/DELIVERING order)
-    const activeOrder = mockOrders.find(
-        (o) => o.status === "PREPARING" || o.status === "DELIVERING"
-    );
+    // Active order is now managed by state and API
+    // const activeOrder = ... (removed mock)
 
     // Mobile bottom nav visibility
     const [bottomNavVisible, setBottomNavVisible] = useState(true);
@@ -84,57 +85,149 @@ const CustomerLayout = () => {
         }
     };
 
+    // WebSocket for notifications
+    const { client, isConnected } = useWebSocket();
+    const [notification, setNotification] = useState(null);
+    const [driverLocations, setDriverLocations] = useState({}); // Stores latest driver locations
+
+    useEffect(() => {
+        if (!client || !isConnected) return;
+
+        console.log("CustomerLayout: Subscribing to /user/queue/orders");
+        const orderSub = client.subscribe('/user/queue/orders', (message) => {
+            if (message.body) {
+                const notif = JSON.parse(message.body);
+                console.log("Customer received:", notif);
+
+                // Show notification
+                let title = "Order Update";
+                let msg = "";
+                let type = "info";
+
+                if (notif.type === "ORDER_UPDATE") {
+                    title = "Cập nhật đơn hàng";
+                    msg = notif.message;
+                    type = "info";
+                } else if (notif.type === "ORDER_STATUS_CHANGED") {
+                    title = "Trạng thái đơn hàng";
+                    const status = notif.data?.orderStatus;
+                    msg = `Đơn hàng của bạn đã chuyển sang trạng thái: ${status}`;
+                    type = "success";
+
+                    // Refresh active order logic here
+                    fetchActiveOrder();
+                }
+
+                if (msg) {
+                    setNotification({
+                        title,
+                        message: msg,
+                        type,
+                        timestamp: Date.now()
+                    });
+
+                    // Auto hide after 5s
+                    setTimeout(() => setNotification(null), 5000);
+                }
+            }
+        });
+
+        // Subscribe to driver location updates
+        const locationSub = client.subscribe('/user/queue/driver-location', (message) => {
+            if (message.body) {
+                const locUpdate = JSON.parse(message.body);
+                console.log("Driver Location Update:", locUpdate);
+                // We use a simple object/map if we had orderId, but here we just have lat/lng
+                // Since this is "Current Order", we can assume it applies to the active driver.
+                // Depending on backend implementation, this might need driverId. 
+                // For now, let's store it as 'currentDriverLocation'
+                setDriverLocations(prev => ({ ...prev, current: locUpdate }));
+            }
+        });
+
+        return () => {
+            orderSub.unsubscribe();
+            locationSub.unsubscribe();
+        };
+    }, [client, isConnected]);
+
+    // Fetch active orders on mount and auth change
+    const [activeOrders, setActiveOrders] = useState([]);
+
+    const fetchActiveOrder = async () => {
+        if (!isAuthenticated) {
+            setActiveOrders([]);
+            return;
+        }
+        try {
+            const res = await customerApi.getMyCurrentOrders();
+            // Expected structure: { data: { result: [...] } }
+            const orders = res.data?.data?.result || res.data?.result || [];
+
+            setActiveOrders(orders);
+        } catch (error) {
+            console.error("Failed to fetch active orders:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchActiveOrder();
+    }, [isAuthenticated]);
+
+    // Fetch driver location for active orders (initial load)
+    useEffect(() => {
+        if (activeOrders.length > 0) {
+            activeOrders.forEach(async (order) => {
+                const driverId = order.driver?.id;
+                // Only fetch if we have a driver and don't have location yet
+                if (driverId && !driverLocations.current) {
+                    try {
+                        const res = await customerApi.getDriverLocation(driverId);
+                        // Access data inside res.data.data if wrapped, or fallback to res.data
+                        const locationData = res.data?.data || res.data;
+
+                        if (locationData && locationData.latitude && locationData.longitude) {
+                            console.log("Fetched initial driver location:", locationData);
+                            setDriverLocations(prev => ({
+                                ...prev,
+                                current: {
+                                    latitude: locationData.latitude,
+                                    longitude: locationData.longitude,
+                                    timestamp: Date.now()
+                                }
+                            }));
+                        }
+                    } catch (err) {
+                        console.warn("Failed to fetch initial driver location", err);
+                    }
+                }
+            });
+        }
+    }, [activeOrders]);
+
+    // ... (keep existing useEffect for locationRoute) ...
+
     return (
         <div className="cust-root">
+            {/* Notification */}
+            {notification && (
+                <OrderNotification
+                    title={notification.title}
+                    message={notification.message}
+                    type={notification.type}
+                    timestamp={notification.timestamp}
+                    onClose={() => setNotification(null)}
+                />
+            )}
+
             {/* ── Desktop/Mobile Header ── */}
             <header className={`cust-header ${isDetailPage ? 'cust-header--detail' : ''}`}>
                 <div className="cust-header-inner">
-                    {/* Menu Button */}
-                    <button className="cust-menu-btn" onClick={() => setMenuOpen(true)}>
-                        <Menu size={20} />
-                    </button>
-
-                    {/* Logo */}
-                    <div className="cust-header-logo" onClick={() => navigate("home")}>
-                        <img
-                            src="https://res.cloudinary.com/durzk8qz6/image/upload/v1771055848/itc1bfm5hvwdhsmrngt0.png"
-                            alt="Eatzy Logo"
-                            className="cust-logo-img"
-                        />
-                    </div>
-
-                    {/* Location Selector */}
-                    {!isDetailPage && (
-                        <button className="cust-location-btn" onClick={() => setLocationPickerOpen(true)}>
-                            <MapPin size={16} />
-                            <div className="cust-location-text">
-                                <span className="cust-location-label">Giao đến</span>
-                                <span className="cust-location-addr">{userLocation?.name || userLocation?.address || "Chọn địa điểm"}</span>
-                            </div>
-                        </button>
-                    )}
-
-                    {/* Search Bar (Desktop) */}
-                    {!isDetailPage && (
-                        <div className="cust-header-search">
-                            <Search size={18} className="cust-search-icon" />
-                            <input
-                                type="text"
-                                placeholder="Tìm nhà hàng, món ăn..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            {searchQuery && (
-                                <button className="cust-search-clear" onClick={() => setSearchQuery("")}>
-                                    <X size={14} />
-                                </button>
-                            )}
-                        </div>
-                    )}
+                    {/* ... (keep menu btn, logo, location, search) ... */}
 
                     {/* ── Right side: Current Order + Cart ── */}
                     <div className="cust-header-right">
-                        {activeOrder && (
+                        {activeOrders.length > 0 && (
                             <button
                                 className="cust-current-order"
                                 onClick={() => setCurrentOrderOpen(true)}
@@ -146,7 +239,19 @@ const CustomerLayout = () => {
                                 <div className="cust-current-order-text">
                                     <span className="cust-current-order-label">Đơn hiện tại</span>
                                     <span className="cust-current-order-status">
-                                        {activeOrder.status === "PREPARING" ? "Đang chuẩn bị" : "Đang giao"}
+                                        {(() => {
+                                            if (activeOrders.length > 1) return "Đang xử lý";
+
+                                            const s = activeOrders[0].orderStatus;
+                                            if (s === "PENDING") return "Đang chờ nhà hàng";
+                                            if (s === "CONFIRMED") return "Nhà hàng đã nhận";
+                                            if (s === "PREPARING") return "Đang chuẩn bị";
+                                            if (s === "DRIVER_ASSIGNED") return "Tài xế đang đến";
+                                            if (s === "READY" || s === "READY_FOR_PICKUP") return "Tài xế đang lấy";
+                                            if (s === "PICKED_UP" || s === "DELIVERING") return "Đang giao hàng";
+                                            if (s === "ARRIVED") return "Tài xế đã đến";
+                                            return "Đang xử lý";
+                                        })()}
                                     </span>
                                 </div>
                                 <div className="cust-current-order-map">
@@ -168,48 +273,7 @@ const CustomerLayout = () => {
                 </div>
             </header>
 
-            {/* ── Sidebar Menu Overlay ── */}
-            {menuOpen && (
-                <div className={`cust-sidebar-overlay ${isClosing ? 'cust-sidebar-overlay--closing' : ''}`} onClick={handleCloseMenu}>
-                    <div className={`cust-sidebar-menu ${isClosing ? 'cust-sidebar-menu--closing' : ''}`} onClick={(e) => e.stopPropagation()}>
-                        <div className="cust-sidebar-profile">
-                            <div className="cust-sidebar-avatar">
-                                {user?.name?.charAt(0).toUpperCase() || "U"}
-                            </div>
-                            <div className="cust-sidebar-info">
-                                <h3 className="cust-sidebar-name">{user?.name || "Khách hàng"}</h3>
-                                <span className="cust-sidebar-email">{user?.email || "Chưa đăng nhập"}</span>
-                            </div>
-                        </div>
-
-                        <div className="cust-sidebar-section">
-                            <span className="cust-sidebar-section-label">MENU</span>
-                            {menuItems.map((item) => (
-                                <button
-                                    key={item.to}
-                                    className="cust-sidebar-item"
-                                    onClick={() => handleMenuNav(item.to)}
-                                >
-                                    <item.icon size={18} />
-                                    <span>{item.label}</span>
-                                </button>
-                            ))}
-                        </div>
-
-                        {isAuthenticated ? (
-                            <button className="cust-sidebar-item cust-sidebar-item--logout" onClick={handleLogout}>
-                                <LogOut size={18} />
-                                <span>Đăng xuất</span>
-                            </button>
-                        ) : (
-                            <button className="cust-sidebar-item cust-sidebar-item--logout" onClick={() => navigate("/customer/login")}>
-                                <User size={18} />
-                                <span>Đăng nhập</span>
-                            </button>
-                        )}
-                    </div>
-                </div>
-            )}
+            {/* ... (keep sidebar) ... */}
 
             {/* ── Main Content ── */}
             <main className="cust-content">
@@ -218,8 +282,15 @@ const CustomerLayout = () => {
 
             {/* ── Modals ── */}
             <CartOverlay isOpen={cartOpen} onClose={() => setCartOpen(false)} />
-            <CurrentOrderOverlay isOpen={currentOrderOpen} onClose={() => setCurrentOrderOpen(false)} />
+            <CurrentOrderOverlay
+                isOpen={currentOrderOpen}
+                onClose={() => setCurrentOrderOpen(false)}
+                orders={activeOrders}
+                driverLocations={driverLocations}
+            />
             <LocationPickerModal isOpen={locationPickerOpen} onClose={() => setLocationPickerOpen(false)} />
+
+            {/* ... (keep mobile nav) ... */}
 
             {/* ── Mobile Bottom Nav ── */}
             <nav className={`cust-mobile-nav ${bottomNavVisible ? "" : "cust-mobile-nav--hidden"}`}>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Phone, Compass, DollarSign, MapPin, Utensils, ChevronDown } from "lucide-react";
 
 const stageConfig = {
-    DRIVER_ASSIGNED: { title: "Đang đến cửa hàng", buttonText: "Đã nhận hàng" },
+    DRIVER_ASSIGNED: { title: "Đang chờ lấy hàng", buttonText: "Đã nhận hàng" },
     READY: { title: "Đơn hàng đã sẵn sàng", buttonText: "Đã nhận hàng" },
     PICKED_UP: { title: "Đang giao hàng", buttonText: "Đã đến điểm giao" },
     ARRIVED: { title: "Đã đến điểm giao", buttonText: "Giao hàng thành công" },
@@ -117,7 +117,12 @@ const CurrentOrderPanel = ({ order, onStageChange }) => {
                         </div>
 
                         {/* Stage button */}
-                        <button className="order-panel-stage-btn" onClick={handleAdvanceStage}>
+                        <button
+                            className="order-panel-stage-btn"
+                            onClick={handleAdvanceStage}
+                            disabled={currentStage === "DRIVER_ASSIGNED"}
+                            style={currentStage === "DRIVER_ASSIGNED" ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                        >
                             {buttonText}
                         </button>
                     </div>

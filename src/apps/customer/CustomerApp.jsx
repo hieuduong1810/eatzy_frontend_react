@@ -12,46 +12,50 @@ import ProfilePage from "./pages/ProfilePage";
 import RestaurantDetailPage from "./pages/RestaurantDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
 
+import { WebSocketProvider } from "../../contexts/WebSocketContext";
+
 const CustomerApp = () => {
     console.log("CustomerApp Rendering. Path:", window.location.pathname);
     return (
-        <CartProvider>
-            <Routes>
-                {/* Public routes */}
-                <Route path="login" element={<LoginPage />} />
-                <Route path="register" element={<RegisterPage />} />
+        <WebSocketProvider>
+            <CartProvider>
+                <Routes>
+                    {/* Public routes */}
+                    <Route path="login" element={<LoginPage />} />
+                    <Route path="register" element={<RegisterPage />} />
 
-                {/* Protected: checkout without layout */}
-                <Route
-                    path="checkout"
-                    element={
-                        <ProtectedRoute loginPath="/login">
-                            <CheckoutPage />
-                        </ProtectedRoute>
-                    }
-                />
+                    {/* Protected: checkout without layout */}
+                    <Route
+                        path="checkout"
+                        element={
+                            <ProtectedRoute loginPath="/login">
+                                <CheckoutPage />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                {/* Protected routes with layout */}
-                <Route
-                    element={
-                        <ProtectedRoute loginPath="/login">
-                            <CustomerLayout />
-                        </ProtectedRoute>
-                    }
-                >
-                    <Route index element={<Navigate to="home" replace />} />
-                    <Route path="home" element={<HomePage />} />
-                    <Route path="favorites" element={<FavoritesPage />} />
-                    <Route path="orders" element={<OrdersPage />} />
-                    <Route path="current-order" element={<CurrentOrderPage />} />
-                    <Route path="profile" element={<ProfilePage />} />
-                    <Route path="restaurant/:slug" element={<RestaurantDetailPage />} />
-                </Route>
+                    {/* Protected routes with layout */}
+                    <Route
+                        element={
+                            <ProtectedRoute loginPath="/login">
+                                <CustomerLayout />
+                            </ProtectedRoute>
+                        }
+                    >
+                        <Route index element={<Navigate to="home" replace />} />
+                        <Route path="home" element={<HomePage />} />
+                        <Route path="favorites" element={<FavoritesPage />} />
+                        <Route path="orders" element={<OrdersPage />} />
+                        <Route path="current-order" element={<CurrentOrderPage />} />
+                        <Route path="profile" element={<ProfilePage />} />
+                        <Route path="restaurant/:slug" element={<RestaurantDetailPage />} />
+                    </Route>
 
-                {/* Catch-all */}
-                <Route path="*" element={<Navigate to="../home" replace />} />
-            </Routes>
-        </CartProvider>
+                    {/* Catch-all */}
+                    <Route path="*" element={<Navigate to="../home" replace />} />
+                </Routes>
+            </CartProvider>
+        </WebSocketProvider>
     );
 };
 

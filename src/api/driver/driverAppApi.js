@@ -36,6 +36,26 @@ const driverAppApi = {
     getOrderDetail: async (orderId) => {
         const url = `/api/v1/orders/${orderId}`;
         return axiosClient.get(url);
+    },
+    acceptOrder: async (orderId) => {
+        const url = `/api/v1/orders/${orderId}/driver/accept`;
+        return axiosClient.patch(url);
+    },
+    rejectOrder: async (orderId) => {
+        const url = `/api/v1/orders/${orderId}/driver/reject`;
+        return axiosClient.patch(url);
+    },
+    markOrderAsPickedUp: async (orderId) => {
+        const url = `/api/v1/orders/${orderId}/driver/picked-up`;
+        return axiosClient.patch(url);
+    },
+    markOrderAsArrived: async (orderId) => {
+        const url = `/api/v1/orders/${orderId}/driver/arrived`;
+        return axiosClient.patch(url);
+    },
+    markOrderAsDelivered: async (orderId) => {
+        const url = `/api/v1/orders/${orderId}/driver/delivered`;
+        return axiosClient.patch(url);
     }
 };
 

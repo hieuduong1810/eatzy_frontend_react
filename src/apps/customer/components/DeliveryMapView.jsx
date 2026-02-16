@@ -45,6 +45,9 @@ const partial = (coords, t) => {
  * - pickup: { lat, lng } – restaurant/pickup location
  * - dropoff: { lat, lng } – delivery location
  * - driverLocation: { lat, lng } (optional) – driver current location
+ * - routeFrom: { lat, lng } (optional) – start point for route line
+ * - routeTo: { lat, lng } (optional) – end point for route line
+ * - waypoints: Array<{lat, lng}> (optional) - list of points for the route (overrides routeFrom/routeTo)
  * - showRoute: boolean (default true) – whether to fetch & draw route
  * - interactive: boolean (default true) – allow pan/zoom
  * - style: CSS style object for the container
@@ -53,46 +56,107 @@ const DeliveryMapView = ({
     pickup,
     dropoff,
     driverLocation,
+    routeFrom,
+    routeTo,
+    waypoints,
     showRoute = true,
     interactive = true,
     style,
 }) => {
     const mapRef = useRef(null);
-    const [route, setRoute] = useState(null);
+    const [route, setRoute] = useState(null); // Single route (2 points)
+    const [routeSegments, setRouteSegments] = useState([]); // Multiple segments (3+ points)
     const [progress, setProgress] = useState(0);
 
     const hasPickup = pickup && isValid(pickup.lat, pickup.lng);
     const hasDropoff = dropoff && isValid(dropoff.lat, dropoff.lng);
     const hasDriver = driverLocation && isValid(driverLocation.lat, driverLocation.lng);
 
+    // Prepare route points
+    const activeWaypoints = useMemo(() => {
+        if (waypoints && waypoints.length >= 2) {
+            return waypoints.filter(p => p && isValid(p.lat, p.lng));
+        }
+        const start = routeFrom && isValid(routeFrom.lat, routeFrom.lng) ? routeFrom : pickup;
+        const end = routeTo && isValid(routeTo.lat, routeTo.lng) ? routeTo : dropoff;
+        if (start && end && isValid(start.lat, start.lng) && isValid(end.lat, end.lng)) {
+            return [start, end];
+        }
+        return [];
+    }, [waypoints, routeFrom, routeTo, pickup, dropoff]);
+
+    const hasRoutePoints = activeWaypoints.length >= 2;
+    const isMultiSegment = activeWaypoints.length > 2;
+
     // Fetch Directions route
     useEffect(() => {
-        if (!showRoute || !hasPickup || !hasDropoff) return;
+        if (!showRoute || !hasRoutePoints) return;
 
         const fetchRoute = async () => {
             try {
-                const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${pickup.lng},${pickup.lat};${dropoff.lng},${dropoff.lat}?geometries=geojson&steps=true&overview=full&language=vi&access_token=${MAPBOX_TOKEN}`;
-                const res = await fetch(url);
-                const json = await res.json();
-                const r = json?.routes?.[0] ?? null;
-                setRoute(r);
+                if (isMultiSegment) {
+                    // Fetch separate segments to allow different coloring
+                    // Segment 1: Waypoint 0 -> Waypoint 1 (Driver -> Restaurant)
+                    // Segment 2: Waypoint 1 -> Waypoint 2 (Restaurant -> Customer)
+                    // We assume max 3 points for now based on requirement
+                    const p1 = activeWaypoints[0];
+                    const p2 = activeWaypoints[1];
+                    const p3 = activeWaypoints[2];
 
-                // Fit bounds to route
-                const inst = mapRef.current;
-                const coords = [
-                    ...(r?.geometry?.coordinates ?? []),
-                    [pickup.lng, pickup.lat],
-                    [dropoff.lng, dropoff.lat],
-                    ...(hasDriver ? [[driverLocation.lng, driverLocation.lat]] : []),
-                ];
-                const lngs = coords.map((c) => c[0]);
-                const lats = coords.map((c) => c[1]);
-                inst?.getMap()?.fitBounds(
-                    [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
-                    { padding: 60, duration: 900 }
-                );
+                    if (!p1 || !p2 || !p3) return;
 
-                // Animate route draw
+                    const url1 = `https://api.mapbox.com/directions/v5/mapbox/driving/${p1.lng},${p1.lat};${p2.lng},${p2.lat}?geometries=geojson&steps=true&overview=full&access_token=${MAPBOX_TOKEN}`;
+                    const url2 = `https://api.mapbox.com/directions/v5/mapbox/driving/${p2.lng},${p2.lat};${p3.lng},${p3.lat}?geometries=geojson&steps=true&overview=full&access_token=${MAPBOX_TOKEN}`;
+
+                    const [res1, res2] = await Promise.all([fetch(url1), fetch(url2)]);
+                    const json1 = await res1.json();
+                    const json2 = await res2.json();
+
+                    setRouteSegments([
+                        json1?.routes?.[0] ?? null,
+                        json2?.routes?.[0] ?? null
+                    ]);
+                    setRoute(null); // Clear single route
+
+                    // Fit bounds to all points
+                    const inst = mapRef.current;
+                    const allCoords = [
+                        ...(json1?.routes?.[0]?.geometry?.coordinates ?? []),
+                        ...(json2?.routes?.[0]?.geometry?.coordinates ?? [])
+                    ];
+                    if (allCoords.length > 0) {
+                        const lngs = allCoords.map((c) => c[0]);
+                        const lats = allCoords.map((c) => c[1]);
+                        inst?.getMap()?.fitBounds(
+                            [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+                            { padding: 60, duration: 900 }
+                        );
+                    }
+
+                } else {
+                    // Single segment
+                    const coordsString = activeWaypoints.map(p => `${p.lng},${p.lat}`).join(';');
+                    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordsString}?geometries=geojson&steps=true&overview=full&language=vi&access_token=${MAPBOX_TOKEN}`;
+
+                    const res = await fetch(url);
+                    const json = await res.json();
+                    const r = json?.routes?.[0] ?? null;
+                    setRoute(r);
+                    setRouteSegments([]);
+
+                    const inst = mapRef.current;
+                    const coords = r?.geometry?.coordinates ?? [];
+                    if (coords.length > 0) {
+                        const lngs = coords.map((c) => c[0]);
+                        const lats = coords.map((c) => c[1]);
+                        inst?.getMap()?.fitBounds(
+                            [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+                            { padding: 60, duration: 900 }
+                        );
+                    }
+                }
+
+                // Animate route draw (simplified for multi-segment)
                 const startTime = performance.now();
                 const animate = (time) => {
                     const t = Math.min((time - startTime) / 900, 1);
@@ -100,17 +164,17 @@ const DeliveryMapView = ({
                     if (t < 1) requestAnimationFrame(animate);
                 };
                 requestAnimationFrame(animate);
+
             } catch {
                 /* silently fail */
             }
         };
         fetchRoute();
-    }, [pickup, dropoff, driverLocation, showRoute, hasPickup, hasDropoff, hasDriver]);
+    }, [activeWaypoints, showRoute, isMultiSegment]);
 
     // If no route, just fit bounds to markers when we have them
     useEffect(() => {
         if (showRoute) return;
-        if (!hasPickup && !hasDropoff) return;
         const points = [];
         if (hasPickup) points.push([pickup.lng, pickup.lat]);
         if (hasDropoff) points.push([dropoff.lng, dropoff.lat]);
@@ -132,35 +196,41 @@ const DeliveryMapView = ({
         }, 200);
     }, [pickup, dropoff, driverLocation, showRoute, hasPickup, hasDropoff, hasDriver]);
 
+    // Features for single route
     const routeFeature = useMemo(() => {
         if (!route?.geometry?.coordinates) return null;
         const coords = route.geometry.coordinates.length > 1
             ? partial(route.geometry.coordinates, progress)
-            : (hasPickup && hasDropoff
-                ? [[pickup.lng, pickup.lat], [dropoff.lng, dropoff.lat]]
-                : []);
+            : [];
         if (coords.length < 2) return null;
         return { type: "Feature", geometry: { type: "LineString", coordinates: coords }, properties: {} };
-    }, [route, progress, pickup, dropoff, hasPickup, hasDropoff]);
+    }, [route, progress]);
 
     const lineData = useMemo(() => ({
         type: "FeatureCollection",
         features: routeFeature ? [routeFeature] : [],
     }), [routeFeature]);
 
-    const etaText = useMemo(() => {
-        if (!route) return "";
-        const km = (Number(route.distance ?? 0)) / 1000;
-        const min = (Number(route.duration ?? 0)) / 60;
-        if (km <= 0 || min <= 0) return "";
-        return `${Math.round(min)} phút · ${km.toFixed(1)} km`;
-    }, [route]);
 
-    const center = hasPickup
-        ? { longitude: pickup.lng, latitude: pickup.lat }
-        : hasDropoff
-            ? { longitude: dropoff.lng, latitude: dropoff.lat }
-            : { longitude: 106.7, latitude: 10.78 };
+    // Features for multi-segment route
+    const segmentFeatures = useMemo(() => {
+        if (!isMultiSegment || routeSegments.length < 2) return [];
+        return routeSegments.map((seg, idx) => {
+            if (!seg?.geometry?.coordinates) return null;
+            // Apply partial animation if needed, or just show full path for simplicity in multi-mode
+            // Let's animate them together
+            const coords = seg.geometry.coordinates.length > 1
+                ? partial(seg.geometry.coordinates, progress)
+                : [];
+            if (coords.length < 2) return null;
+            return {
+                type: "Feature",
+                geometry: { type: "LineString", coordinates: coords },
+                properties: { segmentIndex: idx }
+            };
+        }).filter(Boolean);
+    }, [routeSegments, progress, isMultiSegment]);
+
 
     const lineLayer = {
         id: "customer-route-line",
@@ -168,6 +238,37 @@ const DeliveryMapView = ({
         layout: { "line-cap": "round", "line-join": "round" },
         paint: { "line-color": "#78C841", "line-width": 5, "line-opacity": 0.95 },
     };
+
+    // Gray line for first segment (Driver -> Restaurant)
+    const grayLineLayer = {
+        id: "customer-route-line-gray",
+        type: "line",
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: { "line-color": "#9ca3af", "line-width": 5, "line-opacity": 0.95, "line-dasharray": [1, 0] }, // Solid gray
+    };
+
+    const etaText = useMemo(() => {
+        if (isMultiSegment && routeSegments.length > 0) {
+            const totalDuration = routeSegments.reduce((acc, s) => acc + (s?.duration || 0), 0);
+            const totalDistance = routeSegments.reduce((acc, s) => acc + (s?.distance || 0), 0);
+            const km = totalDistance / 1000;
+            const min = totalDuration / 60;
+            if (km <= 0 || min <= 0) return "";
+            return `${Math.round(min)} phút · ${km.toFixed(1)} km`;
+        }
+
+        if (!route) return "";
+        const km = (Number(route.distance ?? 0)) / 1000;
+        const min = (Number(route.duration ?? 0)) / 60;
+        if (km <= 0 || min <= 0) return "";
+        return `${Math.round(min)} phút · ${km.toFixed(1)} km`;
+    }, [route, routeSegments, isMultiSegment]);
+
+    const center = hasPickup
+        ? { longitude: pickup.lng, latitude: pickup.lat }
+        : hasDropoff
+            ? { longitude: dropoff.lng, latitude: dropoff.lat }
+            : { longitude: 106.7, latitude: 10.78 };
 
     return (
         <Map
@@ -181,10 +282,28 @@ const DeliveryMapView = ({
             dragRotate={false}
             touchZoomRotate={interactive}
         >
-            {showRoute && (
+            {/* Single Route render */}
+            {showRoute && !isMultiSegment && (
                 <Source id="customer-route" type="geojson" data={lineData}>
                     <Layer {...lineLayer} />
                 </Source>
+            )}
+
+            {/* Multi Segment render */}
+            {showRoute && isMultiSegment && segmentFeatures.length > 0 && (
+                <>
+                    {/* Segment 1: Driver -> Restaurant (Gray) */}
+                    <Source id="customer-route-seg1" type="geojson" data={{ type: "FeatureCollection", features: [segmentFeatures[0]] }}>
+                        <Layer {...grayLineLayer} />
+                    </Source>
+
+                    {/* Segment 2: Restaurant -> Customer (Green) */}
+                    {segmentFeatures[1] && (
+                        <Source id="customer-route-seg2" type="geojson" data={{ type: "FeatureCollection", features: [segmentFeatures[1]] }}>
+                            <Layer {...lineLayer} />
+                        </Source>
+                    )}
+                </>
             )}
 
             {hasPickup && (

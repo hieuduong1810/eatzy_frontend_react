@@ -6,6 +6,8 @@ import { useLocationStore } from "../../../stores/locationStore";
 import "../CustomerApp.css";
 
 import customerApi from "../../../api/customer/customerApi";
+import OrderNotification from "../../../components/shared/notifications/OrderNotification";
+import { useLocation } from "react-router-dom";
 
 const promotions = [
     { id: 1, title: "Giảm 30% 🎉", subtitle: "Đơn hàng đầu tiên", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" },
@@ -15,14 +17,38 @@ const promotions = [
 
 export default function HomePage() {
     const navigate = useNavigate();
+    const locationRoute = useLocation();
     const { location } = useLocationStore();
     const [categories, setCategories] = useState([]);
     const [restaurants, setRestaurants] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [notification, setNotification] = useState(null);
 
     const [selectedCategory, setSelectedCategory] = useState("all");
     const sliderRef = useRef(null);
     const promoRef = useRef(null);
+
+    // Handle manual success notification from navigation state (e.g. after Checkout)
+    useEffect(() => {
+        // Check sessionStorage for success flag
+        const storedSuccess = sessionStorage.getItem('orderSuccess');
+        if (storedSuccess) {
+            const { orderId } = JSON.parse(storedSuccess);
+
+            setNotification({
+                title: "Đặt hàng thành công",
+                message: orderId ? `Đơn hàng #${orderId} đã được tạo thành công!` : "Đơn hàng của bạn đã được tạo thành công!",
+                type: "success",
+                timestamp: Date.now()
+            });
+
+            // Clear sessionStorage
+            sessionStorage.removeItem('orderSuccess');
+
+            // Auto hide
+            setTimeout(() => setNotification(null), 5000);
+        }
+    }, [locationRoute]);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -80,6 +106,15 @@ export default function HomePage() {
     return (
         <div className="cust-page">
             <div className="cust-container">
+                {notification && (
+                    <OrderNotification
+                        title={notification.title}
+                        message={notification.message}
+                        type={notification.type}
+                        timestamp={notification.timestamp}
+                        onClose={() => setNotification(null)}
+                    />
+                )}
 
                 {/* ── Hero Section ── */}
                 <section className="cust-hero">

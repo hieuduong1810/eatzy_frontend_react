@@ -18,21 +18,25 @@ const WithDriverLayout = ({ children }) => (
     </ProtectedRoute>
 );
 
+import { WebSocketProvider } from "../../contexts/WebSocketContext";
+
 const DriverApp = () => {
     return (
-        <Routes>
-            {/* Public routes */}
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
+        <WebSocketProvider>
+            <Routes>
+                {/* Public routes */}
+                <Route path="login" element={<LoginPage />} />
+                <Route path="register" element={<RegisterPage />} />
 
-            {/* Protected routes with layout */}
-            {/* Protected routes with layout */}
-            <Route path="/home" element={<WithDriverLayout><HomePage /></WithDriverLayout>} />
-            <Route path="/history" element={<WithDriverLayout><HistoryPage /></WithDriverLayout>} />
-            <Route path="/wallet" element={<WithDriverLayout><WalletPage /></WithDriverLayout>} />
-            <Route path="/profile" element={<WithDriverLayout><ProfilePage /></WithDriverLayout>} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
+                {/* Protected routes with layout */}
+                {/* Protected routes with layout */}
+                <Route path="/home" element={<WithDriverLayout><HomePage /></WithDriverLayout>} />
+                <Route path="/history" element={<WithDriverLayout><HistoryPage /></WithDriverLayout>} />
+                <Route path="/wallet" element={<WithDriverLayout><WalletPage /></WithDriverLayout>} />
+                <Route path="/profile" element={<WithDriverLayout><ProfilePage /></WithDriverLayout>} />
+                <Route path="*" element={<Navigate to="/home" replace />} />
+            </Routes>
+        </WebSocketProvider>
     );
 };
 

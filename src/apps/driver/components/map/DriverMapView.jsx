@@ -68,7 +68,7 @@ const DriverMapView = ({ locateVersion = 0, activeOrder = null }) => {
     if (activeOrder) {
         return (
             <div className="dmap-full">
-                <DriverOrderMapView order={activeOrder} />
+                <DriverOrderMapView order={activeOrder} currentDriverLocation={userPos} />
             </div>
         );
     }

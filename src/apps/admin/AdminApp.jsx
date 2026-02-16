@@ -11,31 +11,35 @@ import PromotionsPage from "./pages/PromotionsPage";
 import SystemConfigPage from "./pages/SystemConfigPage";
 import PermissionsPage from "./pages/PermissionsPage";
 
+import { WebSocketProvider } from "../../contexts/WebSocketContext";
+
 const AdminApp = () => {
     return (
-        <Routes>
-            <Route path="login" element={<LoginPage />} />
+        <WebSocketProvider>
+            <Routes>
+                <Route path="login" element={<LoginPage />} />
 
-            {/* Protected routes */}
-            <Route element={
-                <ProtectedRoute loginPath="login">
-                    <AdminLayout />
-                </ProtectedRoute>
-            }>
-                <Route index element={<Navigate to="/dashboard" replace />} />
-                <Route path="dashboard" element={<DashboardPage />} />
-                <Route path="restaurants" element={<RestaurantsPage />} />
-                <Route path="drivers" element={<DriversPage />} />
-                <Route path="customers" element={<CustomersPage />} />
-                <Route path="finance" element={<FinancePage />} />
-                <Route path="promotions" element={<PromotionsPage />} />
-                <Route path="system-config" element={<SystemConfigPage />} />
-                <Route path="permissions" element={<PermissionsPage />} />
-                <Route path="profile" element={<div className="page-container"><h1 className="page-title">Hồ sơ cá nhân</h1><p className="page-subtitle">Trang đang phát triển...</p></div>} />
-            </Route>
+                {/* Protected routes */}
+                <Route element={
+                    <ProtectedRoute loginPath="login">
+                        <AdminLayout />
+                    </ProtectedRoute>
+                }>
+                    <Route index element={<Navigate to="/dashboard" replace />} />
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="restaurants" element={<RestaurantsPage />} />
+                    <Route path="drivers" element={<DriversPage />} />
+                    <Route path="customers" element={<CustomersPage />} />
+                    <Route path="finance" element={<FinancePage />} />
+                    <Route path="promotions" element={<PromotionsPage />} />
+                    <Route path="system-config" element={<SystemConfigPage />} />
+                    <Route path="permissions" element={<PermissionsPage />} />
+                    <Route path="profile" element={<div className="page-container"><h1 className="page-title">Hồ sơ cá nhân</h1><p className="page-subtitle">Trang đang phát triển...</p></div>} />
+                </Route>
 
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+        </WebSocketProvider>
     );
 };
 

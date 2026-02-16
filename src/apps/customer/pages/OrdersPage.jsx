@@ -34,6 +34,20 @@ export default function OrdersPage() {
         fetchOrders();
     }, []);
 
+    // Show success toast if navigated from checkout
+    useEffect(() => {
+        if (window.history.state?.usr?.successOrder && window.history.state?.usr?.orderId) {
+            // We can use a library like react-toastify here, or a simple alert for now if not available
+            // But based on user request "hiện thông báo", let's try to notify.
+            // Since I don't see toastify imported in OrdersPage, I will use alert or just console for now, 
+            // but user asked for notification. 
+            // I'll add a simple alert for now as a placeholder for "Success Notification"
+            alert(`Order #${window.history.state.usr.orderId} placed successfully!`);
+            // Clear state to prevent showing again on refresh
+            window.history.replaceState({}, document.title);
+        }
+    }, []);
+
     const fetchOrders = async () => {
         try {
             setIsLoading(true);

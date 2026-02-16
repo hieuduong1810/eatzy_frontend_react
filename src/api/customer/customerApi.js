@@ -26,6 +26,30 @@ const customerApi = {
         return axiosInstance.get(`/api/v1/orders/my-customer?filter=${filter}`);
     },
     /**
+     * Get current user's active orders (PENDING, CONFIRMED, PREPARING, DELIVERING, etc.)
+     * GET /api/v1/orders/my-customer?filter=...
+     */
+    getMyCurrentOrders: () => {
+        // Explicitly include active statuses to be safe. 
+        // Note: Field name is 'createdAt' not 'createdDate'
+        const activeStatuses = [
+            "PENDING",
+            "CONFIRMED",
+            "PREPARING",
+            "DRIVER_ASSIGNED",
+            "READY", // User mentioned READY
+            "READY_FOR_PICKUP", // Legacy/Safety
+            "PICKED_UP",
+            "ARRIVED",
+            "DELIVERING"
+        ];
+
+        // Construct filter: orderStatus:'PENDING' or orderStatus:'CONFIRMED' ...
+        const filter = activeStatuses.map(s => `orderStatus:'${s}'`).join(" or ");
+
+        return axiosInstance.get(`/api/v1/orders/my-customer?filter=(${filter})&sort=createdAt,desc`);
+    },
+    /**
      * Get restaurant types
      * GET /api/v1/restaurant-types
      */
@@ -139,6 +163,23 @@ const customerApi = {
      */
     createReview: (reviewData) => {
         return axiosInstance.post("/api/v1/reviews", reviewData);
+    },
+
+    /**
+     * Create order
+     * POST /api/v1/orders
+     * @param {Object} orderData - The order data matching ReqOrderDTO
+     */
+    createOrder: (orderData) => {
+        return axiosInstance.post("/api/v1/orders", orderData);
+    },
+
+    /**
+     * Get driver location (for initial load)
+     * GET /api/v1/redis/driver/location/{driverId}
+     */
+    getDriverLocation: (driverId) => {
+        return axiosInstance.get(`/api/v1/redis/driver/location/${driverId}`);
     },
 };
 
