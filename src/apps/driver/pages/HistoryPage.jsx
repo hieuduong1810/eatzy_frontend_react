@@ -56,7 +56,7 @@ const HistoryCard = ({ order, onClick }) => {
                 ) : (
                     <div className="history-status-badge history-status-badge--cancelled">
                         <XCircle size={14} />
-                        <span>CANCELLED</span>
+                        <span>{order.status === 'DRIVER_ASSIGNED' ? 'ONGOING' : 'CANCELLED'}</span>
                     </div>
                 )}
             </div>
@@ -92,7 +92,7 @@ const HistoryPage = () => {
                     items: order.orderItems ? order.orderItems.map(item => ({
                         name: item.dish?.name || item.name || "---",
                         quantity: item.quantity,
-                        price: item.priceAtPurchase || item.price || 0
+                        price: item.priceAtPurchase || 0
                     })) : [],
                     subtotal: order.subtotal || 0,
                     total: order.totalAmount || 0,
@@ -106,7 +106,9 @@ const HistoryPage = () => {
                     driverCommissionAmount: order.driverCommissionAmount || 0
                 }));
 
-                setOrders(mappedOrders);
+                setOrders(mappedOrders.filter(o =>
+                    ["DELIVERED", "CANCELLED", "REJECTED", "COMPLETED", "REFUSED"].includes(o.status)
+                ));
             } catch (error) {
                 console.error("Failed to fetch driver history:", error);
             } finally {

@@ -1,4 +1,4 @@
-import { X, Play, MapPin, Star, User, Phone, Mail, Globe, Printer, Wallet, Calendar, ShieldCheck, ChevronRight } from "lucide-react";
+import { X, Play, Pause, MapPin, Star, User, Phone, Mail, Globe, Printer, Wallet, Calendar, ShieldCheck, ChevronRight, Clock } from "lucide-react";
 import "./RestaurantDetail.css";
 
 const RestaurantDetail = ({ restaurant, onClose }) => {
@@ -7,8 +7,6 @@ const RestaurantDetail = ({ restaurant, onClose }) => {
     // Mock data for UI showcase
     const establishedYear = "2024";
     const walletBalance = "3.278.503 ₫";
-    const platformFee = "10%";
-    const operationalHours = "06:00 - 20:00";
 
     return (
         <div className="res-detail-overlay" onClick={onClose}>
@@ -29,8 +27,12 @@ const RestaurantDetail = ({ restaurant, onClose }) => {
                                 className="res-avatar"
                                 alt={restaurant.name}
                             />
-                            <div className="res-status-indicator">
-                                <Play size={14} fill="white" strokeWidth={0} />
+                            <div className={`res-status-indicator ${restaurant.status !== 'OPEN' ? 'closed' : ''}`}>
+                                {restaurant.status === 'OPEN' ? (
+                                    <Play size={14} fill="white" strokeWidth={0} />
+                                ) : (
+                                    <Pause size={14} fill="white" strokeWidth={0} />
+                                )}
                             </div>
                         </div>
                         <div className="res-title-group">
@@ -50,97 +52,161 @@ const RestaurantDetail = ({ restaurant, onClose }) => {
                             <span>{restaurant.address}</span>
                         </div>
                         <div className="res-info-pill res-rating-pill">
-                            <Star size={16} fill="#facc15" strokeWidth={0} />
-                            <span className="font-bold">{restaurant.averageRating || "0.0"}</span>
-                            <span className="text-gray-400 text-xs ml-1">{restaurant.reviewCount || 0} REVIEWS</span>
+                            <div className="rating-wrapper-tight">
+                                <Star size={20} fill="#facc15" strokeWidth={0} />
+                                <span className="rating-num-large">{parseFloat(restaurant.averageRating || 0).toFixed(1)}</span>
+                            </div>
+                            <span className="rating-count-small">{restaurant.reviewCount || 0} REVIEWS</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Main Content Grid */}
                 <div className="res-grid">
-                    {/* Financial Overview */}
-                    <div className="res-card">
-                        <div className="detail-card-title">
-                            <Wallet size={18} />
-                            Financial Overview
-                        </div>
-                        <div className="stat-row">
-                            <div>
-                                <span className="contact-label">Wallet Balance</span>
-                                <div className="stat-value">{walletBalance}</div>
+                    {/* Left Column Group */}
+                    <div className="res-left-col">
+                        {/* Financial Overview */}
+                        <div className="res-card flat-card">
+                            <div className="card-header-row">
+                                <div className="icon-box-soft green">
+                                    <Wallet size={20} />
+                                </div>
+                                <span className="card-title-text">FINANCIAL OVERVIEW</span>
+                                <div className="wm-icon">
+                                    <Wallet size={64} strokeWidth={1} />
+                                </div>
                             </div>
-                            <div>
-                                <span className="contact-label">Platform Fee</span>
-                                <div className="stat-value stat-val-highlight">{restaurant.commissionRate || 10}%</div>
+                            <div className="fin-stats-row">
+                                <div className="fin-stat-group">
+                                    <span className="fin-label">WALLET BALANCE</span>
+                                    <div className="fin-value">{walletBalance}</div>
+                                </div>
+                                <div className="fin-stat-group">
+                                    <span className="fin-label">PLATFORM FEE</span>
+                                    <div className="fin-fee-wrapper">
+                                        <div className="fin-badge-purple">
+                                            <span className="percent-icon">%</span>
+                                        </div>
+                                        <div className="fin-value fin-value-purple">{restaurant.commissionRate || 10}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Partner Contacts */}
+                        <div className="res-card flat-card">
+                            <div className="card-header-row mb-4">
+                                <div className="icon-box-soft lime">
+                                    <User size={20} />
+                                </div>
+                                <span className="card-title-text">PARTNER CONTACTS</span>
+                            </div>
+                            <div className="contact-grid-modern">
+                                <div className="contact-pill">
+                                    <div className="cp-icon"><Phone size={18} /></div>
+                                    <div>
+                                        <div className="cp-label">CONTACT NUMBER</div>
+                                        <div className="cp-value">{restaurant.contactPhone}</div>
+                                    </div>
+                                </div>
+                                <div className="contact-pill">
+                                    <div className="cp-icon"><Printer size={18} /></div>
+                                    <div>
+                                        <div className="cp-label">LEGAL ENTITY / OWNER</div>
+                                        <div className="cp-value">{restaurant.owner?.name || "Restaurant"}</div>
+                                    </div>
+                                </div>
+                                <div className="contact-pill">
+                                    <div className="cp-icon"><MapPin size={18} /></div>
+                                    <div>
+                                        <div className="cp-label">OPERATIONAL REGION</div>
+                                        <div className="cp-value">{restaurant.address}</div>
+                                    </div>
+                                </div>
+                                <div className="contact-pill">
+                                    <div className="cp-icon"><Globe size={18} /></div>
+                                    <div>
+                                        <div className="cp-label">PUBLIC LANDING</div>
+                                        <div className="cp-value truncate-w">.../restaurant/{restaurant.id} <ChevronRight size={12} /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        <div className="res-card flat-card">
+                            <div className="card-header-row mb-4">
+                                <div className="icon-box-soft lime">
+                                    <div style={{ fontWeight: 'bold', fontSize: '14px', fontStyle: 'italic' }}>i</div>
+                                </div>
+                                <span className="card-title-text">DESCRIPTION & PHILOSOPHY</span>
+                            </div>
+                            <div className="desc-quote-box">
+                                <div className="quote-line"></div>
+                                "{restaurant.description || "Chưa có mô tả..."}"
                             </div>
                         </div>
                     </div>
 
-                    {/* Performance */}
-                    <div className="res-card" style={{ background: "#000000ff", color: "white" }}>
-                        <div className="detail-card-title" style={{ color: "#9ca3af" }}>
-                            Performance
-                        </div>
-                        <div className="rate-display">
-                            <div className="big-rate">{restaurant.averageRating || "4.0"}</div>
-                            <div className="rate-stars">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star key={i} size={16} fill={i < Math.round(restaurant.averageRating || 0) ? "currentColor" : "none"} />
+                    {/* Right Column Group */}
+                    <div className="res-right-col">
+                        {/* Performance Dark Card */}
+                        <div className="res-card dark-card">
+                            <div className="card-header-row mb-6">
+                                <div>
+                                    <span className="sub-header-text">PERFORMANCE</span>
+                                    <div className="card-title-white">RATING ANALYTICS</div>
+                                </div>
+                                <div className="icon-sq-green">
+                                    <Star size={18} fill="white" strokeWidth={0} />
+                                </div>
+                            </div>
+
+                            <div className="rating-flex-row">
+                                <div className="rating-big-num">{restaurant.averageRating || "5.0"}</div>
+                                <div>
+                                    <div className="stars-row">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} size={14} fill="#84cc16" strokeWidth={0} />
+                                        ))}
+                                    </div>
+                                    <div className="rating-total-text">{restaurant.reviewCount || 0} TOTAL REVIEWS</div>
+                                </div>
+                            </div>
+
+                            <div className="rating-bars">
+                                {[5, 4, 3, 2, 1].map((num) => (
+                                    <div className="bar-row" key={num}>
+                                        <span className="bar-num">{num}</span>
+                                        <div className="progress-track">
+                                            <div className="progress-fill" style={{ width: num === 5 ? '100%' : '0%' }}></div>
+                                        </div>
+                                        <span className="bar-count">{num === 5 ? 1 : 0}</span>
+                                    </div>
                                 ))}
                             </div>
-                            <div className="total-reviews">{restaurant.reviewCount || 0} Total Reviews</div>
                         </div>
-                    </div>
 
-                    {/* Partner Contacts */}
-                    <div className="res-card">
-                        <div className="detail-card-title">
-                            <User size={18} />
-                            Partner Contacts
-                        </div>
-                        <div className="contact-grid">
-                            <div className="contact-item">
-                                <span className="contact-label">Contact Number</span>
-                                <div className="contact-value">{restaurant.contactPhone}</div>
+                        {/* Business Schedule */}
+                        <div className="res-card flat-card">
+                            <div className="card-header-row mb-6">
+                                <div className="icon-box-soft gray">
+                                    <Clock size={20} />
+                                </div>
+                                <span className="card-title-text">BUSINESS SCHEDULE</span>
                             </div>
-                            <div className="contact-item">
-                                <span className="contact-label">Legal Entity / Owner</span>
-                                <div className="contact-value">{restaurant.owner?.name || "Restaurant"}</div>
-                            </div>
-                            <div className="contact-item">
-                                <span className="contact-label">Operational Region</span>
-                                <div className="contact-value">{restaurant.address}</div>
-                            </div>
-                            <div className="contact-item">
-                                <span className="contact-label">Email Address</span>
-                                <div className="contact-value" title={restaurant.owner?.email}>{restaurant.owner?.email}</div>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Business Schedule */}
-                    <div className="res-card">
-                        <div className="detail-card-title">
-                            <Calendar size={18} />
-                            Business Schedule
-                        </div>
-                        <div className="contact-item" style={{ background: "#ecfccb" }}>
-                            <span className="contact-label" style={{ color: "#4d7c0f" }}>Operational Hours</span>
-                            <div className="contact-value" style={{ color: "#365314" }}>{operationalHours}</div>
-                        </div>
-                        <div className="mt-4 text-xs text-gray-400">
-                            Schedule is maintained by the partner. Admin can force close/lock account from the main dashboard.
-                        </div>
-                    </div>
+                            <div className="schedule-box">
+                                <div className="schedule-header">
+                                    <Calendar size={16} /> OPERATIONAL HOURS
+                                </div>
+                                <div className="schedule-time">{restaurant.schedule || "08:00 - 22:00"}</div>
+                            </div>
 
-                    {/* Description */}
-                    <div className="res-card" style={{ gridColumn: "span 2" }}>
-                        <div className="detail-card-title">
-                            Description & Philosophy
-                        </div>
-                        <div className="p-4 bg-gray-50 rounded-xl italic text-gray-600 border-l-4 border-lime-500">
-                            "{restaurant.description || "Cơm trưa sinh viên, cơm tấm sườn bì chả..."}"
+                            <div className="schedule-note">
+                                <div className="dot-gray"></div>
+                                <span>Schedule is maintained by the partner. Admin can force close/lock account.</span>
+                            </div>
                         </div>
                     </div>
                 </div>

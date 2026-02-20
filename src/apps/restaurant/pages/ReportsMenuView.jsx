@@ -57,11 +57,13 @@ const ReportsMenuView = () => {
     }, [reportData]);
 
     const categoryData = useMemo(() => {
-        return reportData.categoryBreakdown.map(c => ({
-            name: c.categoryName,
-            count: c.totalDishes,
-            revenue: c.totalRevenue
-        })).sort((a, b) => b.revenue - a.revenue);
+        return reportData.categoryBreakdown
+            .map(c => ({
+                name: c.categoryName,
+                count: c.totalDishes,
+                revenue: c.totalRevenue
+            }))
+            .sort((a, b) => b.revenue - a.revenue);
     }, [reportData]);
 
     const rankedItems = useMemo(() => {
@@ -90,8 +92,13 @@ const ReportsMenuView = () => {
 
     if (loading) {
         return (
-            <div className="rmv-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-                <Loader2 className="animate-spin" size={32} />
+            <div className="rp-loading-container">
+                <div className="rp-custom-loader">
+                    <div className="rp-loader-track"></div>
+                    <div className="rp-loader-spinner"></div>
+                    <div className="rp-loader-center"></div>
+                </div>
+                <p className="rp-loading-text">Đang phân tích dữ liệu...</p>
             </div>
         );
     }
@@ -142,9 +149,35 @@ const ReportsMenuView = () => {
                     <div className="rmv-donut-wrapper">
                         <div className="rmv-donut-chart" style={{
                             background: `conic-gradient(
-                                #84cc16 0% 60%, 
-                                #111827 60% 90%, 
-                                #3b82f6 90% 100%
+                                ${(() => {
+                                    const top3 = categoryData.slice(0, 3);
+                                    const totalTop3 = top3.reduce((sum, c) => sum + c.revenue, 0);
+                                    if (totalTop3 === 0) return '#e5e7eb 0% 100%'; // Gray if no revenue
+
+                                    let currentDeg = 0;
+                                    const colors = ['#84cc16', '#111827', '#3b82f6'];
+
+                                    return top3.map((c, i) => {
+                                        const pct = (c.revenue / stats.totalRevenue) * 100; // Use total revenue for correct proportion of whole
+                                        // OR if we want circle to be 100% of just these 3 items? usually it's proportion of total.
+                                        // But conic gradient needs to fill 360deg. 
+                                        // Let's assume we show the top 3 relative to each other for the chart, or relative to total?
+                                        // If relative to total, what about "Other"?
+                                        // The screenshot implies a full circle. Let's calculate relative to the SUM of these top 3 or Total.
+                                        // Actually simplest and visually correct is to sum up the displayed parts to 100% or show "Other".
+                                        // Given simplified UI, let's normalize to Top 3 for the visual if others are negligible, or better: use stats.totalRevenue and just show 'Other' as gray if needed.
+                                        // But for now, let's just map the slices based on their % of Total Revenue.
+
+                                        // Better approach for CSS conic-gradient:
+                                        // We need cumulative percentages.
+                                        // Let's map normalized to the TotalRevenue.
+                                        const start = currentDeg;
+                                        const slicePct = (c.revenue / (stats.totalRevenue || 1)) * 100;
+                                        const end = start + slicePct;
+                                        currentDeg = end;
+                                        return `${colors[i]} ${start}% ${end}%`;
+                                    }).join(', ') + (currentDeg < 100 ? `, #f3f4f6 ${currentDeg}% 100%` : ''); // Fill rest with gray
+                                })()}
                             )`
                         }}>
                             <div className="rmv-donut-hole"></div>

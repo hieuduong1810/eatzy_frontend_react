@@ -132,16 +132,15 @@ const FinancePage = () => {
         },
     ];
 
-    if (loading) {
-        return <div className="p-8 text-center">Đang tải dữ liệu...</div>;
-    }
-
     return (
         <div className="management-page">
             <PageHeader
-                title="Tài chính"
-                subtitle={`Quản lý giao dịch và doanh thu hệ thống`}
-                actions={
+                title="FINANCIAL REPORTS"
+                subtitle="Track revenue, commission earnings, and payout status."
+                badge="FINANCE CONSOLE"
+                badgeColor="green"
+                BadgeIcon={Wallet}
+                action={
                     <>
                         <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
                         <button className="btn btn-secondary"><Download size={16} /> Xuất báo cáo</button>
@@ -154,19 +153,19 @@ const FinancePage = () => {
                 <div className="finance-summary-card">
                     <span className="finance-summary-label">Tổng giao dịch</span>
                     <span className="finance-summary-value">
-                        {transactions.length}
+                        {loading ? <div style={{ height: 24, width: 60, background: '#e5e7eb', borderRadius: 4 }}></div> : transactions.length}
                     </span>
                 </div>
                 <div className="finance-summary-card">
                     <span className="finance-summary-label">Dòng tiền vào</span>
                     <span className="finance-summary-value positive">
-                        {formatCurrency(transactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0))}
+                        {loading ? <div style={{ height: 24, width: 100, background: '#e5e7eb', borderRadius: 4 }}></div> : formatCurrency(transactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0))}
                     </span>
                 </div>
                 <div className="finance-summary-card">
                     <span className="finance-summary-label">Dòng tiền ra</span>
                     <span className="finance-summary-value negative">
-                        {formatCurrency(Math.abs(transactions.filter(t => t.amount < 0).reduce((s, t) => s + t.amount, 0)))}
+                        {loading ? <div style={{ height: 24, width: 100, background: '#e5e7eb', borderRadius: 4 }}></div> : formatCurrency(Math.abs(transactions.filter(t => t.amount < 0).reduce((s, t) => s + t.amount, 0)))}
                     </span>
                 </div>
             </div>
@@ -174,18 +173,21 @@ const FinancePage = () => {
             <DataTable
                 columns={columns}
                 data={transactions}
+                loading={loading}
                 searchPlaceholder="Tìm kiếm giao dịch..."
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
             />
 
             {/* Detail Modal */}
-            {detailModal.open && (
-                <TransactionDetail
-                    transaction={detailModal.data}
-                    onClose={() => setDetailModal({ open: false, data: null })}
-                />
-            )}
-        </div>
+            {
+                detailModal.open && (
+                    <TransactionDetail
+                        transaction={detailModal.data}
+                        onClose={() => setDetailModal({ open: false, data: null })}
+                    />
+                )
+            }
+        </div >
     );
 };
 

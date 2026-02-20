@@ -45,7 +45,7 @@ const StorePage = () => {
         }
     };
 
-    if (loading) return <div className="p-8">Loading store data...</div>;
+    if (loading) return <SkeletonStorePage />;
     if (!store) return <div className="p-8">Store not found.</div>;
 
     // Default coordinates if missing (HCMC)
@@ -87,68 +87,78 @@ const StorePage = () => {
 
             {/* Main Content Floating Card */}
             <div className="resto-store-main-container">
-                {/* General Info Section */}
-                <div className="store-section-title">
-                    <InfoIcon size={20} /> GENERAL INFORMATION
-                    <button className="btn-edit-section"><PenLine size={16} /></button>
-                </div>
-
-                <div className="store-top-row">
-                    {/* Profile Card */}
-                    <div className="store-profile-card">
-                        <div className="store-avatar-wrapper">
-                            <img src={store.imageUrl} alt={store.name} className="store-avatar" />
-                            <div className="verified-badge"><Check size={14} strokeWidth={4} /></div>
+                {/* General Info Card */}
+                <div className="store-general-card">
+                    <div className="store-section-title">
+                        <div className="section-icon-wrapper bg-blue-100 text-blue-600">
+                            <InfoIcon size={20} />
                         </div>
-                        <h3 className="store-profile-name">{store.name}</h3>
-                        <div className="store-profile-role">Restaurant Partner</div>
-
-                        <div className="store-stats-row">
-                            <div className="store-stat-item">
-                                <span className="stat-value">{store.reviewCount || 0}</span>
-                                <span className="stat-label">REVIEWS</span>
-                            </div>
-                            <div className="store-stat-item">
-                                <span className="stat-value">
-                                    {store.rating || 0} <Star size={12} fill="black" stroke="none" style={{ display: 'inline' }} />
-                                </span>
-                                <span className="stat-label">RATING</span>
-                            </div>
-                            <div className="store-stat-item">
-                                <span className="stat-value">
-                                    {store.commissionRate || 10}% <span className="badge-fixed">FIXED</span>
-                                </span>
-                                <span className="stat-label">COMMISSION RATE</span>
-                            </div>
-                        </div>
+                        GENERAL INFORMATION
+                        <button className="btn-edit-section"><PenLine size={16} /></button>
                     </div>
 
-                    {/* Info Content */}
-                    <div className="store-info-content">
-                        <div className="info-block">
-                            <h4>About {store.name}</h4>
-                            <p className="info-text">
-                                {store.description || "Chưa có mô tả giới thiệu."}
-                            </p>
+                    <div className="store-top-row">
+                        {/* Profile Card */}
+                        <div className="store-profile-card">
+                            <div className="store-avatar-wrapper">
+                                <img src={store.imageUrl} alt={store.name} className="store-avatar" />
+                                <div className="verified-badge"><Check size={14} strokeWidth={4} /></div>
+                            </div>
+                            <h3 className="store-profile-name">{store.name}</h3>
+                            <div className="store-profile-role">Restaurant Partner</div>
+
+                            <div className="store-stats-row">
+                                <div className="store-stat-item">
+                                    <span className="stat-value">{store.reviewCount || 0}</span>
+                                    <span className="stat-label">REVIEWS</span>
+                                </div>
+                                <div className="store-stat-item">
+                                    <span className="stat-value">
+                                        {store.rating || 0} <Star size={12} fill="black" stroke="none" style={{ display: 'inline' }} />
+                                    </span>
+                                    <span className="stat-label">RATING</span>
+                                </div>
+                                <div className="store-stat-item">
+                                    <span className="stat-value">
+                                        {store.commissionRate || 10}% <span className="badge-fixed">FIXED</span>
+                                    </span>
+                                    <span className="stat-label">COMMISSION RATE</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="info-block">
-                            <h4>Contact Information</h4>
-                            <div className="contact-grid">
-                                <div className="contact-item">
-                                    <Phone size={20} className="contact-icon" />
-                                    <div>
-                                        <span className="contact-detail-label">Phone Support</span>
-                                        <span className="contact-detail-value">{store.phone}</span>
+                        {/* Info Content */}
+                        <div className="store-info-content">
+                            <div className="info-block">
+                                <h4>About {store.name}</h4>
+                                <p className="info-text">
+                                    {store.description || "Chưa có mô tả giới thiệu."}
+                                </p>
+                            </div>
+
+                            <div className="info-block">
+                                <h4>Contact Information</h4>
+                                <div className="contact-grid">
+                                    <div className="contact-item">
+                                        <Phone size={20} className="contact-icon" />
+                                        <div>
+                                            <span className="contact-detail-label">Phone Support</span>
+                                            <span className="contact-detail-value">{store.phone}</span>
+                                        </div>
+                                    </div>
+                                    <div className="contact-item">
+                                        <Mail size={20} className="contact-icon" />
+                                        <div>
+                                            <span className="contact-detail-label">Email</span>
+                                            <span className="contact-detail-value">{store.email}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="contact-item">
-                                    <Mail size={20} className="contact-icon" />
-                                    <div>
-                                        <span className="contact-detail-label">Email</span>
-                                        <span className="contact-detail-value">{store.email}</span>
-                                    </div>
-                                </div>
+                            </div>
+
+                            {/* Protection Note (Moved inside Info Content) */}
+                            <div className="protection-note">
+                                <ShieldCheckIcon /> To protect your payment, always communicate through the Eatzy website.
                             </div>
                         </div>
                     </div>
@@ -159,11 +169,14 @@ const StorePage = () => {
                     {/* Location */}
                     <div className="content-card">
                         <div className="store-section-title">
-                            <MapPin size={20} /> LOCATION & ADDRESS
+                            <div className="section-icon-wrapper bg-green-100 text-green-600">
+                                <MapPin size={20} />
+                            </div>
+                            LOCATION & ADDRESS
                             <button className="btn-edit-section"><PenLine size={16} /></button>
                         </div>
                         <div className="address-text">
-                            <span className="text-gray-500 text-xs font-bold uppercase block mb-1">ADDRESS</span>
+                            <span className="text-gray-500 text-xs font-bold uppercase block mb-1">ADDRESS: </span>
                             {store.address}
                         </div>
 
@@ -186,7 +199,10 @@ const StorePage = () => {
                     {/* Hours */}
                     <div className="content-card">
                         <div className="store-section-title">
-                            <Clock size={20} /> OPENING HOURS
+                            <div className="section-icon-wrapper bg-orange-100 text-orange-600">
+                                <Clock size={20} />
+                            </div>
+                            OPENING HOURS
                             <button className="btn-edit-section"><PenLine size={16} /></button>
                         </div>
 
@@ -213,11 +229,6 @@ const StorePage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Footer Note */}
-            <div className="max-w-[1400px] mx-auto mb-8 px-10 text-xs text-gray-400 flex items-center gap-2">
-                <ShieldCheckIcon /> To protect your payment, always communicate through the Eatzy website.
-            </div>
         </div>
     );
 };
@@ -236,3 +247,88 @@ const ShieldCheckIcon = () => (
 );
 
 export default StorePage;
+
+const SkeletonStorePage = () => {
+    return (
+        <div className="resto-store-page">
+            {/* Cover Skeleton */}
+            <div className="skeleton-cover">
+                <div className="skeleton-header-content">
+                    <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                        <div className="skeleton-block" style={{ width: 100, height: 24, borderRadius: 99, background: 'rgba(255,255,255,0.2)' }}></div>
+                        <div className="skeleton-block" style={{ width: 120, height: 24, borderRadius: 99, background: 'rgba(255,255,255,0.2)' }}></div>
+                    </div>
+                    <div className="skeleton-block" style={{ width: 400, height: 48, marginBottom: 16, background: 'rgba(255,255,255,0.2)' }}></div>
+                    <div style={{ display: 'flex', gap: 24 }}>
+                        <div className="skeleton-block" style={{ width: 200, height: 20, background: 'rgba(255,255,255,0.2)' }}></div>
+                        <div className="skeleton-block" style={{ width: 150, height: 20, background: 'rgba(255,255,255,0.2)' }}></div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="resto-store-main-container">
+                <div className="skeleton-block" style={{ width: 250, height: 24, marginBottom: 24 }}></div>
+
+                <div className="skeleton-top-row">
+                    {/* Profile Card Skeleton */}
+                    <div className="skeleton-profile-card">
+                        <div className="skeleton-block skeleton-avatar"></div>
+                        <div className="skeleton-block" style={{ width: 180, height: 24, marginBottom: 8 }}></div>
+                        <div className="skeleton-block" style={{ width: 120, height: 16, marginBottom: 24 }}></div>
+
+                        <div style={{ width: '100%', borderTop: '1px solid #f3f4f6', paddingTop: 24, display: 'flex', justifyContent: 'space-between' }}>
+                            <div className="skeleton-block" style={{ width: 60, height: 40 }}></div>
+                            <div className="skeleton-block" style={{ width: 60, height: 40 }}></div>
+                            <div className="skeleton-block" style={{ width: 60, height: 40 }}></div>
+                        </div>
+                    </div>
+
+                    {/* Info Content Skeleton */}
+                    <div className="skeleton-info-content">
+                        <div className="skeleton-info-block">
+                            <div className="skeleton-block" style={{ width: 150, height: 20 }}></div>
+                            <div className="skeleton-block" style={{ width: '100%', height: 16 }}></div>
+                            <div className="skeleton-block" style={{ width: '90%', height: 16 }}></div>
+                            <div className="skeleton-block" style={{ width: '80%', height: 16 }}></div>
+                        </div>
+                        <div className="skeleton-info-block">
+                            <div className="skeleton-block" style={{ width: 150, height: 20 }}></div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+                                <div style={{ display: 'flex', gap: 12 }}>
+                                    <div className="skeleton-block" style={{ width: 20, height: 20, borderRadius: 99 }}></div>
+                                    <div>
+                                        <div className="skeleton-block" style={{ width: 80, height: 14, marginBottom: 4 }}></div>
+                                        <div className="skeleton-block" style={{ width: 100, height: 14 }}></div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: 12 }}>
+                                    <div className="skeleton-block" style={{ width: 20, height: 20, borderRadius: 99 }}></div>
+                                    <div>
+                                        <div className="skeleton-block" style={{ width: 80, height: 14, marginBottom: 4 }}></div>
+                                        <div className="skeleton-block" style={{ width: 120, height: 14 }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="skeleton-bottom-grid">
+                    <div className="skeleton-content-card">
+                        <div className="skeleton-block" style={{ width: 200, height: 24, marginBottom: 24 }}></div>
+                        <div className="skeleton-block" style={{ width: '100%', height: 250, borderRadius: 12 }}></div>
+                    </div>
+                    <div className="skeleton-content-card">
+                        <div className="skeleton-block" style={{ width: 180, height: 24, marginBottom: 24 }}></div>
+                        {[1, 2, 3, 4, 5, 6, 7].map(i => (
+                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                                <div className="skeleton-block" style={{ width: 60, height: 16 }}></div>
+                                <div className="skeleton-block" style={{ width: 100, height: 16 }}></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};

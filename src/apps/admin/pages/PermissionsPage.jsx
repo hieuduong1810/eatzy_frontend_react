@@ -61,6 +61,24 @@ const PermissionsPage = () => {
             if (fetchedRoles.length > 0) {
                 setSelectedRole(fetchedRoles[0]);
             }
+
+            // Fetch member counts for all roles (1-4 or more)
+            // We use Promise.all to fetch counts in parallel
+            fetchedRoles.forEach(async (role) => {
+                try {
+                    const res = await userApi.getUsers({
+                        "filter": `role.id:${role.id}`,
+                        page: 1,
+                        size: 1 // We only need meta.total
+                    });
+                    setRoles(prev => prev.map(r =>
+                        r.id === role.id ? { ...r, memberCount: res.meta.total } : r
+                    ));
+                } catch (err) {
+                    console.error(`Failed to fetch count for role ${role.id}`, err);
+                }
+            });
+
         } catch (error) {
             console.error("Failed to fetch initial data:", error);
         } finally {
@@ -197,8 +215,11 @@ const PermissionsPage = () => {
     return (
         <div className="management-page permissions-page">
             <PageHeader
-                title="Phân quyền (Roles)"
-                subtitle="Quản lý vai trò và quyền hạn người dùng trong hệ thống"
+                title="ACCESS CONTROL"
+                subtitle="Manage staff roles, permissions, and administrative access levels."
+                badge="SECURITY CONSOLE"
+                badgeColor="green"
+                BadgeIcon={Shield}
             />
 
             <div className="roles-layout">
@@ -222,42 +243,95 @@ const PermissionsPage = () => {
                             <span>ROLES • {roles.length}</span>
                             <span>MEMBERS</span>
                         </div>
-                        {filteredRoles.map(role => {
-                            const style = getRoleStyle(role.name);
-                            return (
-                                <div
-                                    key={role.id}
-                                    className={`role-item ${selectedRole?.id === role.id ? 'active' : ''}`}
-                                    onClick={() => setSelectedRole(role)}
-                                >
+                        {loading ? (
+                            // Skeleton for Roles List
+                            [...Array(5)].map((_, i) => (
+                                <div key={i} className="role-item" style={{ pointerEvents: 'none' }}>
                                     <div className="role-item-main">
-                                        <div className={`role-icon-wrapper`} style={{
-                                            background: selectedRole?.id === role.id ? '#111827' : style.bg,
-                                            color: selectedRole?.id === role.id ? 'white' : style.text
-                                        }}>
-                                            <Shield size={16} />
+                                        <div className="role-icon-wrapper" style={{ background: '#e5e7eb', color: 'transparent' }}>
+                                            <div style={{ width: 16, height: 16 }}></div>
                                         </div>
-                                        <div className="role-info">
-                                            <span className="role-name">{role.name}</span>
-                                            <span className="role-desc">{role.description || "No description"}</span>
+                                        <div className="role-info" style={{ width: '100%' }}>
+                                            <div style={{ height: 16, width: '60%', background: '#e5e7eb', borderRadius: 4, marginBottom: 4 }}></div>
+                                            <div style={{ height: 12, width: '80%', background: '#e5e7eb', borderRadius: 4 }}></div>
                                         </div>
-                                    </div>
-                                    <div className="role-meta">
-                                        <div className="role-members-count">
-                                            <User size={12} />
-                                            <span>{role.memberCount !== undefined ? role.memberCount : (role.users?.length || 0)}</span>
-                                        </div>
-                                        <button className="btn-role-more"><MoreHorizontal size={16} /></button>
                                     </div>
                                 </div>
-                            );
-                        })}
+                            ))
+                        ) : (
+                            filteredRoles.map(role => {
+                                const style = getRoleStyle(role.name);
+                                return (
+                                    <div
+                                        key={role.id}
+                                        className={`role-item ${selectedRole?.id === role.id ? 'active' : ''}`}
+                                        onClick={() => setSelectedRole(role)}
+                                    >
+                                        <div className="role-item-main">
+                                            <div className={`role-icon-wrapper`} style={{
+                                                background: selectedRole?.id === role.id ? '#111827' : style.bg,
+                                                color: selectedRole?.id === role.id ? 'white' : style.text
+                                            }}>
+                                                <Shield size={16} />
+                                            </div>
+                                            <div className="role-info">
+                                                <span className="role-name">{role.name}</span>
+                                                <span className="role-desc">{role.description || "No description"}</span>
+                                            </div>
+                                        </div>
+                                        <div className="role-meta">
+                                            <div className="role-members-count">
+                                                <User size={12} />
+                                                <span>{role.memberCount !== undefined ? role.memberCount : (role.users?.length || 0)}</span>
+                                            </div>
+                                            <button className="btn-role-more"><MoreHorizontal size={16} /></button>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
                     </div>
                 </div>
 
                 {/* Right Content: Role Details */}
                 <div className="roles-content">
-                    {selectedRole ? (
+                    {loading ? (
+                        <div className="role-details-skeleton">
+                            <div className="role-header">
+                                <div className="role-header-info">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                                        <div style={{ height: 32, width: 200, background: '#e5e7eb', borderRadius: 8 }}></div>
+                                        <div style={{ height: 24, width: 60, background: '#e5e7eb', borderRadius: 12 }}></div>
+                                    </div>
+                                    <div style={{ height: 16, width: 300, background: '#e5e7eb', borderRadius: 4 }}></div>
+                                </div>
+                            </div>
+                            <div className="role-body">
+                                <div className="permissions-view">
+                                    <div className="permissions-toolbar">
+                                        <div style={{ height: 36, width: 250, background: '#e5e7eb', borderRadius: 8 }}></div>
+                                    </div>
+                                    <div className="permissions-grid">
+                                        {[...Array(3)].map((_, i) => (
+                                            <div key={i} className="permission-group">
+                                                <div style={{ height: 24, width: 150, background: '#e5e7eb', borderRadius: 4, marginBottom: 16 }}></div>
+                                                <div className="permission-items">
+                                                    {[...Array(4)].map((_, j) => (
+                                                        <div key={j} className="permission-item" style={{ height: 60 }}>
+                                                            <div className="perm-info" style={{ width: '100%' }}>
+                                                                <div style={{ height: 16, width: '60%', background: '#e5e7eb', borderRadius: 4, marginBottom: 8 }}></div>
+                                                                <div style={{ height: 12, width: '80%', background: '#e5e7eb', borderRadius: 4 }}></div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : selectedRole ? (
                         <>
                             <div className="role-header">
                                 <div className="role-header-info">

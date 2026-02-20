@@ -1,7 +1,7 @@
-import { ShoppingBag, Store, Truck, Users } from "lucide-react";
+import { ShoppingBag, Store, Truck, Users, Tag } from "lucide-react";
 import "./DashboardComponents.css";
 
-const DashboardHeader = ({ title, subtitle, stats }) => {
+const DashboardHeader = ({ title, subtitle, stats, badge, badgeColor = "green", BadgeIcon = Tag }) => {
     const quickStats = [
         { icon: ShoppingBag, label: "Đơn mới", value: stats.activeOrders, colorClass: "qs-blue" },
         { icon: Store, label: "Cửa hàng", value: stats.totalRestaurants, colorClass: "qs-orange" },
@@ -12,8 +12,14 @@ const DashboardHeader = ({ title, subtitle, stats }) => {
     return (
         <div className="dashboard-header">
             <div>
-                <h1 className="dashboard-header-title">{title}</h1>
-                <p className="dashboard-header-subtitle">{subtitle}</p>
+                {badge && (
+                    <div className={`header-badge-pill ${badgeColor}`} style={{ marginBottom: '8px' }}>
+                        <BadgeIcon size={12} />
+                        <span>{badge}</span>
+                    </div>
+                )}
+                <h1 className="header-title-modern">{title}</h1>
+                <p className="header-subtitle-modern">{subtitle}</p>
             </div>
 
             <div className="quick-stats-bar">

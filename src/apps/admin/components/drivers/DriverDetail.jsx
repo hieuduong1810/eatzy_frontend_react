@@ -1,4 +1,4 @@
-import { X, Pause, CheckCircle, ShieldCheck, Mail, Star, Bike, CreditCard, ChevronRight, FileText, Wallet } from "lucide-react";
+import { X, Play, Pause, CheckCircle, ShieldCheck, Mail, Star, Bike, CreditCard, ChevronRight, FileText, Wallet } from "lucide-react";
 import "./DriverDetail.css";
 
 const DriverDetail = ({ driver, onClose }) => {
@@ -19,8 +19,12 @@ const DriverDetail = ({ driver, onClose }) => {
                             className="driver-avatar-img"
                             alt="avatar"
                         />
-                        <div className="driver-pause-btn">
-                            <Pause size={16} fill="white" />
+                        <div className={`driver-pause-btn ${driver.status !== 'AVAILABLE' ? 'closed' : ''}`}>
+                            {driver.status === 'AVAILABLE' ? (
+                                <Play size={16} fill="white" strokeWidth={0} />
+                            ) : (
+                                <Pause size={16} fill="white" strokeWidth={0} />
+                            )}
                         </div>
                     </div>
 

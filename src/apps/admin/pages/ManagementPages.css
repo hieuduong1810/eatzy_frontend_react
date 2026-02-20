@@ -381,6 +381,10 @@
     border-radius: 50%;
 }
 
+.res-status-dot.closed {
+    background: #9CA3AF;
+}
+
 .res-details {
     display: flex;
     flex-direction: column;
@@ -1437,4 +1441,266 @@ input:checked+.slider:before {
     font-size: 11px;
     font-weight: 600;
     color: #9CA3AF;
+}
+
+/* System Config Modern Styles */
+.sys-financial-section {
+    background: white;
+    border-radius: 32px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.section-title-modern {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'Oswald', sans-serif;
+    color: #1f2937;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.section-badge-black {
+    background: #111827;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.section-title-modern {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.sys-financial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.sys-financial-card {
+    background: #f9fafb;
+    /* Gray 50 */
+    border-radius: 24px;
+    padding: 32px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.sys-financial-card:hover {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+}
+
+.sys-card-header {
+    margin-bottom: 24px;
+}
+
+.sys-key-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.sys-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.sys-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 16px;
+    margin-top: 16px;
+}
+
+.sys-value-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sys-label-tiny {
+    font-size: 9px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sys-value-huge {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    color: #111827;
+    line-height: 1.2;
+}
+
+.sys-meta-group {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sys-date-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.sys-desc-text {
+    font-size: 13px;
+    font-style: normal;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Icon Box Soft Shared Styles */
+.icon-box-soft {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-box-soft.green {
+    background: #ecfccb;
+    color: #4d7c0f;
+}
+
+.icon-box-soft.lime {
+    background: #f7fee7;
+    color: #65a30d;
+}
+
+.icon-box-soft.gray {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.icon-box-soft.blue {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.icon-box-soft.indigo {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.icon-box-soft.orange {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+/* Page Header Modern */
+.page-header-modern {
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.header-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: fit-content;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.header-badge-pill span {
+    padding-top: 1px;
+    /* Optical alignment */
+}
+
+.header-badge-pill.green {
+    background: #ecfccb;
+    color: #4d7c0f;
+}
+
+.header-badge-pill.blue {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.header-badge-pill.purple {
+    background: #f3e8ff;
+    color: #7e22ce;
+}
+
+.header-badge-pill.orange {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.header-badge-pill.gray {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.header-content-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.header-title-modern {
+    font-size: 30px;
+    font-weight: 800;
+    color: #111827;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.header-subtitle-modern {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 8px 0 0 0;
+    max-width: 700px;
+    line-height: 1.5;
+}
+
+.header-action-wrapper {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 8px;
+    /* Value alignment */
 }

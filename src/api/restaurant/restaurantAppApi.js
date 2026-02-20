@@ -64,6 +64,18 @@ const restaurantAppApi = {
     markOrderAsReady: (orderId) => {
         const url = `/api/v1/orders/${orderId}/restaurant/ready`;
         return axiosClient.patch(url);
+    },
+    getOrder: (orderId) => {
+        const url = `/api/v1/orders/${orderId}`;
+        return axiosClient.get(url);
+    },
+    updateCategories: (categories) => {
+        const url = "/api/v1/restaurants/my-restaurant/categories";
+        return axiosClient.put(url, categories);
+    },
+    deleteDish: (dishId) => {
+        const url = `/api/v1/dishes/${dishId}`;
+        return axiosClient.delete(url);
     }
 };
 

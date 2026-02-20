@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import Skeleton from "./Skeleton";
 import "./DataTable.css";
 /* Add this style implicitly in the component or via this file? 
    Wait, I should verify if DataTable.css exists. 
@@ -28,6 +29,7 @@ const DataTable = ({
     pageSize = 10,
     emptyMessage = "Không có dữ liệu",
     onRowClick,
+    loading = false, // new prop with default false
 }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -117,7 +119,22 @@ const DataTable = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {pageData.length === 0 ? (
+                        {loading ? (
+                            // Skeleton Loading Rows
+                            Array.from({ length: pageSize }).map((_, idx) => (
+                                <tr key={`skeleton-${idx}`}>
+                                    {columns.map((col, colIdx) => (
+                                        <td key={`sk-col-${colIdx}`}>
+                                            <Skeleton
+                                                variant="text"
+                                                height={20}
+                                                width={col.key === 'id' ? '40px' : '80%'}
+                                            />
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : pageData.length === 0 ? (
                             <tr>
                                 <td colSpan={columns.length} className="data-table-empty">
                                     {emptyMessage}

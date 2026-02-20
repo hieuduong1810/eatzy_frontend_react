@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Lock, Unlock, MapPin, Phone, Trash2, ExternalLink, Plus, Filter, Eye, Pencil, Star, Bike, CreditCard } from "lucide-react";
+import { Lock, Unlock, MapPin, Phone, Trash2, ExternalLink, Plus, Filter, Eye, Pencil, Star, Bike, CreditCard, Truck } from "lucide-react";
 import PageHeader from "../../../components/shared/PageHeader";
 import DataTable from "../../../components/shared/DataTable";
 import StatusBadge from "../../../components/shared/StatusBadge";
@@ -43,7 +43,7 @@ const DriversPage = () => {
                             alt=""
                             className="res-img"
                         />
-                        <div className={`res-status-dot ${row.status === 'AVAILABLE' ? 'bg-green-500' : 'bg-gray-400'}`} />
+                        <div className={`res-status-dot ${row.status !== 'AVAILABLE' ? 'closed' : ''}`} />
                     </div>
                     <div className="res-details">
                         <div className="res-name">
@@ -127,16 +127,15 @@ const DriversPage = () => {
         },
     ];
 
-    if (loading) {
-        return <div className="p-8 text-center">Đang tải dữ liệu...</div>;
-    }
-
     return (
         <div className="management-page">
             <PageHeader
-                title="Quản lý tài xế"
-                subtitle={`Tổng cộng ${drivers.length} tài xế trên hệ thống`}
-                actions={
+                title="DRIVER FLEET"
+                subtitle="Monitor active drivers, manage registrations and track delivery performance."
+                badge="OPERATION CONSOLE"
+                badgeColor="green"
+                BadgeIcon={Truck}
+                action={
                     <>
                         <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
                         <button className="btn btn-primary" onClick={() => setCreateModal(true)}>
@@ -149,6 +148,7 @@ const DriversPage = () => {
             <DataTable
                 columns={columns}
                 data={drivers}
+                loading={loading}
                 searchPlaceholder="Tìm kiếm tài xế..."
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
             />
@@ -210,5 +210,4 @@ const DriversPage = () => {
         </div>
     );
 };
-
 export default DriversPage;

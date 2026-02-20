@@ -127,52 +127,93 @@ const SystemConfigPage = () => {
     return (
         <div className="management-page">
             <PageHeader
-                title="System Configuration"
-                subtitle="Manage detailed system settings and parameters"
+                title="SYSTEM CONFIGURATION"
+                subtitle="Manage detailed system settings, commission rates, and operational parameters."
+                badge="SYSTEM CONSOLE"
+                badgeColor="green"
+                BadgeIcon={Settings}
             />
 
             <div className="system-config-container">
-                {Object.entries(groups).map(([groupName, groupItems]) => {
-                    if (groupItems.length === 0) return null;
-
-                    const Icon = groupIcons[groupName] || Settings;
-
-                    return (
-                        <div key={groupName} className="config-section">
+                {loading ? (
+                    // Skeleton for System Config
+                    [...Array(3)].map((_, i) => (
+                        <div key={i} className="config-section">
                             <div className="config-section-header">
-                                <div className="section-title-wrapper">
-                                    <Icon size={20} className="section-icon" />
-                                    <h3 className="section-title">{groupName}</h3>
+                                <div className="section-title-wrapper" style={{ gap: 12 }}>
+                                    <div style={{ width: 20, height: 20, background: '#e5e7eb', borderRadius: 4 }}></div>
+                                    <div style={{ width: 150, height: 24, background: '#e5e7eb', borderRadius: 4 }}></div>
                                 </div>
-                                <span className="section-badge">{groupItems.length} ITEMS</span>
                             </div>
-
                             <div className="config-grid">
-                                {groupItems.map(config => (
-                                    <div key={config.id} className="config-card" onClick={() => handleEdit(config)}>
+                                {[...Array(4)].map((_, j) => (
+                                    <div key={j} className="config-card" style={{ height: 140 }}>
                                         <div className="config-card-header">
-                                            <span className="config-key">{config.configKey}</span>
+                                            <div style={{ width: '60%', height: 16, background: '#e5e7eb', borderRadius: 4 }}></div>
                                         </div>
                                         <div className="config-card-body">
-                                            <h4 className="config-description">{configLabels[config.configKey] || config.description || config.configKey}</h4>
-                                            <div className="config-value-wrapper">
-                                                <span className="config-value-label">VALUE</span>
-                                                <span className="config-value">{formatValue(config.configKey, config.configValue)}</span>
-                                            </div>
-                                        </div>
-                                        <div className="config-card-footer">
-                                            <p className="config-note">{config.description || "No additional description"}</p>
-                                            <div className="config-meta">
-                                                <span>LAST UPDATE</span>
-                                                <span>{formatDate(config.updatedAt)}</span>
-                                            </div>
+                                            <div style={{ width: '80%', height: 20, background: '#e5e7eb', borderRadius: 4, marginBottom: 8 }}></div>
+                                            <div style={{ width: '40%', height: 16, background: '#e5e7eb', borderRadius: 4 }}></div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    );
-                })}
+                    ))
+                ) : (
+                    Object.entries(groups).map(([groupName, groupItems]) => {
+                        if (groupItems.length === 0) return null;
+
+                        const Icon = groupIcons[groupName] || Settings;
+
+                        // Determine color theme based on group
+                        let colorTheme = "gray";
+                        if (groupName.includes("FINANCIAL")) colorTheme = "green";
+                        else if (groupName.includes("DELIVERY")) colorTheme = "blue";
+                        else if (groupName.includes("SYSTEM")) colorTheme = "indigo";
+                        else if (groupName.includes("TIMEOUT")) colorTheme = "orange";
+
+                        return (
+                            <div key={groupName} className="config-section sys-financial-section">
+                                <div className="config-section-header">
+                                    <div className="section-title-wrapper">
+                                        <div className={`icon-box-soft ${colorTheme}`}>
+                                            <Icon size={20} />
+                                        </div>
+                                        <h3 className="section-title-modern">{groupName}</h3>
+                                    </div>
+                                    <span className="section-badge-black">{groupItems.length} ITEMS</span>
+                                </div>
+
+                                <div className="sys-financial-grid">
+                                    {groupItems.map(config => (
+                                        <div key={config.id} className="sys-financial-card" onClick={() => handleEdit(config)}>
+                                            <div className="sys-card-header">
+                                                <span className="sys-key-label">{config.configKey}</span>
+                                                <h4 className="sys-card-title">{configLabels[config.configKey] || config.configKey}</h4>
+                                            </div>
+
+                                            <div className="sys-card-body">
+                                                <div className="sys-value-group">
+                                                    <span className="sys-label-tiny">VALUE</span>
+                                                    <div className="sys-value-huge">{formatValue(config.configKey, config.configValue)}</div>
+                                                </div>
+                                                <div className="sys-meta-group">
+                                                    <span className="sys-label-tiny">LAST UPDATE</span>
+                                                    <div className="sys-date-text">{formatDate(config.updatedAt)}</div>
+                                                </div>
+                                            </div>
+
+                                            <div className="sys-card-footer">
+                                                <p className="sys-desc-text">{config.description}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
             </div>
 
             <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title={`Edit ${selectedConfig?.configKey}`} size="md">

@@ -61,7 +61,7 @@ const ReviewsPage = () => {
     // In real app, might fetch sorted data or sort locally by date
     // filteredReviews.sort(...)
 
-    if (loading) return <div className="p-8">Loading reviews...</div>;
+    if (loading) return <SkeletonReviewsPage />;
 
     return (
         <div className="resto-reviews-page">
@@ -97,7 +97,7 @@ const ReviewsPage = () => {
                         {ratingDist.map(({ stars, count, pct }) => (
                             <div key={stars} className="rating-bar-row">
                                 <div className="rating-star-label">
-                                    {stars} <Star size={10} style={{ marginLeft: 2, marginTop: 2 }} />
+                                    {stars} <Star size={10} style={{ marginTop: 2 }} />
                                 </div>
                                 <div className="rating-bar-bg">
                                     <div className="rating-bar-fill" style={{ width: `${pct}%` }}></div>
@@ -127,7 +127,7 @@ const ReviewsPage = () => {
                         </select>
                     </div>
 
-                    <div className="search-wrapper relative mb-6">
+                    <div className="search-wrapper">
                         <input
                             type="text"
                             className="reviews-search-input"
@@ -135,14 +135,18 @@ const ReviewsPage = () => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                        <div className="absolute left-3 top-3 text-gray-400">
+                        <div className="search-icon-wrapper">
                             <SearchIconSmall />
                         </div>
                     </div>
 
                     <div className="reviews-list">
                         {filteredReviews.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No reviews found.</div>
+                            <div className="reviews-empty-state">
+                                <div className="reviews-empty-icon">🤔</div>
+                                <div className="reviews-empty-title">No reviews found</div>
+                                <div className="reviews-empty-desc">Try adjusting your search or filters</div>
+                            </div>
                         ) : (
                             filteredReviews.map((review) => (
                                 <ReviewCard key={review.id} review={review} />
@@ -208,3 +212,50 @@ const SearchIconSmall = () => (
 );
 
 export default ReviewsPage;
+
+const SkeletonReviewsPage = () => {
+    return (
+        <div className="resto-reviews-page">
+            <div className="resto-reviews-header">
+                <div className="skeleton-block" style={{ width: 150, height: 24, marginBottom: 8, borderRadius: 6 }}></div>
+                <div className="skeleton-block" style={{ width: 300, height: 40, marginBottom: 8 }}></div>
+                <div className="skeleton-block" style={{ width: 200, height: 20 }}></div>
+            </div>
+
+            <div className="resto-reviews-content">
+                {/* Left Skeleton */}
+                <div className="skeleton-overview">
+                    <div className="skeleton-block" style={{ height: 150, borderRadius: 16 }}></div>
+                    <div className="skeleton-block" style={{ height: 200, borderRadius: 16 }}></div>
+                </div>
+
+                {/* Right Skeleton */}
+                <div className="skeleton-list-container">
+                    <div className="skeleton-list-header">
+                        <div className="skeleton-block" style={{ width: 200, height: 32 }}></div>
+                        <div className="skeleton-block" style={{ width: 120, height: 32, borderRadius: 8 }}></div>
+                    </div>
+
+                    <div className="skeleton-block" style={{ width: '100%', height: 48, borderRadius: 12, marginBottom: 24 }}></div>
+
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="skeleton-review-card">
+                            <div className="skeleton-review-header">
+                                <div className="skeleton-block skeleton-avatar"></div>
+                                <div className="skeleton-user-info">
+                                    <div className="skeleton-block" style={{ width: 120, height: 16 }}></div>
+                                    <div className="skeleton-block" style={{ width: 80, height: 12 }}></div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div className="skeleton-block skeleton-stars"></div>
+                                    <div className="skeleton-block skeleton-date" style={{ marginLeft: 'auto' }}></div>
+                                </div>
+                            </div>
+                            <div className="skeleton-block" style={{ height: 60, borderRadius: 12, marginLeft: 56 }}></div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Lock, Unlock, MapPin, Phone, Trash2, ExternalLink, Plus, Filter, Eye, Pencil, Star } from "lucide-react";
+import { Lock, Unlock, MapPin, Phone, Trash2, ExternalLink, Plus, Filter, Eye, Pencil, Star, Store } from "lucide-react";
 import PageHeader from "../../../components/shared/PageHeader";
 import DataTable from "../../../components/shared/DataTable";
 import StatusBadge from "../../../components/shared/StatusBadge";
@@ -43,7 +43,7 @@ const RestaurantsPage = () => {
                             alt=""
                             className="res-img"
                         />
-                        <div className="res-status-dot" />
+                        <div className={`res-status-dot ${row.status !== 'OPEN' ? 'closed' : ''}`} />
                     </div>
                     <div className="res-details">
                         <div className="res-name">
@@ -127,16 +127,15 @@ const RestaurantsPage = () => {
         },
     ];
 
-    if (loading) {
-        return <div className="p-8 text-center">Đang tải dữ liệu...</div>;
-    }
-
     return (
         <div className="management-page">
             <PageHeader
-                title="Quản lý cửa hàng"
-                subtitle={`Tổng cộng ${restaurants.length} cửa hàng trên hệ thống`}
-                actions={
+                title="RESTAURANT MANAGEMENT"
+                subtitle="Manage partners, view menus, track performance and commission rates."
+                badge="OPERATION CONSOLE"
+                badgeColor="green"
+                BadgeIcon={Store}
+                action={
                     <>
                         <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
                         <button className="btn btn-primary" onClick={() => setEditModal({ open: true, data: null })}>
@@ -149,6 +148,7 @@ const RestaurantsPage = () => {
             <DataTable
                 columns={columns}
                 data={restaurants}
+                loading={loading}
                 searchPlaceholder="Tìm kiếm cửa hàng..."
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
             />
@@ -170,5 +170,4 @@ const RestaurantsPage = () => {
         </div>
     );
 };
-
 export default RestaurantsPage;

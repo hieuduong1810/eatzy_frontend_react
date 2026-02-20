@@ -72,8 +72,13 @@ const ReportsOrdersView = ({ startDate, endDate }) => {
 
     if (loading) {
         return (
-            <div className="rov-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-                <Loader2 className="animate-spin" size={32} />
+            <div className="rp-loading-container">
+                <div className="rp-custom-loader">
+                    <div className="rp-loader-track"></div>
+                    <div className="rp-loader-spinner"></div>
+                    <div className="rp-loader-center"></div>
+                </div>
+                <p className="rp-loading-text">Đang phân tích dữ liệu...</p>
             </div>
         );
     }

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { ShoppingBag, DollarSign, TrendingUp, Users, BarChart3, Calendar, ChevronDown, Download, Pizza, Star, CheckCircle, XCircle, Search, ThumbsUp, ThumbsDown, MessageCircle, ArrowRight, Loader2 } from "lucide-react";
+import { ShoppingBag, DollarSign, TrendingUp, Users, BarChart3, Calendar, ChevronDown, Download, Pizza, Star, CheckCircle, XCircle, Search, ThumbsUp, ThumbsDown, MessageCircle, ArrowRight, Loader2, Percent, Tag } from "lucide-react";
 // import { mockOrderHistory } from "../data/mockRestaurantData"; // Removed mock data import
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import "../RestaurantApp.css";
 import "./ReportsPage.css";
+
 import HistoryPage from "./HistoryPage";
 import ReportsOrdersView from "./ReportsOrdersView";
 import ReportsMenuView from "./ReportsMenuView";
@@ -69,10 +71,15 @@ const ReportsPage = () => {
 
     const [overviewData, setOverviewData] = useState({
         totalRevenue: 0,
+        netRevenue: 0,
         totalOrders: 0,
         avgOrderValue: 0,
         completedOrders: 0,
+        cancelledOrders: 0,
         completionRate: 0,
+        averageRating: 0,
+        totalReviews: 0,
+        topPerformingDish: "",
         dailyData: []
     });
     const [revenueData, setRevenueData] = useState({
@@ -97,14 +104,20 @@ const ReportsPage = () => {
                     // Map API data to component state
                     setOverviewData({
                         totalRevenue: data.totalRevenue || 0,
+                        netRevenue: data.netRevenue || 0,
                         totalOrders: data.totalOrders || 0,
                         avgOrderValue: data.averageOrderValue || 0,
                         completedOrders: data.completedOrders || 0,
+                        cancelledOrders: data.cancelledOrders || 0,
+                        averageRating: data.averageRating || 0,
+                        totalReviews: data.totalReviews || 0,
+                        topPerformingDish: data.topPerformingDish || "",
                         // Calculate completion rate if not provided directly, or use cancelRate
                         completionRate: data.totalOrders > 0 ? ((data.completedOrders / data.totalOrders) * 100).toFixed(1) : 0,
                         dailyData: Array.isArray(data.revenueChart) ? data.revenueChart.map(d => ({
                             ...d,
-                            revenue: d.foodRevenue // Mapping foodRevenue to revenue for chart compatibility
+                            foodRevenue: d.foodRevenue, // Gross
+                            netRevenue: d.netRevenue // Net (Real)
                         })) : []
                     });
                 } else if (activeTab === "revenue") {
@@ -116,14 +129,17 @@ const ReportsPage = () => {
                     const totalRev = dailyList.reduce((sum, item) => sum + (item.foodRevenue || 0), 0);
                     const totalComm = dailyList.reduce((sum, item) => sum + (item.commissionAmount || 0), 0);
                     const totalDisc = dailyList.reduce((sum, item) => sum + (item.discountAmount || 0), 0);
+                    const totalNet = dailyList.reduce((sum, item) => sum + (item.netRevenue || 0), 0);
 
                     setRevenueData({
                         totalRevenue: totalRev,
                         totalCommission: totalComm,
                         totalDiscount: totalDisc,
+                        totalNetRevenue: totalNet,
                         dailyData: dailyList.map(d => ({
                             ...d,
-                            revenue: d.foodRevenue // Mapping for chart
+                            foodRevenue: d.foodRevenue,
+                            netRevenue: d.netRevenue || (d.foodRevenue - (d.commissionAmount || 0) - (d.discountAmount || 0)) // Fallback if needed, though API has it
                         }))
                     });
                 }
@@ -213,21 +229,67 @@ const ReportsPage = () => {
             </div>
 
             {loading && (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '48px' }}>
-                    <Loader2 className="animate-spin" size={32} />
+                <div className="rp-loading-container">
+                    <div className="rp-custom-loader">
+                        <div className="rp-loader-track"></div>
+                        <div className="rp-loader-spinner"></div>
+                        <div className="rp-loader-center"></div>
+                    </div>
+                    <p className="rp-loading-text">Đang phân tích dữ liệu...</p>
                 </div>
             )}
 
             {!loading && activeTab === "overview" && (
                 <>
-                    {/* Metrics Grid */}
-                    <div className="rp-metrics-grid">
-                        {metrics.map((m, i) => (
-                            <div key={i} className="rp-card" style={{ borderColor: i === 3 ? 'transparent' : '', background: i === 3 ? '#F3F4F6' : '' }}>
-                                <div className="rp-metric-label">{m.label.toUpperCase()} <m.icon size={16} /></div>
-                                <div className="rp-metric-value" style={{ color: m.color }}>{m.value}</div>
+                    {/* Metrics Grid - New Design */}
+                    <div className="rp-metrics-grid-new">
+                        {/* Card 1: Total Revenue (White) */}
+                        <div className="rp-metric-card">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">TỔNG DOANH THU</span>
+                                <div className="rp-icon-bg"><DollarSign size={40} color="#ecfccb" /></div>
                             </div>
-                        ))}
+                            <div className="rp-card-value">{formatVnd(overviewData.totalRevenue)}</div>
+                            <div className="rp-card-subtext">
+                                <span className="text-green-600">↗ +12%</span> Doanh thu gộp
+                            </div>
+                        </div>
+
+                        {/* Card 2: Net Revenue (White) */}
+                        <div className="rp-metric-card">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">DOANH THU THỰC</span>
+                                <div className="rp-icon-bg"><TrendingUp size={40} color="#dbeafe" /></div>
+                            </div>
+                            <div className="rp-card-value">{formatVnd(overviewData.netRevenue)}</div>
+                            <div className="rp-card-subtext">
+                                <span className="text-green-600">↗ +8%</span> Sau hoa hồng
+                            </div>
+                        </div>
+
+                        {/* Card 3: Total Orders (White) */}
+                        <div className="rp-metric-card">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">TỔNG ĐƠN HÀNG</span>
+                                <div className="rp-icon-bg"><ShoppingBag size={40} color="#f3e8ff" /></div>
+                            </div>
+                            <div className="rp-card-value">{overviewData.totalOrders}</div>
+                            <div className="rp-card-subtext">
+                                1 hoàn thành
+                            </div>
+                        </div>
+
+                        {/* Card 4: Avg Rating (Black) */}
+                        <div className="rp-metric-card dark">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">ĐÁNH GIÁ TB</span>
+                                <div className="rp-icon-bg dark-icon"><Star size={40} color="#3f3f46" /></div>
+                            </div>
+                            <div className="rp-card-value text-green">{overviewData.averageRating}</div>
+                            <div className="rp-card-subtext" style={{ color: '#a1a1aa' }}>
+                                {overviewData.totalReviews} đánh giá
+                            </div>
+                        </div>
                     </div>
 
                     {/* Best Seller Banner */}
@@ -237,65 +299,95 @@ const ReportsPage = () => {
                         </div>
                         <div>
                             <div style={{ fontSize: '11px', fontWeight: 800, color: '#4d7c0f', background: '#d9f99d', width: 'fit-content', padding: '2px 8px', borderRadius: '6px', marginBottom: '8px' }}>BEST SELLER</div>
-                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#1a2e05', marginBottom: '4px' }}>Cơm Gà Nướng</h3>
+                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#1a2e05', marginBottom: '4px' }}>{overviewData.topPerformingDish}</h3>
                             <p style={{ color: '#365314', fontSize: '14px', maxWidth: '600px' }}>Món ăn bán chạy nhất trong tháng này, chiếm tỷ lệ cao nhất trong tổng doanh thu của nhà hàng.</p>
                         </div>
                     </div>
 
                     {/* Charts & Status Section */}
                     <div className="rp-grid-2-1">
-                        {/* Revenue Trends Chart */}
-                        <div className="rp-card">
-                            <div className="rp-metric-label" style={{ marginBottom: '0' }}>Xu Hướng Doanh Thu</div>
-                            <div className="rp-chart-container">
-                                {(() => {
-                                    // Simple SVG Line Chart Logic
-                                    const dataPoints = overviewData.dailyData.map(d => d.revenue);
-                                    const max = Math.max(...dataPoints, 100000); // min max to avoid flat line at 0
-                                    const width = 600; // viewBox width
-                                    const height = 250; // viewBox height
-                                    const padding = 20;
-
-                                    const getX = (i) => (i / (dataPoints.length - 1 || 1)) * (width - padding * 2) + padding;
-                                    const getY = (val) => height - ((val / max) * (height - padding * 2)) - padding;
-
-                                    const pathD = dataPoints.map((val, i) =>
-                                        `${i === 0 ? 'M' : 'L'} ${getX(i)} ${getY(val)}`
-                                    ).join(' ');
-
-                                    return (
-                                        <svg viewBox={`0 0 ${width} ${height}`} className="rp-chart-svg" preserveAspectRatio="none">
-                                            {/* Grid Lines */}
-                                            {[0, 0.33, 0.66, 1].map(p => (
-                                                <g key={p}>
-                                                    <line
-                                                        x1="30" y1={getY(max * p)}
-                                                        x2={width} y2={getY(max * p)}
-                                                        className="rp-chart-grid-line"
-                                                    />
-                                                    <text x="0" y={getY(max * p) + 4} className="rp-chart-axis-text">
-                                                        {Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(max * p)}
-                                                    </text>
-                                                </g>
-                                            ))}
-
-                                            {/* The Line */}
-                                            <path d={pathD} className="rp-chart-line" />
-
-                                            {/* X Axis Labels */}
-                                            {overviewData.dailyData.map((d, i) => {
-                                                if (i % 2 !== 0 && i !== overviewData.dailyData.length - 1) return null; // Show every 2nd label
-                                                const dateParts = d.date.split('-');
-                                                const label = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}` : d.date;
-                                                return (
-                                                    <text key={i} x={getX(i)} y={height + 15} textAnchor="middle" className="rp-chart-axis-text">
-                                                        {label}
-                                                    </text>
-                                                );
-                                            })}
-                                        </svg>
-                                    );
-                                })()}
+                        <div className="rp-card" style={{ padding: '24px', height: '400px' }}>
+                            <div className="rp-metric-label" style={{ marginBottom: '24px', fontSize: '18px', color: '#111827' }}>Xu Hướng Doanh Thu</div>
+                            <div style={{ width: '100%', height: '300px' }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart
+                                        data={overviewData.dailyData}
+                                        margin={{
+                                            top: 10,
+                                            right: 30,
+                                            left: 0,
+                                            bottom: 0,
+                                        }}
+                                    >
+                                        <defs>
+                                            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#84cc16" stopOpacity={0.1} />
+                                                <stop offset="95%" stopColor="#84cc16" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                                        <XAxis
+                                            dataKey="date"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: '#9ca3af', fontSize: 12 }}
+                                            tickFormatter={(date) => {
+                                                const d = new Date(date);
+                                                return `${d.getDate() < 10 ? '0' + d.getDate() : d.getDate()}-${d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1}`;
+                                            }}
+                                            dy={10}
+                                        />
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: '#9ca3af', fontSize: 12 }}
+                                            tickFormatter={(val) => {
+                                                if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
+                                                if (val >= 1000) return `${(val / 1000).toFixed(0)}K`;
+                                                return val;
+                                            }}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: '#fff',
+                                                borderRadius: '12px',
+                                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                                                border: 'none',
+                                                padding: '12px'
+                                            }}
+                                            formatter={(value, name) => [formatVnd(value), name === 'foodRevenue' ? 'Doanh thu món' : 'Doanh thu thực']}
+                                            labelFormatter={(label) => {
+                                                const d = new Date(label);
+                                                return d.toLocaleDateString("vi-VN");
+                                            }}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="netRevenue" // Real Revenue (Solid Green)
+                                            stackId="2"
+                                            stroke="#84cc16"
+                                            strokeWidth={3}
+                                            fill="url(#colorRevenue)"
+                                            activeDot={{ r: 6, fill: "#fff", stroke: "#84cc16", strokeWidth: 2 }}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            // Mocking same data for dashed line effect from screenshot if needed, or better, calculate a "Potential" vs "Real"
+                                            // For now just one main line as per user request "like this" but user screenshot shows dashed line too.
+                                            // The dashed line in screenshot seems to be a projection or a comparison. 
+                                            // I'll add a second area if I can derive data, but for now let's stick to the main solid green line which matches the "Net" or "Real" revenue.
+                                            // Wait, the screenshot shows a dashed BLACK line with a higher peak, and a solid GREEN line with a lower peak.
+                                            // Dashed might be "Total Revenue" vs "Net Revenue".
+                                            // Let's verify data keys.
+                                            // I will map `revenue` (foodRevenue) to the Dashed line (Gross), and `revenue * 0.8` to Solid Green (Net).
+                                            dataKey="foodRevenue" // Total Revenue (Dashed Black)
+                                            stroke="#000"
+                                            strokeDasharray="5 5"
+                                            fill="none"
+                                            dot={false}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
                             </div>
                         </div>
 
@@ -304,58 +396,63 @@ const ReportsPage = () => {
                             <div className="rp-metric-label" style={{ marginBottom: '24px' }}>Tình Trạng Đơn Hàng</div>
 
                             {(() => {
-                                const total = overviewData.totalOrders || 1;
                                 const completed = overviewData.completedOrders || 0;
-                                const cancelled = total - completed; // Simplification as API might not allow cancelled breakdown yet
+                                const cancelled = overviewData.cancelledOrders || 0;
+                                const total = completed + cancelled;
 
-                                const pctCompleted = overviewData.completionRate;
-                                const pctCancelled = (100 - pctCompleted).toFixed(1);
+                                const pctCompleted = total > 0 ? (completed / total) * 100 : 0;
+                                const pctCancelled = total > 0 ? (cancelled / total) * 100 : 0;
 
                                 return (
-                                    <div>
-                                        {/* Completed Row */}
-                                        <div className="rp-status-group">
-                                            <div className="rp-status-row">
-                                                <div className="rp-status-left">
-                                                    <div className="rp-status-icon-box success"><CheckCircle size={20} strokeWidth={2.5} /></div>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <div>
+                                            {/* Completed Row */}
+                                            <div className="rp-status-row" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div className="rp-status-left" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                    <div className="rp-status-icon-box success" style={{ background: '#dcfce7', color: '#16a34a', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <CheckCircle size={20} strokeWidth={2.5} />
+                                                    </div>
                                                     <div className="rp-status-info">
-                                                        <h4>Hoàn thành</h4>
-                                                        <p>{completed} đơn</p>
+                                                        <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#111827' }}>Hoàn thành</h4>
+                                                        <p style={{ fontSize: '13px', margin: 0, color: '#6b7280' }}>{completed} đơn</p>
                                                     </div>
                                                 </div>
-                                                <div className="rp-status-pct success">{pctCompleted}%</div>
+                                                <div className="rp-status-pct success" style={{ fontSize: '18px', fontFamily: 'Antonio, sans-serif', fontWeight: '800', color: '#16a34a' }}>{Math.round(pctCompleted)}%</div>
                                             </div>
-                                            <div className="rp-progress-bar-single">
-                                                <div className="rp-progress-fill success" style={{ width: `${pctCompleted}%` }}></div>
-                                            </div>
-                                        </div>
 
-                                        {/* Cancelled Row */}
-                                        <div className="rp-status-group">
-                                            <div className="rp-status-row">
-                                                <div className="rp-status-left">
-                                                    <div className="rp-status-icon-box error"><XCircle size={20} strokeWidth={2.5} /></div>
+                                            {/* Cancelled Row */}
+                                            <div className="rp-status-row" style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div className="rp-status-left" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                                    <div className="rp-status-icon-box error" style={{ background: '#fee2e2', color: '#ef4444', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <XCircle size={20} strokeWidth={2.5} />
+                                                    </div>
                                                     <div className="rp-status-info">
-                                                        <h4>Đã hủy/Khác</h4>
-                                                        <p>{cancelled} đơn</p>
+                                                        <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#111827' }}>Đã hủy</h4>
+                                                        <p style={{ fontSize: '13px', margin: 0, color: '#6b7280' }}>{cancelled} đơn</p>
                                                     </div>
                                                 </div>
-                                                <div className="rp-status-pct error">{pctCancelled}%</div>
+                                                <div className="rp-status-pct error" style={{ fontSize: '18px', fontFamily: 'Antonio, sans-serif', fontWeight: '800', color: '#ef4444' }}>{Math.round(pctCancelled)}%</div>
                                             </div>
-                                            <div className="rp-progress-bar-single">
-                                                <div className="rp-progress-fill error" style={{ width: `${pctCancelled}%` }}></div>
+
+                                            {/* Single Progress Bar */}
+                                            <div className="rp-progress-bar-single" style={{ height: '12px', background: '#f3f4f6', borderRadius: '6px', overflow: 'hidden', display: 'flex', width: '100%' }}>
+                                                <div style={{ width: `${pctCompleted}%`, height: '100%', background: '#16a34a', borderRadius: '6px 0 0 6px' }}></div>
+                                                <div style={{ width: `${pctCancelled}%`, height: '100%', background: '#ef4444', borderRadius: '0 6px 6px 0' }}></div>
                                             </div>
                                         </div>
 
                                         {/* Footer Stats */}
-                                        <div className="rp-stat-footer">
-                                            <div className="rp-stat-item">
-                                                <div className="rp-stat-label">GIÁ TRỊ TB</div>
-                                                <div className="rp-stat-val">{Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(overviewData.avgOrderValue)}</div>
+                                        {/* Footer Stats */}
+                                        <div className="rp-stat-footer" style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
+                                            <div className="rp-stat-item" style={{ textAlign: 'center' }}>
+                                                <div className="rp-stat-label" style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase' }}>GIÁ TRỊ TB</div>
+                                                <div className="rp-stat-val" style={{ fontSize: '20px', fontWeight: '800', fontFamily: 'Antonio, sans-serif', color: '#111827' }}>
+                                                    {Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(overviewData.avgOrderValue)}
+                                                </div>
                                             </div>
-                                            <div className="rp-stat-item">
-                                                <div className="rp-stat-label">ĐÁNH GIÁ</div>
-                                                <div className="rp-stat-val">4.8</div>
+                                            <div className="rp-stat-item" style={{ textAlign: 'center' }}>
+                                                <div className="rp-stat-label" style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase' }}>ĐÁNH GIÁ</div>
+                                                <div className="rp-stat-val" style={{ fontSize: '20px', fontWeight: '800', fontFamily: 'Antonio, sans-serif', color: '#111827' }}>4.8</div>
                                             </div>
                                         </div>
                                     </div>
@@ -369,67 +466,117 @@ const ReportsPage = () => {
             {!loading && activeTab === "revenue" && (
                 <>
                     {/* Revenue Metrics */}
-                    <div className="rp-rev-metrics">
-                        <div className="rp-card">
-                            <div className="rp-metric-label">TỔNG DOANH THU <DollarSign size={16} /></div>
-                            <div className="rp-metric-value">{formatVnd(revenueData.totalRevenue)}</div>
+                    {/* Revenue Metrics */}
+                    {/* Revenue Metrics - New Design */}
+                    <div className="rp-metrics-grid-new">
+                        {/* Card 1: Total Revenue (White) */}
+                        <div className="rp-metric-card">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">TỔNG DOANH THU</span>
+                                <div className="rp-icon-bg"><DollarSign size={40} color="#16a34a" /></div>
+                            </div>
+                            <div className="rp-card-value text-green">{formatVnd(revenueData.totalRevenue)}</div>
+                            <div className="rp-card-subtext">
+                                <span className="text-green-600">↗ +12%</span> Doanh thu gộp
+                            </div>
                         </div>
-                        <div className="rp-card">
-                            <div className="rp-metric-label">HOA HỒNG PLATFORM</div>
-                            <div className="rp-metric-value">{formatVnd(revenueData.totalCommission)}</div>
+
+                        {/* Card 2: Net Revenue (White) */}
+                        <div className="rp-metric-card">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">DOANH THU THỰC</span>
+                                <div className="rp-icon-bg"><TrendingUp size={40} color="#2563eb" /></div>
+                            </div>
+                            <div className="rp-card-value">{formatVnd(revenueData.totalNetRevenue)}</div>
+                            <div className="rp-card-subtext">
+                                <span className="text-green-600">↗ +8%</span> Sau hoa hồng
+                            </div>
                         </div>
-                        <div className="rp-card">
-                            <div className="rp-metric-label">GIẢM GIÁ</div>
-                            <div className="rp-metric-value">{formatVnd(revenueData.totalDiscount)}</div>
+
+                        {/* Card 3: Commission (White) */}
+                        <div className="rp-metric-card">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">HOA HỒNG PLATFORM</span>
+                                <div className="rp-icon-bg"><Percent size={40} color="#d97706" /></div>
+                            </div>
+                            <div className="rp-card-value text-blue">{formatVnd(revenueData.totalCommission)}</div>
+                            <div className="rp-card-subtext">
+                                {((revenueData.totalCommission / (revenueData.totalRevenue || 1)) * 100).toFixed(1)}% tổng doanh thu
+                            </div>
+                        </div>
+
+                        {/* Card 4: Discount (Dark) */}
+                        <div className="rp-metric-card dark">
+                            <div className="rp-card-header">
+                                <span className="rp-card-title">GIẢM GIÁ</span>
+                                <div className="rp-icon-bg dark-icon"><Tag size={40} color="#db2777" /></div>
+                            </div>
+                            <div className="rp-card-value text-red">{formatVnd(revenueData.totalDiscount)}</div>
+                            <div className="rp-card-subtext" style={{ color: '#a1a1aa' }}>
+                                Đã áp dụng cho khách hàng
+                            </div>
                         </div>
                     </div>
 
-                    {/* Full Width Chart */}
+                    {/* Revenue Chart */}
                     <div className="rp-card" style={{ marginBottom: '24px' }}>
-                        <div className="rp-metric-label" style={{ marginBottom: '0' }}>Xu Hướng Doanh Thu</div>
-                        <div className="rp-chart-container">
-                            {(() => {
-                                const dataPoints = revenueData.dailyData.map(d => d.revenue);
-                                const max = Math.max(...dataPoints, 100000);
-                                const width = 1000; // Wider for full width
-                                const height = 250;
-                                const padding = 20;
-
-                                const getX = (i) => (i / (dataPoints.length - 1 || 1)) * (width - padding * 2) + padding;
-                                const getY = (val) => height - ((val / max) * (height - padding * 2)) - padding;
-
-                                const pathD = dataPoints.map((val, i) =>
-                                    `${i === 0 ? 'M' : 'L'} ${getX(i)} ${getY(val)}`
-                                ).join(' ');
-
-                                return (
-                                    <svg viewBox={`0 0 ${width} ${height}`} className="rp-chart-svg" preserveAspectRatio="none">
-                                        {[0, 0.33, 0.66, 1].map(p => (
-                                            <g key={p}>
-                                                <line
-                                                    x1="30" y1={getY(max * p)}
-                                                    x2={width} y2={getY(max * p)}
-                                                    className="rp-chart-grid-line"
-                                                />
-                                                <text x="0" y={getY(max * p) + 4} className="rp-chart-axis-text">
-                                                    {Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(max * p)}
-                                                </text>
-                                            </g>
-                                        ))}
-                                        <path d={pathD} className="rp-chart-line" />
-                                        {revenueData.dailyData.map((d, i) => {
-                                            if (i % 2 !== 0 && i !== revenueData.dailyData.length - 1) return null;
-                                            const dateParts = d.date.split('-');
-                                            const label = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}` : d.date;
-                                            return (
-                                                <text key={i} x={getX(i)} y={height + 15} textAnchor="middle" className="rp-chart-axis-text">
-                                                    {label}
-                                                </text>
-                                            );
-                                        })}
-                                    </svg>
-                                )
-                            })()}
+                        <div className="rp-card-header" style={{ marginBottom: '24px' }}>
+                            <div className="rp-card-title">XU HƯỚNG DOANH THU</div>
+                        </div>
+                        <div style={{ height: '300px', width: '100%' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={revenueData.dailyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#84cc16" stopOpacity={0.1} />
+                                            <stop offset="95%" stopColor="#84cc16" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                                    <XAxis
+                                        dataKey="date"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#9ca3af', fontSize: 12 }}
+                                        dy={10}
+                                        tickFormatter={(str) => {
+                                            const parts = str.split('-');
+                                            if (parts.length === 3) return `${parts[2]}/${parts[1]}`;
+                                            return str;
+                                        }}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#9ca3af', fontSize: 12 }}
+                                        tickFormatter={(val) => Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(val)}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                        formatter={(value, name) => [formatVnd(value), name === 'foodRevenue' ? 'Doanh thu món' : 'Doanh thu thực']}
+                                        labelFormatter={(label) => `Ngày ${label}`}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="netRevenue" // Real Revenue (Green)
+                                        stackId="2"
+                                        stroke="#84cc16"
+                                        strokeWidth={3}
+                                        fillOpacity={1}
+                                        fill="url(#colorRevenue)"
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="foodRevenue" // Dish Revenue (Dashed Black)
+                                        stackId="1"
+                                        stroke="#000"
+                                        strokeDasharray="5 5"
+                                        fill="none"
+                                        strokeWidth={2}
+                                        dot={false}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
 
@@ -450,10 +597,10 @@ const ReportsPage = () => {
                                 {revenueData.dailyData.map((d, i) => (
                                     <tr key={i}>
                                         <td>{d.date}/2026</td>
-                                        <td className="text-right">{formatVnd(d.revenue)}</td>
-                                        <td className="text-right">{formatVnd(0)}</td>
-                                        <td className="text-right">{formatVnd(0)}</td>
-                                        <td className="text-right text-green">{formatVnd(d.revenue)}</td>
+                                        <td className="text-right">{formatVnd(d.foodRevenue)}</td>
+                                        <td className="text-right">{formatVnd(d.commissionAmount)}</td>
+                                        <td className="text-right">{formatVnd(d.discountAmount)}</td>
+                                        <td className="text-right text-green">{formatVnd(d.netRevenue)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -475,3 +622,63 @@ const ReportsPage = () => {
 };
 
 export default ReportsPage;
+
+const SkeletonReportsPage = () => {
+    return (
+        <div className="resto-page">
+            <div className="rp-skeleton-header">
+                <div className="rp-skeleton-title-group">
+                    <div className="skeleton-block" style={{ width: 150, height: 24 }}></div>
+                    <div className="skeleton-block" style={{ width: 300, height: 48 }}></div>
+                </div>
+                <div className="rp-skeleton-controls">
+                    <div className="skeleton-block" style={{ width: 180, height: 40 }}></div>
+                    <div className="skeleton-block" style={{ width: 140, height: 40 }}></div>
+                </div>
+            </div>
+
+            <div className="rp-skeleton-tabs">
+                {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="skeleton-block rp-skeleton-tab"></div>
+                ))}
+            </div>
+
+            <div className="rp-skeleton-grid">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="rp-skeleton-card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div className="skeleton-block" style={{ width: 100, height: 16 }}></div>
+                            <div className="skeleton-block" style={{ width: 40, height: 40, borderRadius: 12 }}></div>
+                        </div>
+                        <div className="skeleton-block" style={{ width: 120, height: 32 }}></div>
+                        <div className="skeleton-block" style={{ width: 80, height: 16 }}></div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="rp-grid-2-1">
+                <div className="rp-skeleton-chart">
+                    <div className="skeleton-block" style={{ width: 200, height: 24, marginBottom: 24 }}></div>
+                    <div className="skeleton-block" style={{ width: '100%', height: 300, borderRadius: 12 }}></div>
+                </div>
+                <div className="rp-skeleton-chart">
+                    <div className="skeleton-block" style={{ width: 150, height: 24, marginBottom: 24 }}></div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                        {[1, 2, 3].map(i => (
+                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: 12 }}>
+                                    <div className="skeleton-block" style={{ width: 40, height: 40, borderRadius: 99 }}></div>
+                                    <div>
+                                        <div className="skeleton-block" style={{ width: 100, height: 16, marginBottom: 4 }}></div>
+                                        <div className="skeleton-block" style={{ width: 60, height: 12 }}></div>
+                                    </div>
+                                </div>
+                                <div className="skeleton-block" style={{ width: 40, height: 24 }}></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};

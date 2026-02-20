@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Star, Check, ThumbsUp, ThumbsDown, Clock, Reply, Loader2 } from "lucide-react";
+import { Star, Check, ThumbsUp, ThumbsDown, Clock, Reply, Loader2, MessageSquare } from "lucide-react";
 // import { mockReviews } from "../data/mockRestaurantData"; // Removed
 import restaurantAppApi from "../../../api/restaurant/restaurantAppApi";
 import "./ReportsReviewsView.css";
@@ -84,8 +84,13 @@ const ReportsReviewsView = () => {
 
     if (loading) {
         return (
-            <div className="rrv-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-                <Loader2 className="animate-spin" size={32} />
+            <div className="rp-loading-container">
+                <div className="rp-custom-loader">
+                    <div className="rp-loader-track"></div>
+                    <div className="rp-loader-spinner"></div>
+                    <div className="rp-loader-center"></div>
+                </div>
+                <p className="rp-loading-text">Đang phân tích dữ liệu...</p>
             </div>
         );
     }
@@ -112,7 +117,7 @@ const ReportsReviewsView = () => {
                         <div className="rrv-icon-badge green"><Check size={14} /></div>
                     </div>
                     <div className="rrv-value">{stats.responseRate}%</div>
-                    <div className="rrv-progress-bg" style={{ marginTop: 'auto', height: '6px' }}>
+                    <div className="rrv-progress-bg" style={{ marginTop: 'auto', height: '10px', flex: 'none' }}>
                         <div className="rrv-progress-fill" style={{ width: `${stats.responseRate}%` }}></div>
                     </div>
                 </div>
@@ -150,21 +155,34 @@ const ReportsReviewsView = () => {
             {/* --- Rating Distribution --- */}
             <div className="rrv-dist-section">
                 <h3 className="rrv-section-title">Phân Bố Đánh Giá</h3>
-                {[5, 4, 3, 2, 1].map(star => (
-                    <div key={star} className="rrv-dist-row">
-                        <div className="rrv-star-label">
-                            {star} <Star className="rrv-star-icon" fill="#fbbf24" stroke="none" />
-                        </div>
-                        <div className="rrv-progress-bg">
-                            <div
-                                className="rrv-progress-fill"
-                                style={{ width: `${(distribution[star] / (stats.total || 1)) * 100}%`, opacity: distribution[star] > 0 ? 1 : 0 }}
-                            ></div>
-                        </div>
-                        <div className="rrv-count-label">{distribution[star]}</div>
-                        <div className="rrv-percent-label">{Math.round((distribution[star] / (stats.total || 1)) * 100)}%</div>
-                    </div>
-                ))}
+                {(() => {
+                    // Calculate totals and max for display
+                    const distValues = Object.values(distribution);
+                    const realTotal = distValues.reduce((a, b) => a + b, 0) || 1;
+                    const maxCount = Math.max(...distValues) || 1;
+
+                    return [5, 4, 3, 2, 1].map(star => {
+                        const count = distribution[star];
+                        const widthPct = (count / maxCount) * 100;
+                        const textPct = Math.round((count / realTotal) * 100);
+
+                        return (
+                            <div key={star} className="rrv-dist-row">
+                                <div className="rrv-star-label">
+                                    {star} <Star className="rrv-star-icon" fill="#fbbf24" stroke="none" />
+                                </div>
+                                <div className="rrv-progress-bg">
+                                    <div
+                                        className="rrv-progress-fill"
+                                        style={{ width: `${widthPct}%`, opacity: count > 0 ? 1 : 0 }}
+                                    ></div>
+                                </div>
+                                <div className="rrv-count-label">{count}</div>
+                                <div className="rrv-percent-label">{textPct}%</div>
+                            </div>
+                        );
+                    });
+                })()}
             </div>
 
             {/* --- Reviews List --- */}
@@ -180,41 +198,48 @@ const ReportsReviewsView = () => {
                 </div>
 
                 <div className="rrv-list">
-                    {limitedReviews.map(review => (
-                        <div key={review.id} className="rrv-review-card">
-                            <div className="rrv-avatar">
-                                {review.customerName ? review.customerName.charAt(0).toUpperCase() : 'C'}
-                            </div>
-                            <div className="rrv-review-content">
-                                <div className="rrv-review-top">
-                                    <div>
-                                        <span className="rrv-user-name">{review.customerName || 'Customer'}</span>
-                                        <span className="rrv-review-date">{new Date(review.createdAt).toLocaleDateString('vi-VN')}</span>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <div className="rrv-review-stars">
-                                            {Array(5).fill(0).map((_, i) => (
-                                                <Star key={i} size={12} fill={i < review.rating ? "#fbbf24" : "none"} stroke={i < review.rating ? "none" : "#d1d5db"} />
-                                            ))}
-                                        </div>
-                                        <div className="rrv-review-id">#{review.orderId}</div>
-                                    </div>
-                                </div>
-
-                                <div className="rrv-comment">"{review.comment}"</div>
-
-                                <div className="rrv-tags">
-                                    {getTags(review.id).map((tag, i) => (
-                                        <span key={i} className="rrv-tag">{tag}</span>
-                                    ))}
-                                </div>
-
-                                <button className="rrv-reply-link">
-                                    <Reply size={14} /> Phản hồi đánh giá
-                                </button>
-                            </div>
+                    {limitedReviews.length === 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 0', color: '#9ca3af' }}>
+                            <MessageSquare size={40} strokeWidth={1.5} style={{ marginBottom: '12px', opacity: 0.5 }} />
+                            <div style={{ fontSize: '14px' }}>Không tìm thấy đánh giá phù hợp</div>
                         </div>
-                    ))}
+                    ) : (
+                        limitedReviews.map(review => (
+                            <div key={review.id} className="rrv-review-card">
+                                <div className="rrv-avatar">
+                                    {review.customerName ? review.customerName.charAt(0).toUpperCase() : 'C'}
+                                </div>
+                                <div className="rrv-review-content">
+                                    <div className="rrv-review-top">
+                                        <div>
+                                            <span className="rrv-user-name">{review.customerName || 'Customer'}</span>
+                                            <span className="rrv-review-date">{new Date(review.createdAt).toLocaleDateString('vi-VN')}</span>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <div className="rrv-review-stars">
+                                                {Array(5).fill(0).map((_, i) => (
+                                                    <Star key={i} size={12} fill={i < review.rating ? "#fbbf24" : "none"} stroke={i < review.rating ? "none" : "#d1d5db"} />
+                                                ))}
+                                            </div>
+                                            <div className="rrv-review-id">#{review.orderId}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="rrv-comment">"{review.comment}"</div>
+
+                                    <div className="rrv-tags">
+                                        {getTags(review.id).map((tag, i) => (
+                                            <span key={i} className="rrv-tag">{tag}</span>
+                                        ))}
+                                    </div>
+
+                                    <button className="rrv-reply-link">
+                                        <Reply size={14} /> Phản hồi đánh giá
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>

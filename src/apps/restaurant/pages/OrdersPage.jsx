@@ -210,7 +210,7 @@ const OrdersPage = () => {
         }
     ];
 
-    if (loading && orders.length === 0) return <div className="p-8">Loading orders...</div>;
+    // if (loading && orders.length === 0) return <div className="p-8">Loading orders...</div>;
 
     return (
         <div className="resto-orders-page">
@@ -240,12 +240,14 @@ const OrdersPage = () => {
                                 <div className={`kanban-col-header border-${col.colorTheme}`}>
                                     <h3 className="kanban-col-title">{col.title}</h3>
                                     <div className={`kanban-col-count bg-${col.colorTheme}`}>
-                                        {colOrders.length}
+                                        {loading ? '-' : colOrders.length}
                                     </div>
                                 </div>
                             </div>
                             <div className="kanban-col-body custom-scrollbar">
-                                {colOrders.length > 0 ? (
+                                {loading && orders.length === 0 ? (
+                                    Array(3).fill(0).map((_, i) => <SkeletonOrderCard key={i} />)
+                                ) : colOrders.length > 0 ? (
                                     colOrders.map(order => (
                                         <OrderCard key={order.id} order={order} onClick={() => handleOrderClick(order)} />
                                     ))
@@ -285,6 +287,43 @@ const OrdersPage = () => {
     );
 };
 
+const SkeletonOrderCard = () => {
+    return (
+        <div className="skeleton-card">
+            <div className="skeleton-header">
+                <div className="skeleton-text-group">
+                    <div className="skeleton-block skeleton-text-sm"></div>
+                    <div className="skeleton-block skeleton-id"></div>
+                </div>
+                <div className="skeleton-block skeleton-badge"></div>
+            </div>
+
+            <div className="skeleton-row">
+                <div className="skeleton-block skeleton-avatar"></div>
+                <div className="skeleton-text-group">
+                    <div className="skeleton-block skeleton-text-sm"></div>
+                    <div className="skeleton-block skeleton-text-md"></div>
+                </div>
+            </div>
+
+            <div className="skeleton-row">
+                <div className="skeleton-block skeleton-avatar" style={{ width: 24, height: 24 }}></div>
+                <div className="skeleton-text-group">
+                    <div className="skeleton-block skeleton-text-sm"></div>
+                    <div className="skeleton-block skeleton-text-md"></div>
+                </div>
+            </div>
+
+            <div className="skeleton-block skeleton-preview"></div>
+
+            <div className="skeleton-footer">
+                <div className="skeleton-block skeleton-time"></div>
+                <div className="skeleton-block skeleton-price"></div>
+            </div>
+        </div>
+    );
+};
+
 const OrderCard = ({ order, onClick }) => {
     const date = new Date(order.createdAt);
     const timeStr = date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
@@ -297,7 +336,14 @@ const OrderCard = ({ order, onClick }) => {
                     <span className="order-id-label">ORDER ID</span>
                     <span className="order-id-value">#{order.id}</span>
                 </div>
-                <span className="items-badge">{order.items ? order.items.length : 0} Items</span>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {['DRIVER_ASSIGNED', 'READY', 'READY_FOR_PICKUP'].includes(order.status) && (
+                        <div className="driver-assigned-badge">
+                            <Truck size={12} /> Driver Assigned
+                        </div>
+                    )}
+                    <span className="order-items-count-badge">{order.items ? order.items.length : 0} Items</span>
+                </div>
             </div>
 
             <div className="customer-row">
@@ -323,7 +369,14 @@ const OrderCard = ({ order, onClick }) => {
                     {order.items.slice(0, 2).map((item, i) => (
                         <div key={i} className="preview-item">
                             <span className="preview-qty">{item.quantity}x</span>
-                            <span>{item.name}</span>
+                            <div>
+                                <div>{item.name}</div>
+                                {item.options && item.options.length > 0 && (
+                                    <div className="preview-options">
+                                        {item.options.join(', ')}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     ))}
                     {order.items.length > 2 && (
@@ -395,6 +448,18 @@ const OrderModal = ({ isOpen, onClose, order, onUpdateStatus }) => {
                             <div className="info-value line-clamp-2">{order.deliveryAddress}</div>
                         </div>
                     </div>
+
+                    {/* Driver Info - Only if Assigned (Shown for DRIVER_ASSIGNED, READY, READY_FOR_PICKUP) */}
+                    {['DRIVER_ASSIGNED', 'READY', 'READY_FOR_PICKUP'].includes(order.status) && (
+                        <div className="driver-info-box">
+                            <div className="driver-info-icon"><Truck size={24} /></div>
+                            <div className="driver-info-content">
+                                <span className="driver-label">DRIVER ASSIGNED</span>
+                                <div className="driver-name">{order.driver?.name || order.driverName || "Tai Xe " + order.driverId || "Driver"}</div>
+                                <div className="driver-status-badge">ACTIVE</div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="modal-items-section">
                         <div className="modal-section-title">ORDER ITEMS ({order.items?.length})</div>

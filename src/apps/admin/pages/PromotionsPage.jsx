@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Filter, Tag, Clock, Store, Play, Pause, Pencil, Trash2, Truck } from "lucide-react";
+import { Plus, Filter, Tag, Clock, Store, Play, Pause, Pencil, Trash2, Truck, Ticket } from "lucide-react";
 import PageHeader from "../../../components/shared/PageHeader";
 import DataTable from "../../../components/shared/DataTable";
 import promotionApi from "../../../api/admin/promotionApi";
@@ -163,9 +163,12 @@ const PromotionsPage = () => {
     return (
         <div className="management-page">
             <PageHeader
-                title="Promotions Management"
-                subtitle="Manage your restaurant campaigns and vouchers"
-                actions={
+                title="MARKETING & PROMOTIONS"
+                subtitle="Manage promotions, discount codes, and marketing campaigns across the entire Eatzy system."
+                badge="MARKETING CONSOLE"
+                badgeColor="green"
+                BadgeIcon={Ticket}
+                action={
                     <>
                         <button className="btn btn-secondary"><Filter size={16} /> Filter</button>
                         <button className="btn btn-primary" onClick={() => setModalState({ open: true, data: null })}>
@@ -180,7 +183,7 @@ const PromotionsPage = () => {
                     columns={columns}
                     data={promotions}
                     searchPlaceholder="Search campaigns..."
-                    isLoading={loading}
+                    loading={loading}
                     onRowClick={(row) => setModalState({ open: true, data: row })}
                 />
             </div>

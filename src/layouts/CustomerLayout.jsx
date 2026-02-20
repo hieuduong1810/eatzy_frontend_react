@@ -53,16 +53,16 @@ const CustomerLayout = ({ children }) => {
 
     const mobileNavTabs = [
         { id: "orders-active", name: "Current Order", icon: Truck, action: () => setCurrentOrderOpen(true) },
-        { id: "history", name: "History", icon: History, to: "orders" },
-        { id: "favorites", name: "Favorites", icon: Heart, to: "favorites" },
-        { id: "profile", name: "Profile", icon: User, to: "profile" },
-        { id: "home", name: "Home", icon: Home, to: "home" },
+        { id: "history", name: "History", icon: History, to: "/orders" },
+        { id: "favorites", name: "Favorites", icon: Heart, to: "/favorites" },
+        { id: "profile", name: "Profile", icon: User, to: "/profile" },
+        { id: "home", name: "Home", icon: Home, to: "/home" },
     ];
 
     const menuItems = [
-        { icon: Home, label: "Trang chủ", to: "home" },
-        { icon: History, label: "Lịch sử đơn hàng", to: "orders" },
-        { icon: Heart, label: "Yêu thích", to: "favorites" },
+        { icon: Home, label: "Trang chủ", to: "/home" },
+        { icon: History, label: "Lịch sử đơn hàng", to: "/orders" },
+        { icon: Heart, label: "Yêu thích", to: "/favorites" },
     ];
 
     const handleCloseMenu = () => {

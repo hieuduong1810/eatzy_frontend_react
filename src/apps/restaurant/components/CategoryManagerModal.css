@@ -1,0 +1,268 @@
+/* CategoryManagerModal.css */
+
+.cm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.cm-modal {
+    background: white;
+    width: 500px;
+    max-width: 90vw;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: cm-fade-in 0.2s ease-out;
+}
+
+@keyframes cm-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.cm-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cm-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    text-transform: uppercase;
+    font-family: var(--font-family);
+}
+
+.cm-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cm-close-btn:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.cm-content {
+    padding: 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.cm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.cm-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f9fafb;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.cm-item:focus-within {
+    background: white;
+    border-color: #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cm-drag-handle {
+    color: #d1d5db;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+}
+
+.cm-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    outline: none;
+    font-family: var(--font-family);
+}
+
+.cm-input::placeholder {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.cm-delete-btn {
+    color: #d1d5db;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.cm-delete-btn:hover {
+    color: #ef4444;
+}
+
+.cm-add-btn {
+    width: 100%;
+    padding: 14px;
+    border: 2px dashed #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.cm-add-btn:hover {
+    border-color: #d1d5db;
+    color: #374151;
+    background: #f9fafb;
+}
+
+.cm-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #f3f4f6;
+    background: white;
+}
+
+.cm-save-btn {
+    width: 100%;
+    background: #84cc16;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.cm-save-btn:hover {
+    background: #65a30d;
+}
+
+/* New & Deleted States */
+.cm-item.deleted {
+    background: #fef2f2;
+    /* Red-50 */
+    border-color: #fee2e2;
+    /* Red-200 */
+}
+
+.cm-item.deleted .cm-input {
+    color: #9ca3af;
+    /* Gray-400 */
+    text-decoration: line-through;
+    /* Optional: explicit deleted look */
+}
+
+.cm-item.deleted .cm-drag-handle {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Badges */
+.cm-badge-new {
+    background: #84cc16;
+    /* Lime-500 */
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-right: 8px;
+}
+
+.cm-badge-delete {
+    background: #ef4444;
+    /* Red-500 */
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-right: 8px;
+}
+
+/* Restore Button */
+.cm-restore-btn {
+    color: #6b7280;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    width: 24px;
+    height: 24px;
+}
+
+.cm-restore-btn:hover {
+    color: #111827;
+    background: #e5e7eb;
+    border-radius: 50%;
+}
+
+.rotate-icon {
+    font-size: 16px;
+    font-weight: bold;
+    transform: rotate(-45deg);
+    display: block;
+    line-height: 1;
+}

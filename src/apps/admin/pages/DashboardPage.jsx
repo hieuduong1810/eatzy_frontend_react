@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { LayoutDashboard } from "lucide-react";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import DashboardStats from "../components/dashboard/DashboardStats";
 import OrderGoalCard from "../components/dashboard/OrderGoalCard";
@@ -172,8 +173,11 @@ const DashboardPage = () => {
     return (
         <div className="dashboard-page">
             <DashboardHeader
-                title="Tổng quan hệ thống"
-                subtitle="Chào mừng Admin, đây là tình hình hệ thống hôm nay."
+                title="System Dashboard"
+                subtitle="Hi Admin, this is the system dashboard."
+                badge="SYSTEM OVERVIEW"
+                badgeColor="green"
+                BadgeIcon={LayoutDashboard}
                 stats={{
                     activeOrders: stats.activeOrders,
                     totalRestaurants: stats.totalRestaurants,

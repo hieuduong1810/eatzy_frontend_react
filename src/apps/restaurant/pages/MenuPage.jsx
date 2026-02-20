@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Search, Settings, MoreHorizontal, Check } from "lucide-react";
+import { Plus, Search, Settings, MoreHorizontal, Check, Trash2, Edit3 } from "lucide-react";
 import restaurantAppApi from "../../../api/restaurant/restaurantAppApi";
 import Modal from "../../../components/shared/Modal";
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
+import AddDishModal from "../components/AddDishModal";
+import CategoryManagerModal from "../components/CategoryManagerModal";
 import "./MenuPage.css";
 
 const formatVnd = (n) => Intl.NumberFormat("vi-VN", { style: 'currency', currency: 'VND' }).format(n);
@@ -12,7 +15,59 @@ const MenuPage = () => {
     const [activeCategory, setActiveCategory] = useState(null);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [showAddDishModal, setShowAddDishModal] = useState(false);
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [editingDish, setEditingDish] = useState(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [dishToDelete, setDishToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const isManualScroll = useRef(false);
+
+    const handleAddNewDish = () => {
+        setEditingDish(null);
+        setShowAddDishModal(true);
+    };
+
+    const handleEditDish = (dish) => {
+        setEditingDish(dish);
+        setShowAddDishModal(true);
+    };
+
+    const handleSaveCategories = async (updatedCategories) => {
+        try {
+            // Sanitize: For new categories, remove the temp ID (or set to null)
+            const payload = updatedCategories.map(cat => ({
+                ...cat,
+                id: cat.isNew ? null : cat.id
+            }));
+            await restaurantAppApi.updateCategories(payload);
+            fetchMenu();
+        } catch (error) {
+            console.error("Failed to update categories:", error);
+            alert("Failed to update categories. Please try again.");
+        }
+    };
+
+    const handleDeleteClick = (dish) => {
+        setDishToDelete(dish);
+        setShowDeleteConfirm(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!dishToDelete) return;
+        setIsDeleting(true);
+        try {
+            await restaurantAppApi.deleteDish(dishToDelete.id);
+            fetchMenu();
+            setShowDeleteConfirm(false);
+            setDishToDelete(null);
+        } catch (error) {
+            console.error("Failed to delete dish:", error);
+            alert("Failed to delete dish. Please try again.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     useEffect(() => {
         fetchMenu();
@@ -25,8 +80,8 @@ const MenuPage = () => {
             const container = document.querySelector('.resto-main');
             if (!container) return;
 
-            // Header height approx 180px
-            const offset = 230;
+            // Header height approx 180px + padding
+            const offset = 260;
 
             let currentId = null;
             // Iterate to find the last category that has passed the threshold
@@ -90,7 +145,7 @@ const MenuPage = () => {
         dishes: cat.dishes?.filter(d => d.name.toLowerCase().includes(search.toLowerCase())) || []
     })).filter(cat => cat.dishes.length > 0);
 
-    if (loading) return <div className="p-8">Loading menu...</div>;
+    if (loading) return <SkeletonMenuPage />;
 
     return (
         <div className="resto-menu-page">
@@ -121,10 +176,10 @@ const MenuPage = () => {
                         </div>
 
                         <div className="resto-menu-btn-group">
-                            <button className="btn-white">
+                            <button className="btn-white" onClick={() => setShowCategoryModal(true)}>
                                 <Settings size={18} /> Categories
                             </button>
-                            <button className="btn-green">
+                            <button className="btn-green" onClick={() => setShowAddDishModal(true)}>
                                 <Plus size={18} /> THÊM MÓN MỚI
                             </button>
                         </div>
@@ -132,6 +187,8 @@ const MenuPage = () => {
                 </div>
 
                 {/* Category Tabs */}
+                {/* ... existing code ... */}
+
                 <div className="resto-menu-categories-tabs">
                     {categories.map((cat) => (
                         <button
@@ -162,7 +219,13 @@ const MenuPage = () => {
                                         <div className="qty-badge">Qty: {dish.availabilityQuantity}</div>
 
                                         <div className="dish-edit-overlay">
-                                            <button className="btn-edit-dish">Edit Dish</button>
+                                            <button className="btn-edit-dish" onClick={() => handleEditDish(dish)}>
+                                                <Edit3 size={14} />
+                                                <span>Chỉnh sửa</span>
+                                            </button>
+                                            <button className="btn-delete-dish" onClick={() => handleDeleteClick(dish)}>
+                                                <Trash2 size={18} />
+                                            </button>
                                         </div>
                                     </div>
 
@@ -196,7 +259,83 @@ const MenuPage = () => {
                 </div>
             </div>
 
-            {/* Modal placeholder - can be implemented later for Add/Edit */}
+            {/* Add Dish Modal */}
+            <AddDishModal
+                isOpen={showAddDishModal}
+                onClose={() => setShowAddDishModal(false)}
+                categories={categories}
+                onSave={fetchMenu}
+                dish={editingDish}
+            />
+
+            {/* Category Manager Modal */}
+            <CategoryManagerModal
+                isOpen={showCategoryModal}
+                onClose={() => setShowCategoryModal(false)}
+                categories={categories}
+                onSave={handleSaveCategories}
+            />
+
+            <SlideConfirmModal
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={handleConfirmDelete}
+                title="Xóa món ăn"
+                description={`Bạn có chắc chắn muốn xóa món "${dishToDelete?.name}" không? Hành động này không thể hoàn tác.`}
+                isLoading={isDeleting}
+                type="danger"
+            />
+        </div>
+    );
+};
+
+const SkeletonMenuPage = () => {
+    return (
+        <div className="resto-menu-page">
+            <div className="resto-menu-sticky-header">
+                <div className="resto-menu-header-row">
+                    <div className="skeleton-block skeleton-title" style={{ width: 250, height: 40 }}></div>
+                    <div className="resto-menu-actions-wrapper">
+                        <div className="skeleton-block" style={{ width: 280, height: 40, borderRadius: 99 }}></div>
+                        <div className="skeleton-block" style={{ width: 120, height: 40, borderRadius: 8 }}></div>
+                        <div className="skeleton-block" style={{ width: 160, height: 40, borderRadius: 8 }}></div>
+                    </div>
+                </div>
+                <div className="skeleton-tabs-row">
+                    <div className="skeleton-block skeleton-tab"></div>
+                    <div className="skeleton-block skeleton-tab"></div>
+                    <div className="skeleton-block skeleton-tab"></div>
+                    <div className="skeleton-block skeleton-tab"></div>
+                    <div className="skeleton-block skeleton-tab"></div>
+                </div>
+            </div>
+
+            <div className="resto-menu-content">
+                {[1, 2].map((section) => (
+                    <div key={section} className="skeleton-section">
+                        <div className="skeleton-section-header">
+                            <div className="skeleton-block skeleton-title"></div>
+                            <div className="skeleton-block skeleton-badge"></div>
+                        </div>
+                        <div className="resto-dish-grid">
+                            {[1, 2, 3, 4].map((item) => (
+                                <div key={item} className="skeleton-card">
+                                    <div className="skeleton-img"></div>
+                                    <div className="skeleton-body">
+                                        <div className="skeleton-block skeleton-line-lg"></div>
+                                        <div className="skeleton-block skeleton-line-sm"></div>
+                                        <div className="skeleton-block skeleton-line-md"></div>
+                                        <div className="skeleton-footer">
+                                            <div className="skeleton-block skeleton-price"></div>
+                                            <div className="skeleton-block skeleton-opt"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

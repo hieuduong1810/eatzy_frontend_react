@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Lock, Unlock, MapPin, Phone, Trash2, Filter, Pencil } from "lucide-react";
+import { Lock, Unlock, MapPin, Phone, Trash2, Filter, Pencil, Users } from "lucide-react";
 import PageHeader from "../../../components/shared/PageHeader";
 import DataTable from "../../../components/shared/DataTable";
 import StatusBadge from "../../../components/shared/StatusBadge";
@@ -98,25 +98,22 @@ const CustomersPage = () => {
         },
     ];
 
-    if (loading) {
-        return <div className="p-8 text-center">Đang tải dữ liệu...</div>;
-    }
-
     return (
         <div className="management-page">
             <PageHeader
-                title="Quản lý khách hàng"
-                subtitle={`Tổng cộng ${customers.length} khách hàng trên hệ thống`}
-                actions={
-                    <>
-                        <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
-                    </>
+                title="CUSTOMER BASE"
+                subtitle="View user profiles, order history, and manage account statuses."
+                badge="CUSTOMER CONSOLE"
+                badgeColor="green"
+                BadgeIcon={Users}
+                action={
+                    <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
                 }
             />
-
             <DataTable
                 columns={columns}
                 data={customers}
+                loading={loading}
                 searchPlaceholder="Tìm kiếm khách hàng..."
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
             />
@@ -138,5 +135,4 @@ const CustomersPage = () => {
         </div>
     );
 };
-
 export default CustomersPage;

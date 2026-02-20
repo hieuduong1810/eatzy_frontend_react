@@ -1,3 +1,5 @@
+/* WalletPage.css */
+
 .wp-header-badge {
     display: inline-flex;
     align-items: center;
@@ -41,4 +43,372 @@
     color: #65a30d;
     /* lime-600 */
     font-weight: 600;
+}
+
+/* --- Transaction History Section --- */
+.wp-tx-section {
+    margin-top: 40px;
+}
+
+.wp-tx-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.wp-tx-title-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.wp-tx-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111827;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wp-tx-title::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 24px;
+    background: #84cc16;
+    /* Lime 500 */
+    border-radius: 4px;
+}
+
+.wp-tx-subtitle {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-left: 18px;
+    /* Align with text */
+    margin-top: 4px;
+}
+
+.wp-tx-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.wp-control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* Circle */
+    border: none;
+    background: #f3f4f6;
+    /* Gray 100 */
+    color: #4b5563;
+    /* Gray 600 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wp-control-btn:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.wp-export-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    height: 40px;
+    background: #111827;
+    /* Gray 900 */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wp-export-btn:hover {
+    background: #000;
+    transform: translateY(-1px);
+}
+
+/* --- Table Styles --- */
+.wp-section-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.wp-table-container {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #f3f4f6;
+    /* Removed background and shadow from container as it's now internal */
+}
+
+.wp-table-header {
+    display: grid;
+    grid-template-columns: 120px 2fr 1.5fr 1.5fr 1.5fr 80px;
+    padding: 20px 24px;
+    background: #f9fafb;
+    /* Gray 50 */
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 11px;
+    font-weight: 800;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.wp-tx-row {
+    display: grid;
+    grid-template-columns: 120px 2fr 1.5fr 1.5fr 1.5fr 80px;
+    padding: 20px 24px;
+    align-items: center;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.15s;
+}
+
+.wp-tx-row:hover {
+    background: #fcfcfc;
+}
+
+.wp-tx-row:last-child {
+    border-bottom: none;
+}
+
+/* Columns */
+.wp-col-id {
+    font-size: 13px;
+    font-weight: 600;
+    color: #d1d5db;
+    /* Light gray for ID background usually, or text */
+}
+
+.wp-id-badge {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.wp-col-type {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.wp-type-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wp-type-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.wp-type-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #84cc16;
+    /* Lime 500 default */
+    letter-spacing: 0.05em;
+}
+
+.wp-type-desc {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.wp-col-date {
+    display: flex;
+    flex-direction: column;
+}
+
+.wp-date-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.wp-time-val {
+    font-size: 12px;
+    color: #9ca3af;
+    /* Gray 400 */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.wp-col-amount {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wp-amt-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.wp-amount-val {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.wp-amount-val.pos {
+    color: #65a30d;
+}
+
+/* Lime 600 */
+.wp-amount-val.neg {
+    color: #dc2626;
+}
+
+/* Red 600 */
+
+.wp-balance-hint {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.wp-icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wp-icon-box.pos {
+    background: #ecfccb;
+    color: #4d7c0f;
+}
+
+.wp-icon-box.neg {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+
+.wp-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.wp-status-badge.success {
+    background: #ecfccb;
+    color: #3f6212;
+    border-color: #d9f99d;
+}
+
+.wp-status-badge.pending {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.wp-status-badge.fail {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.wp-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #65a30d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wp-action-btn:hover {
+    background: #ecfccb;
+    color: #3f6212;
+}
+
+/* --- Skeleton Loader --- */
+@keyframes skeleton-loading {
+    0% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+.skeleton-row {
+    display: grid;
+    grid-template-columns: 120px 2fr 1.5fr 1.5fr 1.5fr 80px;
+    padding: 20px 24px;
+    align-items: center;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 16px;
+}
+
+.skeleton-block {
+    height: 16px;
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+    background-size: 400% 100%;
+    border-radius: 4px;
+    animation: skeleton-loading 1.4s ease infinite;
+}
+
+.skeleton-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.4s ease infinite;
+}
+
+.skeleton-col-type {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.skeleton-col-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
 }
