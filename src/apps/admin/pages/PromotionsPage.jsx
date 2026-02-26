@@ -4,16 +4,24 @@ import PageHeader from "../../../components/shared/PageHeader";
 import DataTable from "../../../components/shared/DataTable";
 import promotionApi from "../../../api/admin/promotionApi";
 import PromotionModal from "../components/promotions/PromotionModal";
+import PromotionFilterModal from "../components/promotions/PromotionFilterModal";
 import "./PromotionsPage.css";
 
 const PromotionsPage = () => {
     const [promotions, setPromotions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalState, setModalState] = useState({ open: false, data: null });
+    const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const [filters, setFilters] = useState({});
 
     useEffect(() => {
         fetchPromotions();
-    }, []);
+    }, [filters]);
+
+    const handleApplyFilters = (newFilters) => {
+        setFilters(newFilters);
+        console.log("Promotion filters applied:", newFilters);
+    };
 
     const fetchPromotions = async () => {
         setLoading(true);
@@ -170,7 +178,9 @@ const PromotionsPage = () => {
                 BadgeIcon={Ticket}
                 action={
                     <>
-                        <button className="btn btn-secondary"><Filter size={16} /> Filter</button>
+                        <button className="btn btn-secondary" onClick={() => setFilterModalOpen(true)}>
+                            <Filter size={16} /> Filter {Object.keys(filters).length > 0 && `(${Object.keys(filters).length})`}
+                        </button>
                         <button className="btn btn-primary" onClick={() => setModalState({ open: true, data: null })}>
                             <Plus size={16} /> Create Campaign
                         </button>
@@ -196,8 +206,14 @@ const PromotionsPage = () => {
                 }}
                 promotion={modalState.data}
             />
+
+            <PromotionFilterModal
+                isOpen={filterModalOpen}
+                onClose={() => setFilterModalOpen(false)}
+                onApply={handleApplyFilters}
+                currentFilters={filters}
+            />
         </div>
     );
 };
-
 export default PromotionsPage;

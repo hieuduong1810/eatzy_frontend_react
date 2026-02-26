@@ -29,7 +29,8 @@ const DataTable = ({
     pageSize = 10,
     emptyMessage = "Không có dữ liệu",
     onRowClick,
-    loading = false, // new prop with default false
+    loading = false,
+    searchKeys = [], // Array of keys to search on (supports dot notation for nested objects)
 }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -55,12 +56,27 @@ const DataTable = ({
     let filteredData = data;
     if (searchTerm && !onSearch) {
         const term = searchTerm.toLowerCase();
-        filteredData = data.filter((row) =>
-            columns.some((col) => {
-                const val = row[col.key];
+
+        // Helper to get nested value safely
+        const getNestedValue = (obj, path) => {
+            return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined) ? acc[part] : null, obj);
+        };
+
+        filteredData = data.filter((row) => {
+            // Use searchKeys if provided, otherwise fallback to column keys
+            // But column keys might not map 1:1 to data properties in this table reuse.
+            // If searchKeys is not provided, try to search all string values in the row (risky/bland) 
+            // OR stick to columns.
+            // Let's stick to columns but add support for searchKeys prop which is passed to this component.
+            // Assuming searchKeys is passed as a prop, accessed via `props.searchKeys` or destructuring.
+            // Wait, I need to add searchKeys to props destructuring first.
+            const keys = searchKeys.length > 0 ? searchKeys : columns.map(c => c.key);
+
+            return keys.some((key) => {
+                const val = getNestedValue(row, key);
                 return val && String(val).toLowerCase().includes(term);
-            })
-        );
+            });
+        });
     }
 
     // Sort data

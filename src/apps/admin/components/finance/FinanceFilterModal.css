@@ -1,0 +1,351 @@
+.finance-filter-content {
+    background: #f9fafb;
+    width: 800px !important;
+    padding: 0 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Header */
+.finance-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    background: white;
+    border-bottom: 1px solid #f3f4f6;
+    border-radius: 24px 24px 0 0;
+}
+
+.finance-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.finance-header-icon {
+    width: 40px;
+    height: 40px;
+    background: #111827;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.finance-header-text h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+}
+
+.finance-header-text span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.finance-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-finance-apply {
+    background: #84cc16;
+    /* Lime 500 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(132, 204, 22, 0.3);
+    transition: all 0.2s;
+}
+
+.btn-finance-apply:hover {
+    background: #65a30d;
+    transform: translateY(-1px);
+}
+
+.btn-finance-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: none;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-finance-close:hover {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+/* Body */
+.finance-filter-body {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: flex-start;
+    /* Ensure left alignment */
+}
+
+.section-icon-wrapper {
+    width: 44px;
+    /* Slightly larger */
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.section-icon-wrapper.blue {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.section-icon-wrapper.green {
+    background: #f7fee7;
+    color: #65a30d;
+}
+
+.section-title-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* Ensure text aligns left */
+    text-align: left;
+}
+
+.section-title-group h3 {
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.section-title-group p {
+    font-size: 10px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    margin: 2px 0 0 0;
+    letter-spacing: 0.05em;
+}
+
+/* Scope Grid */
+.scope-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.scope-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    /* Prepare for border */
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.scope-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.scope-card.active {
+    background: #eff6ff;
+    /* Light blue background */
+    border-color: #3b82f6;
+    /* Blue border */
+}
+
+.scope-icon {
+    color: #9ca3af;
+}
+
+.scope-card.active .scope-icon {
+    color: #2563eb;
+    /* Blue icon when active */
+}
+
+.scope-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.scope-card.active .scope-label {
+    color: #1e3a8a;
+    /* Dark blue text */
+    font-weight: 700;
+}
+
+.scope-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.scope-card.active .scope-check {
+    background: #bfdbfe;
+}
+
+.scope-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3b82f6;
+}
+
+/* Class Grid */
+.class-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.class-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.class-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.class-card.active {
+    background: #f7fee7;
+    /* Light lime background */
+    border-color: #84cc16;
+    /* Lime border */
+}
+
+.class-check-indicator {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.class-card.active .class-check-indicator {
+    background: #d9f99d;
+}
+
+.class-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4d7c0f;
+}
+
+.class-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: #f9fafb;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    transition: all 0.2s;
+}
+
+.class-card.active .class-icon-wrapper {
+    background: #d9f99d;
+    color: #3f6212;
+}
+
+.class-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.class-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.class-card.active .class-label {
+    color: #14532d;
+}
+
+.class-sub {
+    font-size: 9px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.class-card.active .class-sub {
+    color: #4d7c0f;
+    opacity: 0.8;
+}

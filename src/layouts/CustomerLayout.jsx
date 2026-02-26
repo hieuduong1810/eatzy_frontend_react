@@ -10,6 +10,7 @@ import { useNotification } from "../contexts/NotificationContext";
 import { mockOrders } from "../apps/customer/data/mockCustomerData";
 import { useAuthStore, authActions } from "../stores/authStore";
 import { useLocationStore } from "../stores/locationStore";
+import { useSearchStore, searchActions } from "../stores/searchStore";
 import authApi from "../api/authApi";
 import customerApi from "../api/customer/customerApi";
 import "./CustomerLayout.css";
@@ -22,7 +23,8 @@ const CustomerLayout = ({ children }) => {
     const [locationPickerOpen, setLocationPickerOpen] = useState(false); // New state
     const [menuOpen, setMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
+    const { searchKeyword: searchQuery } = useSearchStore();
+    const setSearchQuery = searchActions.setSearchKeyword;
     const navigate = useNavigate();
     const { totalItems } = useCart();
     const { user, isAuthenticated } = useAuthStore();

@@ -6,6 +6,7 @@ import StatusBadge from "../../../components/shared/StatusBadge";
 import restaurantApi from "../../../api/admin/restaurantApi";
 import RestaurantDetail from "../components/restaurants/RestaurantDetail";
 import RestaurantModal from "../components/restaurants/RestaurantModal";
+import RestaurantFilterModal from "../components/restaurants/RestaurantFilterModal";
 import "./ManagementPages.css";
 
 const formatCurrency = (val) =>
@@ -16,21 +17,35 @@ const RestaurantsPage = () => {
     const [loading, setLoading] = useState(true);
     const [detailModal, setDetailModal] = useState({ open: false, data: null });
     const [editModal, setEditModal] = useState({ open: false, data: null });
+    const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const [currentFilter, setCurrentFilter] = useState('ALL');
 
     useEffect(() => {
-        const fetchRestaurants = async () => {
-            try {
-                const data = await restaurantApi.getAllRestaurants();
-                setRestaurants(data);
-            } catch (error) {
-                console.error("Failed to fetch restaurants:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchRestaurants();
     }, []);
+
+    const fetchRestaurants = async (filterType = 'ALL') => {
+        setLoading(true);
+        try {
+            let params = {};
+            if (filterType !== 'ALL') {
+                // Construct filter string: filter=status in ['OPEN']
+                params.filter = `status in ['${filterType}']`;
+            }
+
+            const data = await restaurantApi.getAllRestaurants(params);
+            setRestaurants(data);
+        } catch (error) {
+            console.error("Failed to fetch restaurants:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleFilterApply = (filterId) => {
+        setCurrentFilter(filterId);
+        fetchRestaurants(filterId);
+    };
 
     const columns = [
         {
@@ -100,9 +115,9 @@ const RestaurantsPage = () => {
         {
             key: "status", label: "STATUS",
             render: (_, row) => (
-                <div className="badge-unlocked">
-                    <Unlock size={12} strokeWidth={3} />
-                    UNLOCKED
+                <div className={`badge-unlocked ${!row.owner?.isActive ? 'locked' : ''}`}>
+                    {row.owner?.isActive ? <Unlock size={12} strokeWidth={3} /> : <Lock size={12} strokeWidth={3} />}
+                    {row.owner?.isActive ? "UNLOCKED" : "LOCKED"}
                 </div>
             ),
         },
@@ -137,7 +152,9 @@ const RestaurantsPage = () => {
                 BadgeIcon={Store}
                 action={
                     <>
-                        <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
+                        <button className="btn btn-secondary" onClick={() => setFilterModalOpen(true)}>
+                            <Filter size={16} /> Bộ lọc {currentFilter !== 'ALL' && '(1)'}
+                        </button>
                         <button className="btn btn-primary" onClick={() => setEditModal({ open: true, data: null })}>
                             <Plus size={16} /> Thêm cửa hàng
                         </button>
@@ -149,8 +166,17 @@ const RestaurantsPage = () => {
                 columns={columns}
                 data={restaurants}
                 loading={loading}
-                searchPlaceholder="Tìm kiếm cửa hàng..."
+                searchPlaceholder="Tìm kiếm cửa hàng (Tên, Địa chỉ, SĐT, Chủ)..."
+                searchKeys={['name', 'address', 'contactPhone', 'owner.name', 'contactEmail']}
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
+            />
+
+            {/* Filter Modal */}
+            <RestaurantFilterModal
+                isOpen={filterModalOpen}
+                onClose={() => setFilterModalOpen(false)}
+                onApply={handleFilterApply}
+                currentFilter={currentFilter}
             />
 
             {/* Detail Modal (Read Only Dossier) */}

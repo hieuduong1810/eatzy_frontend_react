@@ -7,6 +7,7 @@ import Modal from "../../../components/shared/Modal";
 import driverApi from "../../../api/admin/driverApi";
 import DriverDetail from "../components/drivers/DriverDetail";
 import "./ManagementPages.css";
+import DriverFilterModal from "../components/drivers/DriverFilterModal";
 
 const formatCurrency = (val) =>
     new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", notation: "compact" }).format(val);
@@ -16,10 +17,13 @@ const DriversPage = () => {
     const [loading, setLoading] = useState(true);
     const [detailModal, setDetailModal] = useState({ open: false, data: null });
     const [createModal, setCreateModal] = useState(false);
+    const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const [currentFilters, setCurrentFilters] = useState({});
 
     useEffect(() => {
         const fetchDrivers = async () => {
             try {
+                // In a real app, pass filters to API here
                 const data = await driverApi.getAllDrivers();
                 setDrivers(data);
             } catch (error) {
@@ -30,7 +34,16 @@ const DriversPage = () => {
         };
 
         fetchDrivers();
-    }, []);
+    }, [currentFilters]);
+
+    const handleFilterApply = (filters) => {
+        setCurrentFilters(filters);
+        // Logic to re-fetch or filter data locally would go here
+        console.log("Filters applied:", filters);
+    };
+
+
+
 
     const columns = [
         {
@@ -39,7 +52,7 @@ const DriversPage = () => {
                 <div className="res-info-cell">
                     <div className="res-img-wrapper">
                         <img
-                            src={row.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.user?.name || "Driver")}&background=random`}
+                            src={row.profile_photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.user?.name || "Driver")}&background=random`}
                             alt=""
                             className="res-img"
                         />
@@ -103,7 +116,7 @@ const DriversPage = () => {
         {
             key: "status", label: "STATUS",
             render: (_, row) => (
-                <div className={`badge-unlocked ${row.user?.isActive ? '' : 'locked'}`}>
+                <div className={`badge-unlocked ${!row.user?.isActive ? 'locked' : ''}`}>
                     {row.user?.isActive ? <Unlock size={12} strokeWidth={3} /> : <Lock size={12} strokeWidth={3} />}
                     {row.user?.isActive ? "UNLOCKED" : "LOCKED"}
                 </div>
@@ -137,7 +150,9 @@ const DriversPage = () => {
                 BadgeIcon={Truck}
                 action={
                     <>
-                        <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
+                        <button className="btn btn-secondary" onClick={() => setFilterModalOpen(true)}>
+                            <Filter size={16} /> Bộ lọc {Object.keys(currentFilters).some(k => currentFilters[k] !== 'ALL' && currentFilters[k].length > 0) && '(1)'}
+                        </button>
                         <button className="btn btn-primary" onClick={() => setCreateModal(true)}>
                             <Plus size={16} /> Thêm tài xế
                         </button>
@@ -149,8 +164,17 @@ const DriversPage = () => {
                 columns={columns}
                 data={drivers}
                 loading={loading}
-                searchPlaceholder="Tìm kiếm tài xế..."
+                searchPlaceholder="Tìm kiếm tài xế (Tên, Biển số, Xe)..."
+                searchKeys={['user.name', 'vehicle_license_plate', 'vehicle_brand', 'vehicle_model']}
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
+            />
+
+            {/* Filter Modal */}
+            <DriverFilterModal
+                isOpen={filterModalOpen}
+                onClose={() => setFilterModalOpen(false)}
+                onApply={handleFilterApply}
+                currentFilters={currentFilters}
             />
 
             {/* Detail Modal */}

@@ -15,7 +15,7 @@ const DriverDetail = ({ driver, onClose }) => {
                 <div className="driver-header-card">
                     <div className="driver-avatar-box">
                         <img
-                            src={driver.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(driver.user?.name || "Dr")}&background=random`}
+                            src={driver.profile_photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(driver.user?.name || "Dr")}&background=random`}
                             className="driver-avatar-img"
                             alt="avatar"
                         />

@@ -60,10 +60,13 @@ const customerApi = {
      * Get nearby restaurants
      * GET /api/v1/restaurants/nearby?latitude=...&longitude=...
      */
-    getNearbyRestaurants: (lat, lng, filter = "") => {
+    getNearbyRestaurants: (lat, lng, filter = "", search = "") => {
         let url = `/api/v1/restaurants/nearby?latitude=${lat}&longitude=${lng}`;
         if (filter) {
             url += `&filter=${filter}`;
+        }
+        if (search) {
+            url += `&search=${encodeURIComponent(search)}`;
         }
         return axiosInstance.get(url);
     },

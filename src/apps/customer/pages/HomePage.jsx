@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Star, MapPin, TrendingUp, Clock, ArrowRight, Sparkles, Utensils, Loader } from "lucide-react";
 import { mockRestaurants, formatVnd } from "../data/mockCustomerData";
 import { useLocationStore } from "../../../stores/locationStore";
+import { useSearchStore } from "../../../stores/searchStore";
 import "../CustomerApp.css";
 
 import customerApi from "../../../api/customer/customerApi";
@@ -19,10 +20,18 @@ export default function HomePage() {
     const navigate = useNavigate();
     const locationRoute = useLocation();
     const { location } = useLocationStore();
+    const { searchKeyword } = useSearchStore();
     const [categories, setCategories] = useState([]);
     const [restaurants, setRestaurants] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [notification, setNotification] = useState(null);
+
+    // Debounce the search keyword
+    const [debouncedSearch, setDebouncedSearch] = useState(searchKeyword);
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedSearch(searchKeyword), 500);
+        return () => clearTimeout(timer);
+    }, [searchKeyword]);
 
     const [selectedCategory, setSelectedCategory] = useState("all");
     const sliderRef = useRef(null);
@@ -77,7 +86,7 @@ export default function HomePage() {
                 if (selectedCategory !== "all") {
                     filter = `restaurantTypes.id:${selectedCategory}`;
                 }
-                const response = await customerApi.getNearbyRestaurants(location.latitude, location.longitude, filter);
+                const response = await customerApi.getNearbyRestaurants(location.latitude, location.longitude, filter, debouncedSearch);
 
                 if (response.data && response.data.data && response.data.data.result) {
                     setRestaurants(response.data.data.result);
@@ -98,7 +107,7 @@ export default function HomePage() {
         };
 
         fetchRestaurants();
-    }, [location, selectedCategory]);
+    }, [location, selectedCategory, debouncedSearch]);
 
     const featured = restaurants.filter((r) => r.rating >= 4.8);
     const nearYou = restaurants;

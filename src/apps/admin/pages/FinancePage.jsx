@@ -5,6 +5,7 @@ import DataTable from "../../../components/shared/DataTable";
 import StatusBadge from "../../../components/shared/StatusBadge";
 import Modal from "../../../components/shared/Modal";
 import TransactionDetail from "../components/finance/TransactionDetail";
+import FinanceFilterModal from "../components/finance/FinanceFilterModal";
 import financeApi from "../../../api/admin/financeApi";
 import "./ManagementPages.css";
 
@@ -21,6 +22,14 @@ const FinancePage = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [detailModal, setDetailModal] = useState({ open: false, data: null });
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [filters, setFilters] = useState({});
+
+    const handleApplyFilters = (newFilters) => {
+        setFilters(newFilters);
+        console.log("Finance filters applied:", newFilters);
+        // Implement actual filtering logic here if needed, or pass to API
+    };
 
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -142,7 +151,9 @@ const FinancePage = () => {
                 BadgeIcon={Wallet}
                 action={
                     <>
-                        <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
+                        <button className="btn btn-secondary" onClick={() => setIsFilterOpen(true)}>
+                            <Filter size={16} /> Bộ lọc {Object.keys(filters).length > 0 && `(${Object.keys(filters).length})`}
+                        </button>
                         <button className="btn btn-secondary"><Download size={16} /> Xuất báo cáo</button>
                     </>
                 }
@@ -175,7 +186,16 @@ const FinancePage = () => {
                 data={transactions}
                 loading={loading}
                 searchPlaceholder="Tìm kiếm giao dịch..."
+                searchKeys={['id', 'wallet.user.name', 'transactionType', 'description']}
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
+            />
+
+            {/* Filter Modal */}
+            <FinanceFilterModal
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                onApply={handleApplyFilters}
+                currentFilters={filters}
             />
 
             {/* Detail Modal */}

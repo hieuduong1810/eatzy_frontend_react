@@ -3,12 +3,19 @@ import axiosClient from "../axios";
 const restaurantApi = {
     getAllRestaurants: async (params = {}) => {
         try {
+            const queryParams = {
+                page: 1,
+                size: 1000,
+                ...params
+            };
+
+            // If filter is provided, add it to query params
+            if (params.filter) {
+                queryParams.filter = params.filter;
+            }
+
             const response = await axiosClient.get("/api/v1/restaurants", {
-                params: {
-                    page: 1,
-                    size: 1000,
-                    ...params
-                },
+                params: queryParams,
             });
             return response.data?.result || response.data?.data?.result || [];
         } catch (error) {

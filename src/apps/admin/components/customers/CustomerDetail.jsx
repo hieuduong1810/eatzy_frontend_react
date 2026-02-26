@@ -40,7 +40,13 @@ const CustomerDetail = ({ customer, onClose }) => {
                         <div className="cust-card profile-card">
                             <div className="profile-image-container">
                                 <img
-                                    src={user.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "Customer")}&background=f3f4f6&color=6b7280`}
+                                    src={
+                                        user.gender === 'MALE'
+                                            ? "https://res.cloudinary.com/durzk8qz6/image/upload/v1771570306/j60o3m9wx7tlugcpsnqt.png"
+                                            : user.gender === 'FEMALE'
+                                                ? "https://res.cloudinary.com/durzk8qz6/image/upload/v1771570306/zepig5ru2gxx4ruxfwnw.avif"
+                                                : (user.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "Customer")}&background=f3f4f6&color=6b7280`)
+                                    }
                                     alt="Profile"
                                     className="profile-img"
                                 />

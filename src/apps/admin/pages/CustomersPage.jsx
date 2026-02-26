@@ -6,6 +6,7 @@ import StatusBadge from "../../../components/shared/StatusBadge";
 import customerApi from "../../../api/admin/customerApi";
 import CustomerDetail from "../components/customers/CustomerDetail";
 import EditCustomerModal from "../components/customers/EditCustomerModal";
+import CustomerFilterModal from "../components/customers/CustomerFilterModal";
 import "./ManagementPages.css";
 
 const CustomersPage = () => {
@@ -13,10 +14,13 @@ const CustomersPage = () => {
     const [loading, setLoading] = useState(true);
     const [detailModal, setDetailModal] = useState({ open: false, data: null });
     const [editModal, setEditModal] = useState({ open: false, data: null });
+    const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const [currentFilter, setCurrentFilter] = useState('ALL');
 
     useEffect(() => {
         const fetchCustomers = async () => {
             try {
+                // In real app, pass currentFilter to API
                 const data = await customerApi.getAllCustomers();
                 setCustomers(data);
             } catch (error) {
@@ -27,7 +31,12 @@ const CustomersPage = () => {
         };
 
         fetchCustomers();
-    }, []);
+    }, [currentFilter]);
+
+    const handleFilterApply = (filter) => {
+        setCurrentFilter(filter);
+        console.log("Customer Filter Applied:", filter);
+    };
 
     const columns = [
         {
@@ -36,7 +45,13 @@ const CustomersPage = () => {
                 <div className="res-info-cell">
                     <div className="res-img-wrapper">
                         <img
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(row.user?.name || "Customer")}&background=random`}
+                            src={
+                                row.user?.gender === 'MALE'
+                                    ? "https://res.cloudinary.com/durzk8qz6/image/upload/v1771570306/j60o3m9wx7tlugcpsnqt.png"
+                                    : row.user?.gender === 'FEMALE'
+                                        ? "https://res.cloudinary.com/durzk8qz6/image/upload/v1771570306/zepig5ru2gxx4ruxfwnw.avif"
+                                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(row.user?.name || "Customer")}&background=random`
+                            }
                             alt=""
                             className="res-img"
                         />
@@ -71,7 +86,7 @@ const CustomersPage = () => {
         {
             key: "status", label: "STATUS",
             render: (_, row) => (
-                <div className={`badge-unlocked ${row.user?.isActive ? '' : 'locked'}`}>
+                <div className={`badge-unlocked ${!row.user?.isActive ? 'locked' : ''}`}>
                     {row.user?.isActive ? <Unlock size={12} strokeWidth={3} /> : <Lock size={12} strokeWidth={3} />}
                     {row.user?.isActive ? "UNLOCKED" : "LOCKED"}
                 </div>
@@ -107,15 +122,26 @@ const CustomersPage = () => {
                 badgeColor="green"
                 BadgeIcon={Users}
                 action={
-                    <button className="btn btn-secondary"><Filter size={16} /> Bộ lọc</button>
+                    <button className="btn btn-secondary" onClick={() => setFilterModalOpen(true)}>
+                        <Filter size={16} /> Bộ lọc {currentFilter !== 'ALL' && '(1)'}
+                    </button>
                 }
             />
             <DataTable
                 columns={columns}
                 data={customers}
                 loading={loading}
-                searchPlaceholder="Tìm kiếm khách hàng..."
+                searchPlaceholder="Tìm kiếm khách hàng (Tên, SĐT, Địa chỉ)..."
+                searchKeys={['user.name', 'user.phoneNumber', 'user.email', 'hometown', 'user.address']}
                 onRowClick={(row) => setDetailModal({ open: true, data: row })}
+            />
+
+            {/* Filter Modal */}
+            <CustomerFilterModal
+                isOpen={filterModalOpen}
+                onClose={() => setFilterModalOpen(false)}
+                onApply={handleFilterApply}
+                currentFilter={currentFilter}
             />
 
             {/* Detail Modal */}
