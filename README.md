@@ -453,7 +453,7 @@ server {
 
 <div align="center">
 
-**Built with ❤️ by Hoan Duong**
+**Built with ❤️ by Hieu Duong**
 
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
