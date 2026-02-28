@@ -5,6 +5,7 @@ import driverAppApi from "../../../api/driver/driverAppApi";
 import authApi from "../../../api/authApi";
 import { authActions } from "../../../stores/authStore";
 import "../DriverApp.css";
+import ProfilePageSkeleton from "../components/ProfilePageSkeleton";
 
 const menuItems = [
     { icon: UserCircle, label: "Tài khoản", desc: "Cập nhật thông tin cá nhân" },
@@ -82,7 +83,7 @@ const ProfilePage = () => {
     };
 
     if (loading) {
-        return <div className="driver-page flex items-center justify-center">Loading...</div>;
+        return <ProfilePageSkeleton />;
     }
 
     if (!profile) {

@@ -4,6 +4,7 @@ import driverAppApi from "../../../api/driver/driverAppApi";
 import Modal from "../../../components/shared/Modal";
 import "../DriverApp.css";
 import OrderDetailView from "../components/OrderDetailView";
+import WalletPageSkeleton from "../components/WalletPageSkeleton";
 
 const formatVnd = (n) => Intl.NumberFormat("vi-VN").format(Math.abs(n)) + "đ";
 
@@ -310,7 +311,7 @@ const WalletPage = () => {
     };
 
     if (loading) {
-        return <div className="driver-page flex items-center justify-center">Loading...</div>;
+        return <WalletPageSkeleton />;
     }
 
     return (

@@ -8,6 +8,7 @@ import OverviewChart from "../components/dashboard/OverviewChart";
 import TopRestaurantsScroll from "../components/dashboard/TopRestaurantsScroll";
 import ActivityList from "../components/dashboard/ActivityList";
 // Removed mockData imports
+import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
 import "./DashboardPage.css";
 import dashboardApi from "../../../api/admin/dashboardApi";
 
@@ -167,7 +168,7 @@ const DashboardPage = () => {
     }, []);
 
     if (loading) {
-        return <div className="dashboard-page">Loading dashboard...</div>;
+        return <DashboardSkeleton />;
     }
 
     return (

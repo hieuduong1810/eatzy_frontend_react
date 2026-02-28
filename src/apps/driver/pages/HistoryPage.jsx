@@ -4,6 +4,7 @@ import { mockDriverHistory } from "../data/mockDriverData";
 import driverAppApi from "../../../api/driver/driverAppApi";
 import "../DriverApp.css";
 import OrderDetailView from "../components/OrderDetailView";
+import HistoryPageSkeleton from "../components/HistoryPageSkeleton";
 import Modal from "../../../components/shared/Modal";
 
 const formatVnd = (n) => Intl.NumberFormat("vi-VN").format(n) + "đ";
@@ -126,7 +127,7 @@ const HistoryPage = () => {
     const totalEarnings = orders.filter((o) => o.status === "DELIVERED").reduce((s, o) => s + o.earnings, 0);
 
     if (loading) {
-        return <div className="driver-page flex items-center justify-center">Loading...</div>;
+        return <HistoryPageSkeleton />;
     }
 
     return (

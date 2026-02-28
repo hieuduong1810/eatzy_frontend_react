@@ -68,9 +68,9 @@ const DriverLoginPage = () => {
 
     return (
         <AuthLayout
-            appName="Eatzy"
+            appName="Tài xế"
             badgeColor="linear-gradient(135deg, #F59E0B, #D97706)"
-            subtitle="Đăng nhập vào hệ thống Eatzy"
+            subtitle="Giao hàng nhanh chóng, thu nhập ổn định"
         >
             <div className="auth-form-header">
                 <h2 className="auth-form-title">Đăng nhập</h2>
@@ -90,7 +90,7 @@ const DriverLoginPage = () => {
                     <input
                         type="email"
                         className="auth-input"
-                        placeholder="name@example.com"
+                        placeholder="driver@eatzy.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         autoComplete="email"

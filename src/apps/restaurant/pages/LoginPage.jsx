@@ -60,7 +60,7 @@ const RestaurantLoginPage = () => {
 
     return (
         <AuthLayout
-            appName="Nhà hàng Eatzy"
+            appName="Nhà hàng"
             badgeColor="linear-gradient(135deg, #F55555, #DC2626)"
             subtitle="Quản lý nhà hàng dễ dàng, tiếp cận hàng triệu khách hàng"
         >

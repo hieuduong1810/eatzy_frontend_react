@@ -17,7 +17,7 @@ const AuthLayout = ({ children, appName = "Eatzy", badgeColor = "var(--color-pri
                         <div className="auth-logo">
                             <UtensilsCrossed size={40} strokeWidth={2} />
                         </div>
-                        <h1 className="auth-brand-title">Eatzy</h1>
+                        <h1 className="auth-brand-title">{appName} Eatzy</h1>
                         <p className="auth-brand-subtitle">
                             {subtitle || "Nền tảng giao đồ ăn thông minh, nhanh chóng và tiện lợi"}
                         </p>

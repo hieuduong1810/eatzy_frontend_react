@@ -16,6 +16,10 @@
     "dev:restaurant": "vite --config vite.restaurant.config.js",
     "start": "vite",
     "build": "vite build",
+    "build:admin": "vite build --config vite.admin.config.js",
+    "build:customer": "vite build --config vite.customer.config.js",
+    "build:driver": "vite build --config vite.driver.config.js",
+    "build:restaurant": "vite build --config vite.restaurant.config.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

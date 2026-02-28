@@ -1,0 +1,48 @@
+services:
+  admin:
+    image: duonghieu1810/eatzy_admin:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: admin
+    container_name: eatzy_admin
+    ports:
+      - "3005:80"
+    restart: always
+
+  customer:
+    image: duonghieu1810/eatzy_customer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: customer
+    container_name: eatzy_customer
+    ports:
+      - "3006:80"
+    restart: always
+
+  driver:
+    image: duonghieu1810/eatzy_driver:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: driver
+    container_name: eatzy_driver
+    ports:
+      - "3007:80"
+    restart: always
+
+  restaurant:
+    image: duonghieu1810/eatzy_restaurant:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: restaurant
+    container_name: eatzy_restaurant
+    ports:
+      - "3008:80"
+    restart: always
