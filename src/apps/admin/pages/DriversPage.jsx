@@ -5,9 +5,12 @@ import DataTable from "../../../components/shared/DataTable";
 import StatusBadge from "../../../components/shared/StatusBadge";
 import Modal from "../../../components/shared/Modal";
 import driverApi from "../../../api/admin/driverApi";
+import userApi from "../../../api/admin/userApi";
 import DriverDetail from "../components/drivers/DriverDetail";
-import "./ManagementPages.css";
 import DriverFilterModal from "../components/drivers/DriverFilterModal";
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
+import { useNotification } from "../../../contexts/NotificationContext";
+import "./ManagementPages.css";
 
 const formatCurrency = (val) =>
     new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", notation: "compact" }).format(val);
@@ -19,20 +22,28 @@ const DriversPage = () => {
     const [createModal, setCreateModal] = useState(false);
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [currentFilters, setCurrentFilters] = useState({});
+    const { showNotification } = useNotification();
+
+    // Delete Modal State
+    const [deleteModal, setDeleteModal] = useState({ open: false, data: null, loading: false, success: false });
+
+    // Lock Modal State
+    const [lockModal, setLockModal] = useState({ open: false, data: null, loading: false, success: false });
+
+    const fetchDrivers = async () => {
+        setLoading(true);
+        try {
+            // In a real app, pass filters to API here
+            const data = await driverApi.getAllDrivers();
+            setDrivers(data);
+        } catch (error) {
+            console.error("Failed to fetch drivers:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchDrivers = async () => {
-            try {
-                // In a real app, pass filters to API here
-                const data = await driverApi.getAllDrivers();
-                setDrivers(data);
-            } catch (error) {
-                console.error("Failed to fetch drivers:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchDrivers();
     }, [currentFilters]);
 
@@ -42,8 +53,52 @@ const DriversPage = () => {
         console.log("Filters applied:", filters);
     };
 
+    const handleDeleteClick = (e, row) => {
+        e.stopPropagation();
+        setDeleteModal({ open: true, data: row, loading: false });
+    };
 
+    const handleDeleteConfirm = async () => {
+        setDeleteModal(prev => ({ ...prev, loading: true }));
+        try {
+            await driverApi.deleteDriver(deleteModal.data.id);
+            setDeleteModal(prev => ({ ...prev, loading: false, success: true }));
+            showNotification("Thành công", `Đã xóa tài xế ${deleteModal.data.user?.name}`, "success");
+            fetchDrivers();
+            setTimeout(() => {
+                setDeleteModal({ open: false, data: null, loading: false, success: false });
+            }, 1000);
+        } catch (error) {
+            showNotification("Lỗi", "Không thể xóa tài xế. Vui lòng thử lại.", "danger");
+            setDeleteModal(prev => ({ ...prev, loading: false }));
+        }
+    };
 
+    const handleLockClick = (e, row) => {
+        e.stopPropagation();
+        setLockModal({ open: true, data: row, loading: false });
+    };
+
+    const handleLockConfirm = async () => {
+        setLockModal(prev => ({ ...prev, loading: true }));
+        const currentStatus = lockModal.data.user?.isActive;
+        try {
+            await userApi.updateUserActiveStatus(lockModal.data.user?.id, !currentStatus);
+            setLockModal(prev => ({ ...prev, loading: false, success: true }));
+            showNotification(
+                "Thành công",
+                `Đã ${!currentStatus ? 'mở khóa' : 'khóa'} tài khoản ${lockModal.data.user?.name}`,
+                "success"
+            );
+            fetchDrivers();
+            setTimeout(() => {
+                setLockModal({ open: false, data: null, loading: false, success: false });
+            }, 1000);
+        } catch (error) {
+            showNotification("Lỗi", "Không thể cập nhật trạng thái người dùng. Vui lòng thử lại.", "danger");
+            setLockModal(prev => ({ ...prev, loading: false }));
+        }
+    };
 
     const columns = [
         {
@@ -126,13 +181,13 @@ const DriversPage = () => {
             key: "actions", label: "ACTIONS", sortable: false, align: "right",
             render: (_, row) => (
                 <div className="res-actions">
-                    <button className="btn-icon-action yellow" title="Lock/Unlock">
+                    <button className="btn-icon-action yellow" title="Lock/Unlock" onClick={(e) => handleLockClick(e, row)}>
                         <Lock size={16} />
                     </button>
                     <button className="btn-icon-action green" title="Edit" onClick={() => setDetailModal({ open: true, data: row })}>
                         <Pencil size={16} />
                     </button>
-                    <button className="btn-icon-action red" title="Delete">
+                    <button className="btn-icon-action red" title="Delete" onClick={(e) => handleDeleteClick(e, row)}>
                         <Trash2 size={16} />
                     </button>
                 </div>
@@ -231,7 +286,34 @@ const DriversPage = () => {
                     </div>
                 </div>
             </Modal>
+
+            {/* Delete Confirmation Modal */}
+            <SlideConfirmModal
+                isOpen={deleteModal.open}
+                onClose={() => setDeleteModal({ open: false, data: null, loading: false, success: false })}
+                onConfirm={handleDeleteConfirm}
+                title="Xác nhận xóa"
+                description={`Bạn có chắc chắn muốn xóa tài xế ${deleteModal.data?.user?.name}? Hành động này không thể hoàn tác.`}
+                isLoading={deleteModal.loading}
+                isSuccess={deleteModal.success}
+                successTitle="Thành công"
+                type="danger"
+            />
+
+            {/* Lock Confirmation Modal */}
+            <SlideConfirmModal
+                isOpen={lockModal.open}
+                onClose={() => setLockModal({ open: false, data: null, loading: false, success: false })}
+                onConfirm={handleLockConfirm}
+                title={lockModal.data?.user?.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+                description={`Bạn có chắc chắn muốn ${lockModal.data?.user?.isActive ? 'khóa' : 'mở khóa'} tài khoản của ${lockModal.data?.user?.name}?`}
+                isLoading={lockModal.loading}
+                isSuccess={lockModal.success}
+                successTitle="Thành công"
+                type={lockModal.data?.user?.isActive ? "danger" : "warning"}
+            />
         </div>
     );
 };
+
 export default DriversPage;

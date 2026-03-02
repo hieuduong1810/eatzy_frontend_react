@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { X, AlertTriangle, PiggyBank, Unlock, FilePen, FilePlus, Check } from "lucide-react";
+import { X, AlertTriangle, PiggyBank, Unlock, FilePen, FilePlus, Check, CheckCircle2 } from "lucide-react";
 import SwipeToConfirm from "./SwipeToConfirm";
 import "./SlideConfirmModal.css";
 
@@ -11,6 +11,8 @@ const SlideConfirmModal = ({
     title = "Xác nhận hành động",
     description,
     isLoading = false,
+    isSuccess = false,
+    successTitle = "Hoàn tất!",
     type = "warning", // warning, success, danger, info, pink
     confirmDetails
 }) => {
@@ -18,6 +20,30 @@ const SlideConfirmModal = ({
     const [showProcessing, setShowProcessing] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
+    const [isSuccessInternal, setIsSuccessInternal] = useState(false);
+    const [displayContent, setDisplayContent] = useState({
+        title,
+        description,
+        type,
+        confirmDetails,
+        successTitle
+    });
+
+    useEffect(() => {
+        if (isOpen && !isSuccessInternal) {
+            setDisplayContent({
+                title,
+                description,
+                type,
+                confirmDetails,
+                successTitle
+            });
+        }
+    }, [isOpen, title, description, type, confirmDetails, successTitle, isSuccessInternal]);
+
+    useEffect(() => {
+        if (isSuccess) setIsSuccessInternal(true);
+    }, [isSuccess]);
 
     useEffect(() => {
         if (isOpen) {
@@ -26,12 +52,13 @@ const SlideConfirmModal = ({
             // Reset states
             setIsCompleted(false);
             setShowProcessing(false);
+            setIsSuccessInternal(false);
         } else {
             setIsClosing(true);
             const timer = setTimeout(() => {
                 setShouldRender(false);
                 setIsClosing(false);
-            }, 2000); // Match animation duration
+            }, 450); // Match animation duration
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
@@ -56,7 +83,8 @@ const SlideConfirmModal = ({
 
     // Determine theme classes based on type
     const getTheme = () => {
-        switch (type) {
+        const themeType = displayContent.type || "warning";
+        switch (themeType) {
             case "warning":
                 return {
                     accent: "accent-amber",
@@ -92,7 +120,8 @@ const SlideConfirmModal = ({
     const theme = getTheme();
 
     const IconComponent = () => {
-        switch (type) {
+        const themeType = displayContent.type || "warning";
+        switch (themeType) {
             case "warning": return <AlertTriangle size={24} className="text-amber-500" />;
             case "danger": return <AlertTriangle size={24} className="text-red-500" />;
             case "success": return <Check size={24} className="text-emerald-500" />;
@@ -114,7 +143,7 @@ const SlideConfirmModal = ({
                         <div className={`scm-icon-box ${theme.bg}`}>
                             <IconComponent />
                         </div>
-                        <h3 className="scm-title">{title}</h3>
+                        <h3 className="scm-title">{displayContent.title}</h3>
                     </div>
                     <button className="scm-close-btn-glass" onClick={onClose} disabled={isCompleted || isLoading}>
                         <X size={18} />
@@ -122,7 +151,15 @@ const SlideConfirmModal = ({
                 </div>
 
                 <div className="scm-content-body">
-                    {shouldShowProcessing ? (
+                    {isSuccessInternal ? (
+                        <div className="scm-success-state">
+                            <div className="scm-success-icon-wrapper">
+                                <CheckCircle2 size={64} className="text-emerald-500" />
+                            </div>
+                            <h4 className="scm-success-title">{displayContent.successTitle}</h4>
+                            <p className="scm-success-desc">Hành động của bạn đã được thực hiện thành công.</p>
+                        </div>
+                    ) : shouldShowProcessing ? (
                         <div className="scm-processing-state">
                             <div className="scm-spinner-wrapper">
                                 <div className="scm-loading-spinner-lg" style={{ borderTopColor: theme.iconColor }}></div>
@@ -131,11 +168,11 @@ const SlideConfirmModal = ({
                         </div>
                     ) : (
                         <>
-                            <p className="scm-desc">{description}</p>
+                            <p className="scm-desc">{displayContent.description}</p>
 
-                            {confirmDetails && (
+                            {displayContent.confirmDetails && (
                                 <div className={`scm-details-box ${theme.bg}`}>
-                                    {Object.entries(confirmDetails).map(([label, value]) => (
+                                    {Object.entries(displayContent.confirmDetails).map(([label, value]) => (
                                         <div key={label} className="scm-detail-row">
                                             <span className="detail-label">{label}:</span>
                                             <span className="detail-value">{value}</span>
@@ -150,7 +187,7 @@ const SlideConfirmModal = ({
                                     text={isCompleted ? "Đã xác nhận!" : "Vuốt để xác nhận"}
                                     disabled={isCompleted || isLoading}
                                     isLoading={isLoading}
-                                    type={type}
+                                    type={displayContent.type}
                                 />
                             </div>
 

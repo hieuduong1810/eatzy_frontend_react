@@ -4,9 +4,12 @@ import PageHeader from "../../../components/shared/PageHeader";
 import DataTable from "../../../components/shared/DataTable";
 import StatusBadge from "../../../components/shared/StatusBadge";
 import restaurantApi from "../../../api/admin/restaurantApi";
+import userApi from "../../../api/admin/userApi";
 import RestaurantDetail from "../components/restaurants/RestaurantDetail";
 import RestaurantModal from "../components/restaurants/RestaurantModal";
 import RestaurantFilterModal from "../components/restaurants/RestaurantFilterModal";
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
+import { useNotification } from "../../../contexts/NotificationContext";
 import "./ManagementPages.css";
 
 const formatCurrency = (val) =>
@@ -19,6 +22,13 @@ const RestaurantsPage = () => {
     const [editModal, setEditModal] = useState({ open: false, data: null });
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [currentFilter, setCurrentFilter] = useState('ALL');
+    const { showNotification } = useNotification();
+
+    // Delete Modal State
+    const [deleteModal, setDeleteModal] = useState({ open: false, data: null, loading: false, success: false });
+
+    // Lock Modal State
+    const [lockModal, setLockModal] = useState({ open: false, data: null, loading: false, success: false });
 
     useEffect(() => {
         fetchRestaurants();
@@ -45,6 +55,53 @@ const RestaurantsPage = () => {
     const handleFilterApply = (filterId) => {
         setCurrentFilter(filterId);
         fetchRestaurants(filterId);
+    };
+
+    const handleDeleteClick = (e, row) => {
+        e.stopPropagation();
+        setDeleteModal({ open: true, data: row, loading: false });
+    };
+
+    const handleDeleteConfirm = async () => {
+        setDeleteModal(prev => ({ ...prev, loading: true }));
+        try {
+            await restaurantApi.deleteRestaurant(deleteModal.data.id);
+            setDeleteModal(prev => ({ ...prev, loading: false, success: true }));
+            showNotification("Thành công", `Đã xóa cửa hàng ${deleteModal.data.name}`, "success");
+            fetchRestaurants(currentFilter);
+            setTimeout(() => {
+                setDeleteModal({ open: false, data: null, loading: false, success: false });
+            }, 1000);
+        } catch (error) {
+            showNotification("Lỗi", "Không thể xóa cửa hàng. Vui lòng thử lại.", "danger");
+            setDeleteModal(prev => ({ ...prev, loading: false }));
+        }
+    };
+
+    const handleLockClick = (e, row) => {
+        e.stopPropagation();
+        setLockModal({ open: true, data: row, loading: false });
+    };
+
+    const handleLockConfirm = async () => {
+        setLockModal(prev => ({ ...prev, loading: true }));
+        const currentStatus = lockModal.data.owner?.isActive;
+        try {
+            await userApi.updateUserActiveStatus(lockModal.data.owner?.id, !currentStatus);
+            setLockModal(prev => ({ ...prev, loading: false, success: true }));
+            showNotification(
+                "Thành công",
+                `Đã ${!currentStatus ? 'mở khóa' : 'khóa'} tài khoản ${lockModal.data.name}`,
+                "success"
+            );
+            fetchRestaurants(currentFilter);
+            setTimeout(() => {
+                setLockModal({ open: false, data: null, loading: false, success: false });
+            }, 1000);
+        } catch (error) {
+            showNotification("Lỗi", "Không thể cập nhật trạng thái người dùng. Vui lòng thử lại.", "danger");
+            setLockModal(prev => ({ ...prev, loading: false }));
+        }
     };
 
     const columns = [
@@ -125,7 +182,7 @@ const RestaurantsPage = () => {
             key: "actions", label: "ACTIONS", sortable: false, align: "right",
             render: (_, row) => (
                 <div className="res-actions">
-                    <button className="btn-icon-action yellow" title="Lock/Unlock" onClick={(e) => e.stopPropagation()}>
+                    <button className="btn-icon-action yellow" title="Lock/Unlock" onClick={(e) => handleLockClick(e, row)}>
                         <Lock size={16} />
                     </button>
                     <button className="btn-icon-action green" title="Edit" onClick={(e) => {
@@ -134,7 +191,7 @@ const RestaurantsPage = () => {
                     }}>
                         <Pencil size={16} />
                     </button>
-                    <button className="btn-icon-action red" title="Delete" onClick={(e) => e.stopPropagation()}>
+                    <button className="btn-icon-action red" title="Delete" onClick={(e) => handleDeleteClick(e, row)}>
                         <Trash2 size={16} />
                     </button>
                 </div>
@@ -192,6 +249,32 @@ const RestaurantsPage = () => {
                 isOpen={editModal.open}
                 onClose={() => setEditModal({ open: false, data: null })}
                 restaurant={editModal.data}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <SlideConfirmModal
+                isOpen={deleteModal.open}
+                onClose={() => setDeleteModal({ open: false, data: null, loading: false, success: false })}
+                onConfirm={handleDeleteConfirm}
+                title="Xác nhận xóa"
+                description={`Bạn có chắc chắn muốn xóa cửa hàng ${deleteModal.data?.name}? Hành động này không thể hoàn tác.`}
+                isLoading={deleteModal.loading}
+                isSuccess={deleteModal.success}
+                successTitle="Thành công"
+                type="danger"
+            />
+
+            {/* Lock Confirmation Modal */}
+            <SlideConfirmModal
+                isOpen={lockModal.open}
+                onClose={() => setLockModal({ open: false, data: null, loading: false, success: false })}
+                onConfirm={handleLockConfirm}
+                title={lockModal.data?.owner?.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+                description={`Bạn có chắc chắn muốn ${lockModal.data?.owner?.isActive ? 'khóa' : 'mở khóa'} tài khoản của ${lockModal.data?.name}?`}
+                isLoading={lockModal.loading}
+                isSuccess={lockModal.success}
+                successTitle="Thành công"
+                type={lockModal.data?.owner?.isActive ? "danger" : "warning"}
             />
         </div>
     );

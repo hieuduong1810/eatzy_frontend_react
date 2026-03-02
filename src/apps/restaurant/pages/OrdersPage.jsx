@@ -15,9 +15,7 @@ const OrdersPage = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(false);
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-
-    const [isTogglingStatus, setIsTogglingStatus] = useState(false);
+    const [statusModal, setStatusModal] = useState({ open: false, loading: false, success: false });
 
     const { client, isConnected } = useWebSocket();
     // ... (keep useEffects)
@@ -25,33 +23,27 @@ const OrdersPage = () => {
     // ... (keep fetch functions)
 
     const handleToggleStatus = () => {
-        setIsConfirmOpen(true);
+        setStatusModal({ open: true, loading: false, success: false });
     };
 
     const handleConfirmToggle = async () => {
-        setIsTogglingStatus(true);
+        setStatusModal(prev => ({ ...prev, loading: true }));
         try {
+            const nextStatus = !isRestaurantOpen;
             if (isRestaurantOpen) {
-                // Closing - wait for API and minimum 1s delay
-                await Promise.all([
-                    restaurantAppApi.closeRestaurant(),
-                    new Promise(resolve => setTimeout(resolve, 1000))
-                ]);
-                setIsRestaurantOpen(false);
+                await restaurantAppApi.closeRestaurant();
             } else {
-                // Opening - wait for API and minimum 1s delay
-                await Promise.all([
-                    restaurantAppApi.openRestaurant(),
-                    new Promise(resolve => setTimeout(resolve, 1000))
-                ]);
-                setIsRestaurantOpen(true);
+                await restaurantAppApi.openRestaurant();
             }
-            setIsConfirmOpen(false);
+            setStatusModal(prev => ({ ...prev, loading: false, success: true }));
+            setTimeout(() => {
+                setIsRestaurantOpen(nextStatus);
+                setStatusModal({ open: false, loading: false, success: false });
+            }, 1000);
         } catch (error) {
             console.error("Failed to toggle restaurant status:", error);
-            toast.error("Failed to update status");
-        } finally {
-            setIsTogglingStatus(false);
+            toast.error("Không thể thay đổi trạng thái cửa hàng");
+            setStatusModal(prev => ({ ...prev, loading: false }));
         }
     };
 
@@ -273,14 +265,16 @@ const OrdersPage = () => {
             )}
 
             <SlideConfirmModal
-                isOpen={isConfirmOpen}
-                onClose={() => setIsConfirmOpen(false)}
+                isOpen={statusModal.open}
+                onClose={() => setStatusModal({ open: false, loading: false, success: false })}
                 onConfirm={handleConfirmToggle}
                 title={isRestaurantOpen ? "Tắt ứng dụng" : "Mở ứng dụng"}
                 description={isRestaurantOpen
                     ? "Tắt ứng dụng sẽ ngừng nhận đơn hàng mới. Bạn có chắc chắn muốn đóng cửa hàng không?"
                     : "Bạn có chắc chắn muốn mở cửa hàng để bắt đầu nhận đơn hàng mới không?"}
-                isLoading={isTogglingStatus}
+                isLoading={statusModal.loading}
+                isSuccess={statusModal.success}
+                successTitle="Thành công"
                 type={isRestaurantOpen ? "warning" : "success"}
             />
         </div>

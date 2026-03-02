@@ -18,8 +18,7 @@ const HomePage = () => {
     const [locateVersion, setLocateVersion] = useState(0);
 
     // Modal state
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [isTogglingStatus, setIsTogglingStatus] = useState(false);
+    const [statusModal, setStatusModal] = useState({ open: false, loading: false, success: false });
 
     // Mock offer state
     const [currentOffer, setCurrentOffer] = useState(null);
@@ -93,28 +92,27 @@ const HomePage = () => {
     };
 
     const handleToggleOnline = () => {
-        setIsConfirmOpen(true);
+        setStatusModal({ open: true, loading: false, success: false });
     };
 
     const confirmToggleOnline = async () => {
-        setIsTogglingStatus(true);
+        setStatusModal(prev => ({ ...prev, loading: true }));
         try {
-            // Minimum 1s delay for UX
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
+            const nextStatus = !online;
             if (online) {
                 await driverAppApi.goOffline();
-                setOnline(false);
             } else {
                 await driverAppApi.goOnline();
-                setOnline(true);
             }
+            setStatusModal(prev => ({ ...prev, loading: false, success: true }));
+            setTimeout(() => {
+                setOnline(nextStatus);
+                setStatusModal({ open: false, loading: false, success: false });
+            }, 1000);
         } catch (error) {
             console.error("Failed to toggle status", error);
             toast.error("Không thể thay đổi trạng thái");
-        } finally {
-            setIsTogglingStatus(false);
-            setIsConfirmOpen(false);
+            setStatusModal(prev => ({ ...prev, loading: false }));
         }
     };
 
@@ -311,14 +309,16 @@ const HomePage = () => {
             />
 
             <SlideConfirmModal
-                isOpen={isConfirmOpen}
-                onClose={() => setIsConfirmOpen(false)}
+                isOpen={statusModal.open}
+                onClose={() => setStatusModal({ open: false, loading: false, success: false })}
                 onConfirm={confirmToggleOnline}
                 title={online ? "Tắt trạng thái hoạt động" : "Bắt đầu làm việc"}
                 description={online
                     ? "Bạn sẽ không nhận được đơn hàng mới. Bạn có chắc chắn muốn nghỉ ngơi không?"
                     : "Bạn đã sẵn sàng nhận đơn và giao hàng chưa?"}
-                isLoading={isTogglingStatus}
+                isLoading={statusModal.loading}
+                isSuccess={statusModal.success}
+                successTitle="Thành công"
                 type={online ? "warning" : "success"}
             />
         </div>

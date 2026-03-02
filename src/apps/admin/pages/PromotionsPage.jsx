@@ -5,6 +5,8 @@ import DataTable from "../../../components/shared/DataTable";
 import promotionApi from "../../../api/admin/promotionApi";
 import PromotionModal from "../components/promotions/PromotionModal";
 import PromotionFilterModal from "../components/promotions/PromotionFilterModal";
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
+import { useNotification } from "../../../contexts/NotificationContext";
 import "./PromotionsPage.css";
 
 const PromotionsPage = () => {
@@ -13,6 +15,10 @@ const PromotionsPage = () => {
     const [modalState, setModalState] = useState({ open: false, data: null });
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [filters, setFilters] = useState({});
+    const { showNotification } = useNotification();
+
+    // Delete Modal State
+    const [deleteModal, setDeleteModal] = useState({ open: false, data: null, loading: false, success: false });
 
     useEffect(() => {
         fetchPromotions();
@@ -32,6 +38,27 @@ const PromotionsPage = () => {
             console.error("Failed to fetch promotions", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteClick = (e, row) => {
+        e.stopPropagation();
+        setDeleteModal({ open: true, data: row, loading: false });
+    };
+
+    const handleDeleteConfirm = async () => {
+        setDeleteModal(prev => ({ ...prev, loading: true }));
+        try {
+            await promotionApi.deletePromotion(deleteModal.data.id);
+            setDeleteModal(prev => ({ ...prev, loading: false, success: true }));
+            showNotification("Thành công", `Đã xóa khuyến mãi ${deleteModal.data.code}`, "success");
+            fetchPromotions();
+            setTimeout(() => {
+                setDeleteModal({ open: false, data: null, loading: false, success: false });
+            }, 1000);
+        } catch (error) {
+            showNotification("Lỗi", "Không thể xóa khuyến mãi. Vui lòng thử lại.", "danger");
+            setDeleteModal(prev => ({ ...prev, loading: false }));
         }
     };
 
@@ -156,10 +183,7 @@ const PromotionsPage = () => {
                         }}>
                             <Pencil size={14} />
                         </button>
-                        <button className="action-btn small delete" onClick={(e) => {
-                            e.stopPropagation();
-                            // Logic for delete
-                        }}>
+                        <button className="action-btn small delete" onClick={(e) => handleDeleteClick(e, row)}>
                             <Trash2 size={14} />
                         </button>
                     </div>
@@ -212,6 +236,19 @@ const PromotionsPage = () => {
                 onClose={() => setFilterModalOpen(false)}
                 onApply={handleApplyFilters}
                 currentFilters={filters}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <SlideConfirmModal
+                isOpen={deleteModal.open}
+                onClose={() => setDeleteModal({ open: false, data: null, loading: false, success: false })}
+                onConfirm={handleDeleteConfirm}
+                title="Xác nhận xóa"
+                description={`Bạn có chắc chắn muốn xóa khuyến mãi ${deleteModal.data?.code}? Hành động này không thể hoàn tác.`}
+                isLoading={deleteModal.loading}
+                isSuccess={deleteModal.success}
+                successTitle="Thành công"
+                type="danger"
             />
         </div>
     );

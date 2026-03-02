@@ -8,6 +8,47 @@ import CartFloatingButton from "../components/CartFloatingButton";
 import CartModal from "../components/CartModal";
 import "../CustomerAppRedesign.css"; // Correct CSS import
 
+const RestaurantDetailSkeleton = () => (
+    <div className="cust-detail-page-redesign">
+        <div className="cust-detail-container">
+            {/* Left Column Skeleton */}
+            <div className="cust-col-left">
+                <div className="cust-sticky-wrapper">
+                    <div className="skeleton-box" style={{ width: '80%', height: '60px', marginBottom: '16px' }} />
+                    <div className="skeleton-box" style={{ width: '60%', height: '20px', marginBottom: '24px' }} />
+                    <div className="skeleton-box" style={{ width: '40%', height: '16px', marginBottom: '32px' }} />
+                    <div className="skeleton-box" style={{ width: '200px', height: '40px', borderRadius: '99px', marginBottom: '32px' }} />
+                    <div className="skeleton-box" style={{ width: '100%', aspectRatio: '4/3', borderRadius: '24px' }} />
+                </div>
+            </div>
+
+            {/* Right Column Skeleton */}
+            <div className="cust-col-right">
+                <div className="skeleton-box" style={{ width: '100%', height: '380px', borderRadius: '32px', marginBottom: '40px' }} />
+
+                <div className="cust-detail-tabs-sticky" style={{ background: 'transparent' }}>
+                    <div className="cust-detail-tabs-list">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="skeleton-box" style={{ width: '80px', height: '30px' }} />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="cust-menu-section">
+                    <div className="cust-cat-header-row">
+                        <div className="skeleton-box" style={{ width: '200px', height: '32px' }} />
+                    </div>
+                    <div className="cust-menu-grid-v2">
+                        {[1, 2, 3, 4, 5, 6].map(i => (
+                            <div key={i} className="skeleton-box" style={{ width: '100%', aspectRatio: '3/4', borderRadius: '32px' }} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
 export default function RestaurantDetailPage() {
     const { slug } = useParams();
     const navigate = useNavigate();
@@ -192,7 +233,7 @@ export default function RestaurantDetailPage() {
         }
     };
 
-    if (isLoading) return <div className="p-10 text-center">Loading...</div>;
+    if (isLoading) return <RestaurantDetailSkeleton />;
 
     const currentResId = restaurant?.id || 0;
 

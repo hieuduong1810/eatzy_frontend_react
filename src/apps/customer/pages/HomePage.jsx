@@ -16,6 +16,21 @@ const promotions = [
     { id: 3, title: "Combo Deal 🔥", subtitle: "Tiết kiệm 50K", gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" },
 ];
 
+const RestaurantListSkeleton = () => (
+    <div className="cust-restaurant-list">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="cust-restaurant-list-item" style={{ cursor: 'default' }}>
+                <div className="skeleton-box" style={{ width: '100px', height: '100px', borderRadius: '20px' }} />
+                <div className="cust-res-list-info" style={{ flex: 1 }}>
+                    <div className="skeleton-box" style={{ width: '60%', height: '20px', marginBottom: '12px' }} />
+                    <div className="skeleton-box" style={{ width: '40%', height: '14px', marginBottom: '8px' }} />
+                    <div className="skeleton-box" style={{ width: '80%', height: '14px' }} />
+                </div>
+            </div>
+        ))}
+    </div>
+);
+
 export default function HomePage() {
     const navigate = useNavigate();
     const locationRoute = useLocation();
@@ -245,9 +260,7 @@ export default function HomePage() {
                         <span className="cust-section-count">{nearYou.length} quán</span>
                     </div>
                     {isLoading ? (
-                        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
-                            <Loader className="animate-spin" size={32} color="#78C841" />
-                        </div>
+                        <RestaurantListSkeleton />
                     ) : (
                         <div className="cust-restaurant-list">
                             {nearYou.map((r, idx) => (

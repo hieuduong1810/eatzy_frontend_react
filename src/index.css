@@ -302,3 +302,24 @@ textarea {
   padding: 0 !important;
   margin: 0 !important;
 }
+
+/* ── Skeleton Loading ── */
+@keyframes skeleton-pulse {
+  0% {
+    background-color: #f3f4f6;
+  }
+
+  50% {
+    background-color: #e5e7eb;
+  }
+
+  100% {
+    background-color: #f3f4f6;
+  }
+}
+
+.skeleton-box {
+  background-color: #f3f4f6;
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+  border-radius: 4px;
+}
