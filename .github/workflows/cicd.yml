@@ -22,24 +22,40 @@ jobs:
 
       # 3. Build 4 Docker images
       - name: Build Admin image
-        run: docker build --build-arg APP_NAME=admin --build-arg VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }} -t ${{ secrets.DOCKERHUB_USER }}/eatzy_admin:latest .
+        run: |
+          docker build \
+            --build-arg APP_NAME=admin \
+            --build-arg VITE_MAPBOX_ACCESS_TOKEN="${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" \
+            -t "${{ secrets.DOCKERHUB_USER }}/eatzy_admin:latest" .
 
       - name: Build Customer image
-        run: docker build --build-arg APP_NAME=customer --build-arg VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }} -t ${{ secrets.DOCKERHUB_USER }}/eatzy_customer:latest .
+        run: |
+          docker build \
+            --build-arg APP_NAME=customer \
+            --build-arg VITE_MAPBOX_ACCESS_TOKEN="${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" \
+            -t "${{ secrets.DOCKERHUB_USER }}/eatzy_customer:latest" .
 
       - name: Build Driver image
-        run: docker build --build-arg APP_NAME=driver --build-arg VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }} -t ${{ secrets.DOCKERHUB_USER }}/eatzy_driver:latest .
+        run: |
+          docker build \
+            --build-arg APP_NAME=driver \
+            --build-arg VITE_MAPBOX_ACCESS_TOKEN="${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" \
+            -t "${{ secrets.DOCKERHUB_USER }}/eatzy_driver:latest" .
 
       - name: Build Restaurant image
-        run: docker build --build-arg APP_NAME=restaurant --build-arg VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }} -t ${{ secrets.DOCKERHUB_USER }}/eatzy_restaurant:latest .
+        run: |
+          docker build \
+            --build-arg APP_NAME=restaurant \
+            --build-arg VITE_MAPBOX_ACCESS_TOKEN="${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" \
+            -t "${{ secrets.DOCKERHUB_USER }}/eatzy_restaurant:latest" .
 
       # 4. Push 4 images lên Docker Hub
       - name: Push all images
         run: |
-          docker push ${{ secrets.DOCKERHUB_USER }}/eatzy_admin:latest
-          docker push ${{ secrets.DOCKERHUB_USER }}/eatzy_customer:latest
-          docker push ${{ secrets.DOCKERHUB_USER }}/eatzy_driver:latest
-          docker push ${{ secrets.DOCKERHUB_USER }}/eatzy_restaurant:latest
+          docker push "${{ secrets.DOCKERHUB_USER }}/eatzy_admin:latest"
+          docker push "${{ secrets.DOCKERHUB_USER }}/eatzy_customer:latest"
+          docker push "${{ secrets.DOCKERHUB_USER }}/eatzy_driver:latest"
+          docker push "${{ secrets.DOCKERHUB_USER }}/eatzy_restaurant:latest"
 
       # 5. SSH vào server & deploy qua docker compose
       - name: Deploy to server via SSH
