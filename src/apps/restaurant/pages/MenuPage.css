@@ -425,8 +425,8 @@
     flex-direction: column;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-6) 0 60px 0;
-    /* Adjusted slightly up based on feedback */
+    padding: 130px 0 20px 0;
+    /* Large padding on top to allow scrolling past last category, small padding on bottom */
     opacity: 0.5;
 }
 
