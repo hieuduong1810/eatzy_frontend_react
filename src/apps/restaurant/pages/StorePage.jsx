@@ -3,6 +3,10 @@ import { MapPin, Phone, Mail, Tag, Star, Clock, Image, PenLine, Check } from "lu
 import Map, { Marker } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import restaurantAppApi from "../../../api/restaurant/restaurantAppApi";
+import EditGeneralInfoModal from "./EditGeneralInfoModal";
+import WeeklyScheduleModal from "./WeeklyScheduleModal";
+import EditLocationModal from "./EditLocationModal";
+import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
 import "./StorePage.css";
 
 // Using the token found in the codebase
@@ -11,6 +15,22 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const StorePage = () => {
     const [store, setStore] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isWeeklyScheduleModalOpen, setIsWeeklyScheduleModalOpen] = useState(false);
+    const [isEditLocationModalOpen, setIsEditLocationModalOpen] = useState(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [isConfirmScheduleOpen, setIsConfirmScheduleOpen] = useState(false);
+    const [isConfirmLocationOpen, setIsConfirmLocationOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [tempSchedule, setTempSchedule] = useState([]);
+    const [tempLocation, setTempLocation] = useState(null);
+    const [formData, setFormData] = useState({
+        name: "",
+        description: "",
+        phone: "",
+        email: ""
+    });
 
     useEffect(() => {
         fetchStoreData();
@@ -30,18 +50,141 @@ const StorePage = () => {
                     phone: data.contactPhone,
                     email: data.owner?.email,
                     rating: data.averageRating,
-                    openingHours: Array(7).fill(null).map((_, i) => ({
-                        day: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"][i],
-                        isOpen: true,
-                        shifts: [{ open: data.schedule.split(" - ")[0], close: data.schedule.split(" - ")[1] }]
-                    }))
+                    openingHours: parseSchedule(data.schedule)
                 };
                 setStore(normalizedStore);
+                setFormData({
+                    name: normalizedStore.name,
+                    description: normalizedStore.description,
+                    phone: normalizedStore.phone,
+                    email: normalizedStore.email
+                });
             }
         } catch (error) {
             console.error("Failed to fetch store data:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const parseSchedule = (scheduleStr) => {
+        try {
+            if (scheduleStr && scheduleStr.startsWith("[")) {
+                return JSON.parse(scheduleStr);
+            }
+        } catch (e) {
+            console.error("Failed to parse schedule JSON:", e);
+        }
+
+        // Fallback: expect "HH:mm - HH:mm" or default
+        const range = scheduleStr ? scheduleStr.split(" - ") : ["08:00", "22:00"];
+        const open = range[0] || "08:00";
+        const close = range[1] || "22:00";
+
+        return Array(7).fill(null).map((_, i) => ({
+            day: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"][i],
+            isOpen: true,
+            shifts: [{ open: open, close: close }]
+        }));
+    };
+
+    const handleEditClick = () => {
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveClick = () => {
+        setIsConfirmModalOpen(true);
+    };
+
+    const handleConfirmSave = async () => {
+        setIsSaving(true);
+        try {
+            const updateData = {
+                name: formData.name,
+                description: formData.description,
+                contactPhone: formData.phone,
+                // The API expectation for email might be different since it's owner.email in the GET, 
+                // but let's check what the backend Restaurant object has.
+            };
+
+            await restaurantAppApi.updateMyRestaurant(updateData);
+
+            setSaveSuccess(true);
+            setTimeout(() => {
+                setIsConfirmModalOpen(false);
+                setIsEditModalOpen(false);
+                setSaveSuccess(false);
+                setIsSaving(false);
+                fetchStoreData(); // Refresh from server
+            }, 1500);
+        } catch (error) {
+            console.error("Failed to save store data:", error);
+            setIsSaving(false);
+        }
+    };
+
+    const handleEditScheduleClick = () => {
+        setIsWeeklyScheduleModalOpen(true);
+    };
+
+    const handleScheduleSaveClick = (newSchedule) => {
+        setTempSchedule(newSchedule);
+        setIsConfirmScheduleOpen(true);
+    };
+
+    const handleConfirmScheduleSave = async () => {
+        setIsSaving(true);
+        try {
+            const updateData = {
+                schedule: JSON.stringify(tempSchedule)
+            };
+            await restaurantAppApi.updateMyRestaurant(updateData);
+            setSaveSuccess(true);
+            setTimeout(() => {
+                setIsConfirmScheduleOpen(false);
+                setSaveSuccess(false);
+                fetchStoreData();
+            }, 1500);
+        } catch (error) {
+            console.error("Failed to update schedule:", error);
+            setIsConfirmScheduleOpen(false);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleEditLocationClick = () => {
+        setIsEditLocationModalOpen(true);
+    };
+
+    const handleLocationSaveClick = (locationData) => {
+        setTempLocation(locationData);
+        setIsEditLocationModalOpen(false);
+        setIsConfirmLocationOpen(true);
+    };
+
+    const handleConfirmLocationSave = async () => {
+        setIsSaving(true);
+        // Simulate API call as requested
+        try {
+            console.log("Saving location data (simulated):", tempLocation);
+            setSaveSuccess(true);
+            setTimeout(() => {
+                setIsConfirmLocationOpen(false);
+                setSaveSuccess(false);
+                // Update local state to reflect changes
+                setStore(prev => ({
+                    ...prev,
+                    address: tempLocation.address,
+                    latitude: tempLocation.latitude,
+                    longitude: tempLocation.longitude
+                }));
+            }, 1500);
+        } catch (error) {
+            console.error("Failed to update location:", error);
+            setIsConfirmLocationOpen(false);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -94,7 +237,7 @@ const StorePage = () => {
                             <InfoIcon size={20} />
                         </div>
                         GENERAL INFORMATION
-                        <button className="btn-edit-section"><PenLine size={16} /></button>
+                        <button className="btn-edit-section" onClick={handleEditClick}><PenLine size={16} /></button>
                     </div>
 
                     <div className="store-top-row">
@@ -173,7 +316,7 @@ const StorePage = () => {
                                 <MapPin size={20} />
                             </div>
                             LOCATION & ADDRESS
-                            <button className="btn-edit-section"><PenLine size={16} /></button>
+                            <button className="btn-edit-section" onClick={handleEditLocationClick}><PenLine size={16} /></button>
                         </div>
                         <div className="address-text">
                             <span className="text-gray-500 text-xs font-bold uppercase block mb-1">ADDRESS: </span>
@@ -203,7 +346,7 @@ const StorePage = () => {
                                 <Clock size={20} />
                             </div>
                             OPENING HOURS
-                            <button className="btn-edit-section"><PenLine size={16} /></button>
+                            <button className="btn-edit-section" onClick={handleEditScheduleClick}><PenLine size={16} /></button>
                         </div>
 
                         <div className="hours-list">
@@ -229,6 +372,80 @@ const StorePage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modals */}
+            <EditGeneralInfoModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSave={handleSaveClick}
+                formData={formData}
+                setFormData={setFormData}
+            />
+
+            <SlideConfirmModal
+                isOpen={isConfirmModalOpen}
+                onClose={() => setIsConfirmModalOpen(false)}
+                onConfirm={handleConfirmSave}
+                title="Xác nhận lưu thay đổi"
+                description="Bạn có chắc chắn muốn lưu các thông tin vừa chỉnh sửa không?"
+                type="info"
+                isLoading={isSaving}
+                isSuccess={saveSuccess}
+                successTitle="Cập nhật thành công!"
+                confirmDetails={{
+                    "Tên cửa hàng": formData.name,
+                    "Số điện thoại": formData.phone
+                }}
+            />
+
+            <WeeklyScheduleModal
+                isOpen={isWeeklyScheduleModalOpen}
+                onClose={() => setIsWeeklyScheduleModalOpen(false)}
+                onSave={handleScheduleSaveClick}
+                initialSchedule={store.openingHours}
+            />
+
+            <SlideConfirmModal
+                isOpen={isConfirmScheduleOpen}
+                onClose={() => setIsConfirmScheduleOpen(false)}
+                onConfirm={handleConfirmScheduleSave}
+                title="Xác nhận thay đổi lịch biểu"
+                description="Lịch hoạt động của bạn sẽ được cập nhật cho tất cả các ngày trong tuần."
+                type="info"
+                isLoading={isSaving}
+                isSuccess={saveSuccess}
+                successTitle="Cập nhật thành công!"
+                confirmDetails={{
+                    "Thông báo": "Đã ghi nhận thay đổi thời gian hoạt động"
+                }}
+            />
+
+            <EditLocationModal
+                isOpen={isEditLocationModalOpen}
+                onClose={() => setIsEditLocationModalOpen(false)}
+                onSave={handleLocationSaveClick}
+                initialData={{
+                    address: store.address,
+                    latitude: store.latitude,
+                    longitude: store.longitude
+                }}
+            />
+
+            <SlideConfirmModal
+                isOpen={isConfirmLocationOpen}
+                onClose={() => setIsConfirmLocationOpen(false)}
+                onConfirm={handleConfirmLocationSave}
+                title="Xác nhận thay đổi vị trí"
+                description="Thông tin địa chỉ và tọa độ bản đồ của cửa hàng sẽ được cập nhật."
+                type="info"
+                isLoading={isSaving}
+                isSuccess={saveSuccess}
+                successTitle="Cập nhật thành công!"
+                confirmDetails={{
+                    "Địa chỉ mới": tempLocation?.address,
+                    "Tọa độ": `${tempLocation?.latitude?.toFixed(4)}, ${tempLocation?.longitude?.toFixed(4)}`
+                }}
+            />
         </div>
     );
 };

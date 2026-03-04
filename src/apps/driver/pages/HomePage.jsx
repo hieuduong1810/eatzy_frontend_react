@@ -19,6 +19,7 @@ const HomePage = () => {
 
     // Modal state
     const [statusModal, setStatusModal] = useState({ open: false, loading: false, success: false });
+    const [isActionLoading, setIsActionLoading] = useState(false);
 
     // Mock offer state
     const [currentOffer, setCurrentOffer] = useState(null);
@@ -228,6 +229,7 @@ const HomePage = () => {
 
     const handleStageChange = useCallback(async (newStage) => {
         if (!activeOrder) return;
+        setIsActionLoading(true);
         try {
             if (newStage === "PICKED_UP") {
                 await driverAppApi.markOrderAsPickedUp(activeOrder.id);
@@ -243,6 +245,8 @@ const HomePage = () => {
         } catch (error) {
             console.error("Failed to update order stage:", error);
             toast.error("Failed to update order status");
+        } finally {
+            setIsActionLoading(false);
         }
     }, [activeOrder]);
 
@@ -293,7 +297,11 @@ const HomePage = () => {
 
                 {/* Active order panel */}
                 {activeOrder && (
-                    <CurrentOrderPanel order={activeOrder} onStageChange={handleStageChange} />
+                    <CurrentOrderPanel
+                        order={activeOrder}
+                        onStageChange={handleStageChange}
+                        isActionLoading={isActionLoading}
+                    />
                 )}
             </div>
 

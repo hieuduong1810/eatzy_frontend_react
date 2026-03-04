@@ -8,6 +8,11 @@ import "./OrdersPage.css";
 import SlideConfirmModal from "../../../components/shared/SlideConfirmModal";
 
 const formatVnd = (n) => Intl.NumberFormat("vi-VN").format(n) + "đ";
+const REJECT_REASONS = [
+    "Hết món",
+    "Nhà hàng quá tải",
+    "Không liên hệ được khách"
+];
 
 const OrdersPage = () => {
     const [orders, setOrders] = useState([]);
@@ -16,6 +21,8 @@ const OrdersPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRestaurantOpen, setIsRestaurantOpen] = useState(false);
     const [statusModal, setStatusModal] = useState({ open: false, loading: false, success: false });
+    const [rejectModal, setRejectModal] = useState({ open: false, orderId: null });
+    const [isActionLoading, setIsActionLoading] = useState(false);
 
     const { client, isConnected } = useWebSocket();
     // ... (keep useEffects)
@@ -153,11 +160,15 @@ const OrdersPage = () => {
     };
 
     const handleStatusUpdate = async (orderId, newStatus) => {
+        setIsActionLoading(true);
         try {
             if (newStatus === "CONFIRMED") {
                 await restaurantAppApi.acceptOrder(orderId);
             } else if (newStatus === "READY") {
                 await restaurantAppApi.markOrderAsReady(orderId);
+            } else if (newStatus === "CANCELLED") {
+                setRejectModal({ open: true, orderId });
+                return;
             } else {
                 await restaurantAppApi.updateOrderStatus(orderId, newStatus);
             }
@@ -169,6 +180,26 @@ const OrdersPage = () => {
         } catch (error) {
             console.error("Failed to update status:", error);
             toast.error("Failed to update order status");
+        } finally {
+            setIsActionLoading(false);
+        }
+    };
+
+    const handleConfirmReject = async (reason) => {
+        const orderId = rejectModal.orderId;
+        setIsActionLoading(true);
+        try {
+            await restaurantAppApi.rejectOrder(orderId, reason);
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "CANCELLED" } : o));
+            setRejectModal({ open: false, orderId: null });
+            handleCloseModal();
+            fetchOrders();
+            toast.success("Đơn hàng đã được từ chối");
+        } catch (error) {
+            console.error("Failed to reject order:", error);
+            toast.error("Không thể từ chối đơn hàng");
+        } finally {
+            setIsActionLoading(false);
         }
     };
 
@@ -261,8 +292,15 @@ const OrdersPage = () => {
                     onClose={handleCloseModal}
                     order={selectedOrder}
                     onUpdateStatus={handleStatusUpdate}
+                    isActionLoading={isActionLoading}
                 />
             )}
+
+            <RejectReasonModal
+                isOpen={rejectModal.open}
+                onClose={() => setRejectModal({ open: false, orderId: null })}
+                onConfirm={handleConfirmReject}
+            />
 
             <SlideConfirmModal
                 isOpen={statusModal.open}
@@ -387,7 +425,7 @@ const OrderCard = ({ order, onClick }) => {
     );
 };
 
-const OrderModal = ({ isOpen, onClose, order, onUpdateStatus }) => {
+const OrderModal = ({ isOpen, onClose, order, onUpdateStatus, isActionLoading }) => {
     if (!isOpen || !order) return null;
 
     const date = new Date(order.createdAt);
@@ -517,18 +555,40 @@ const OrderModal = ({ isOpen, onClose, order, onUpdateStatus }) => {
                     <div className="modal-actions-container">
                         {isPending && (
                             <>
-                                <button className="btn-confirm-order" onClick={() => onUpdateStatus(order.id, "CONFIRMED")}>
-                                    <CheckCircle size={18} /> Confirm Order
+                                <button
+                                    className="btn-confirm-order"
+                                    onClick={() => onUpdateStatus(order.id, "CONFIRMED")}
+                                    disabled={isActionLoading}
+                                >
+                                    {isActionLoading ? (
+                                        <div className="btn-spinner"></div>
+                                    ) : (
+                                        <CheckCircle size={18} />
+                                    )}
+                                    Confirm Order
                                 </button>
-                                <button className="btn-reject-order" onClick={() => onUpdateStatus(order.id, "CANCELLED")}>
+                                <button
+                                    className="btn-reject-order"
+                                    onClick={() => onUpdateStatus(order.id, "CANCELLED")}
+                                    disabled={isActionLoading}
+                                >
                                     <X size={18} /> Reject Order
                                 </button>
                             </>
                         )}
 
                         {isInProgress && (
-                            <button className="btn-mark-ready" onClick={() => onUpdateStatus(order.id, "READY")}>
-                                Mark as Ready <CheckCircle size={18} />
+                            <button
+                                className="btn-mark-ready"
+                                onClick={() => onUpdateStatus(order.id, "READY")}
+                                disabled={isActionLoading}
+                            >
+                                {isActionLoading ? (
+                                    <div className="btn-spinner"></div>
+                                ) : (
+                                    <CheckCircle size={18} />
+                                )}
+                                Mark as Ready
                             </button>
                         )}
 
@@ -539,6 +599,29 @@ const OrderModal = ({ isOpen, onClose, order, onUpdateStatus }) => {
                         )}
                     </div>
                 </div>
+            </div>
+        </Modal>
+    );
+};
+
+const RejectReasonModal = ({ isOpen, onClose, onConfirm }) => {
+    return (
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Select Reason"
+            size="sm"
+        >
+            <div className="reject-reasons-list">
+                {REJECT_REASONS.map((reason, index) => (
+                    <div
+                        key={index}
+                        className="reject-reason-item"
+                        onClick={() => onConfirm(reason)}
+                    >
+                        {reason}
+                    </div>
+                ))}
             </div>
         </Modal>
     );

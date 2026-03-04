@@ -81,7 +81,7 @@ const DashboardPage = () => {
                 setRecentActivities(sortedOrders.slice(0, 5).map(o => ({
                     id: o.id,
                     type: "order",
-                    description: `Đơn hàng #${o.id} trị giá ${new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", notation: "compact" }).format(o.totalAmount)} từ ${o.customer ? o.customer.firstName : "Khách"}`,
+                    description: `Đơn hàng #${o.id} trị giá ${new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", notation: "compact" }).format(o.totalAmount)} từ ${o.customer ? o.customer.name : "Khách"}`,
                     status: o.orderStatus,
                     timestamp: o.createdAt,
                 })));

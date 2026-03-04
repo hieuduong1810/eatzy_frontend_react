@@ -1049,3 +1049,60 @@
     display: inline-block;
     letter-spacing: 0.5px;
 }
+
+/* Reject Reason Modal Styles */
+.reject-reasons-list {
+    display: flex;
+    flex-direction: column;
+    margin: -12px -16px;
+    padding: 8px 0;
+}
+
+.reject-reason-item {
+    padding: 16px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--color-gray-100);
+    display: flex;
+    align-items: center;
+}
+
+.reject-reason-item:last-child {
+    border-bottom: none;
+}
+
+.reject-reason-item:hover {
+    background-color: var(--color-gray-50);
+    color: var(--color-primary-dark);
+}
+
+.reject-reason-item:active {
+    background-color: var(--color-gray-100);
+}
+
+/* Spinner for action buttons */
+.btn-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: btn-spin 0.8s linear infinite;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.btn-confirm-order:disabled,
+.btn-mark-ready:disabled,
+.btn-reject-order:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}

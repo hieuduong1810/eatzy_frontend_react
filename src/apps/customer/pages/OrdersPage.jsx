@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, X, Filter, CheckCircle2, XCircle, Clock, MapPin, Store, LayoutGrid } from "lucide-react";
 import customerApi from "../../../api/customer/customerApi";
 import OrderDetailModal from "../components/OrderDetailModal"; // Import Modal
+import OrderHistorySkeleton from "../components/OrderHistorySkeleton";
 import "../CustomerApp.css";
 import "./OrdersPage.css";
 
@@ -158,9 +159,7 @@ export default function OrdersPage() {
                     {/* ── Orders List ── */}
                     <div className="cust-grid-content">
                         {isLoading ? (
-                            <div className="cust-loading-list">
-                                {[1, 2, 3].map((n) => <div key={n} className="cust-loading-item" />)}
-                            </div>
+                            <OrderHistorySkeleton />
                         ) : filteredOrders.length > 0 ? (
                             <div className="cust-orders-list">
                                 {filteredOrders.map((order) => {
@@ -218,7 +217,9 @@ export default function OrdersPage() {
                                                             className="cust-history-visit"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                navigate(`../restaurant/${order.restaurant.id}`); // Using ID as slug might be safer if slug missing
+                                                                navigate(`../restaurant/${order.restaurant.slug || order.restaurant.id}`, {
+                                                                    state: { id: order.restaurant.id, restaurant: order.restaurant }
+                                                                });
                                                             }}
                                                         >
                                                             <Store size={16} />

@@ -1,0 +1,572 @@
+.wsm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.wsm-container {
+    background: white;
+    width: 98%;
+    max-width: 1300px;
+    height: 85vh;
+    border-radius: 32px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.wsm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 1px solid #f3f4f6;
+    background: white;
+    z-index: 10;
+}
+
+.wsm-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.wsm-icon-box {
+    width: 40px;
+    height: 40px;
+    background: #fff7ed;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wsm-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.02em;
+}
+
+.wsm-editor-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 12px 24px;
+    border-radius: 99px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.editor-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.editor-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #9ca3af;
+    letter-spacing: 0.05em;
+}
+
+.editor-select {
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+
+.editor-separator {
+    color: #d1d5db;
+}
+
+.editor-divider {
+    width: 1px;
+    height: 24px;
+    background: #e5e7eb;
+}
+
+.editor-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.editor-btn.delete:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.editor-btn.confirm {
+    background: #ecfdf5;
+    color: #10b981;
+}
+
+.editor-btn.cancel:hover {
+    background: #f3f4f6;
+}
+
+.wsm-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.wsm-save-btn,
+.wsm-close-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    background: #f3f4f6;
+    transition: all 0.2s;
+}
+
+.wsm-close-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.wsm-grid-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0 20px 20px 20px;
+}
+
+.wsm-grid-header {
+    display: flex;
+    background: white;
+    padding-top: 10px;
+}
+
+.time-col-spacer {
+    width: 80px;
+}
+
+.day-col-header {
+    flex: 1;
+    text-align: center;
+    padding: 16px 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: 0.05em;
+    position: relative;
+    border-left: 1px solid #f3f4f6;
+}
+
+.day-header-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Switch styling */
+.wsm-switch {
+    width: 32px;
+    height: 18px;
+    position: relative;
+    display: inline-block;
+}
+
+.wsm-switch input {
+    display: none;
+}
+
+.wsm-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e7eb;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.wsm-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.wsm-slider {
+    background-color: #3b82f6;
+}
+
+input:checked+.wsm-slider:before {
+    transform: translateX(14px);
+}
+
+.wsm-grid-body {
+    flex: 1;
+    display: flex;
+    position: relative;
+    border-top: 1px solid #f3f4f6;
+}
+
+.time-col {
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-right: 1px solid #f3f4f6;
+}
+
+.time-period {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    /* Moves text to the left side in vertical-lr rotated context */
+    padding-bottom: 10px;
+    /* Adjusts vertical centering if needed after rotation */
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #9ca3af;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+}
+
+.time-period:nth-child(1) {
+    flex: 11;
+}
+
+/* Sáng: 00:00 - 11:00 */
+.time-period:nth-child(2) {
+    flex: 3;
+}
+
+/* Trưa: 11:00 - 14:00 */
+.time-period:nth-child(3) {
+    flex: 4;
+}
+
+/* Chiều: 14:00 - 18:00 */
+.time-period:nth-child(4) {
+    flex: 6;
+}
+
+/* Tối: 18:00 - 24:00 */
+
+.time-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.time-label,
+.time-marker-start,
+.time-marker-end,
+.time-marker-noon {
+    position: absolute;
+    right: 8px;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 600;
+    color: #9ca3af;
+    z-index: 5;
+}
+
+.time-marker-start,
+.time-marker-end {
+    background: #111827;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-weight: 800;
+    right: 4px;
+    font-size: 11px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.time-marker-noon {
+    font-weight: 800;
+    color: #4b5563;
+    font-size: 11px;
+}
+
+/* Time scale mappings */
+.time-label:nth-child(1) {
+    top: 33.3%;
+}
+
+/* 08:00 */
+.time-label:nth-child(2) {
+    top: 45.8%;
+}
+
+/* 11:00 */
+.time-label:nth-child(3) {
+    top: 58.3%;
+}
+
+/* 14:00 */
+.time-label:nth-child(4) {
+    top: 75%;
+}
+
+/* 18:00 */
+.time-label:nth-child(5) {
+    top: 91.6%;
+}
+
+/* 22:00 */
+.time-label:nth-child(6) {
+    top: 95.8%;
+}
+
+/* 23:00 */
+
+.day-col {
+    flex: 1;
+    position: relative;
+    border-left: 1px solid #f3f4f6;
+    background: #fdfdfd;
+}
+
+.day-col.active {
+    background: white;
+}
+
+.day-col.closed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closed-label {
+    writing-mode: vertical-lr;
+    font-size: 48px;
+    font-weight: 900;
+    color: #f3f4f6;
+    letter-spacing: 0.2em;
+    user-select: none;
+}
+
+.shift-block {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    background: #eff6ff;
+    border: 2px solid #3b82f6;
+    border-radius: 16px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shift-block:hover {
+    transform: scale(1.02);
+}
+
+.shift-block.editing {
+    background: white;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+}
+
+.shift-info {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.shift-block.editing .shift-info {
+    color: #1e40af;
+    /* Darker blue for contrast on white background */
+}
+
+/* Time Picker Custom Select */
+.custom-select-trigger {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    min-width: 80px;
+    transition: all 0.2s;
+}
+
+.custom-select-trigger:hover {
+    border-color: #3b82f6;
+    background: white;
+}
+
+.time-picker-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    border: 1px solid #f3f4f6;
+    z-index: 1000;
+    overflow: hidden;
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tp-column {
+    display: flex;
+    flex-direction: column;
+    width: 60px;
+}
+
+.tp-column:not(:last-child) {
+    border-right: 1px solid #f3f4f6;
+}
+
+.tp-header {
+    background: #f9fafb;
+    padding: 8px 0;
+    text-align: center;
+    font-size: 9px;
+    font-weight: 800;
+    color: #9ca3af;
+    letter-spacing: 0.1em;
+}
+
+.tp-list {
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.tp-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tp-list::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 4px;
+}
+
+.tp-item {
+    padding: 8px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tp-item:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.tp-item.selected {
+    background: #eff6ff;
+    color: #3b82f6;
+    font-weight: 800;
+}
+
+/* Floating Editor Bar Styling */
+.wsm-editor-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 8px 16px;
+    border-radius: 99px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #f3f4f6;
+    z-index: 100;
+}
+
+.editor-btn.confirm {
+    background: #ecfdf5;
+    color: #10b981;
+    border-radius: 12px;
+    width: 44px;
+    height: 36px;
+}
+
+.editor-btn.confirm:hover {
+    background: #d1fae5;
+}
+
+.editor-btn.delete {
+    color: #111827;
+}
+
+.editor-btn.delete:hover {
+    background: #f3f4f6;
+}
+
+.editor-btn.cancel {
+    color: #111827;
+}

@@ -179,7 +179,7 @@ const MenuPage = () => {
                             <button className="btn-white" onClick={() => setShowCategoryModal(true)}>
                                 <Settings size={18} /> Categories
                             </button>
-                            <button className="btn-green" onClick={() => setShowAddDishModal(true)}>
+                            <button className="btn-green" onClick={handleAddNewDish}>
                                 <Plus size={18} /> THÊM MÓN MỚI
                             </button>
                         </div>

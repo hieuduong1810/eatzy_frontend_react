@@ -25,6 +25,10 @@ const restaurantAppApi = {
         const url = "/api/v1/restaurants/my-restaurant";
         return axiosClient.get(url);
     },
+    updateMyRestaurant: (data) => {
+        const url = "/api/v1/restaurants/my-restaurant";
+        return axiosClient.put(url, data);
+    },
     updateOrderStatus: (orderId, status) => {
         const url = `/api/v1/orders/${orderId}/status`;
         return axiosClient.put(url, null, { params: { status } });
@@ -60,6 +64,10 @@ const restaurantAppApi = {
     acceptOrder: (orderId) => {
         const url = `/api/v1/orders/${orderId}/restaurant/accept`;
         return axiosClient.patch(url);
+    },
+    rejectOrder: (orderId, cancellationReason) => {
+        const url = `/api/v1/orders/${orderId}/restaurant/reject`;
+        return axiosClient.patch(url, { cancellationReason });
     },
     markOrderAsReady: (orderId) => {
         const url = `/api/v1/orders/${orderId}/restaurant/ready`;

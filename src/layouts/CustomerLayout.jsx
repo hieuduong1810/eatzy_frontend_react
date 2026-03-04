@@ -149,9 +149,17 @@ const CustomerLayout = ({ children }) => {
                 console.log("Driver Location Update:", locUpdate);
                 // We use a simple object/map if we had orderId, but here we just have lat/lng
                 // Since this is "Current Order", we can assume it applies to the active driver.
-                // Depending on backend implementation, this might need driverId. 
-                // For now, let's store it as 'currentDriverLocation'
-                setDriverLocations(prev => ({ ...prev, current: locUpdate }));
+                // We now use driverId as the key to support multiple active orders.
+                if (locUpdate.driverId) {
+                    setDriverLocations(prev => ({
+                        ...prev,
+                        [locUpdate.driverId]: {
+                            latitude: locUpdate.latitude,
+                            longitude: locUpdate.longitude,
+                            timestamp: locUpdate.timestamp || Date.now()
+                        }
+                    }));
+                }
             }
         });
 
@@ -189,18 +197,18 @@ const CustomerLayout = ({ children }) => {
         if (activeOrders.length > 0) {
             activeOrders.forEach(async (order) => {
                 const driverId = order.driver?.id;
-                // Only fetch if we have a driver and don't have location yet
-                if (driverId && !driverLocations.current) {
+                // Only fetch if we have a driver and don't have location in state yet
+                if (driverId && !driverLocations[driverId]) {
                     try {
                         const res = await customerApi.getDriverLocation(driverId);
                         // Access data inside res.data.data if wrapped, or fallback to res.data
                         const locationData = res.data?.data || res.data;
 
                         if (locationData && locationData.latitude && locationData.longitude) {
-                            console.log("Fetched initial driver location:", locationData);
+                            console.log(`Fetched initial driver location for ${driverId}:`, locationData);
                             setDriverLocations(prev => ({
                                 ...prev,
-                                current: {
+                                [driverId]: {
                                     latitude: locationData.latitude,
                                     longitude: locationData.longitude,
                                     timestamp: Date.now()

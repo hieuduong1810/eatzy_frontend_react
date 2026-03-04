@@ -90,9 +90,8 @@ const OrderDetailModal = ({ isOpen, onClose, order }) => {
         if (!targetId) return;
 
         const data = {
-            orderId: id,
-            targetType: targetType,
-            targetId: targetId,
+            order: { id: id },
+            reviewTarget: targetType.toLowerCase(),
             rating: reviewForm[formKey].rating,
             comment: reviewForm[formKey].comment
         };
@@ -140,22 +139,24 @@ const OrderDetailModal = ({ isOpen, onClose, order }) => {
                     </div>
 
                     {/* Toggle Switch */}
-                    <div className="cust-header-center">
-                        <div className="cust-toggle-switch">
-                            <div
-                                className={`cust-toggle-option ${activeTab === 'details' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('details')}
-                            >
-                                Chi tiết
-                            </div>
-                            <div
-                                className={`cust-toggle-option ${activeTab === 'reviews' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('reviews')}
-                            >
-                                Đánh giá
+                    {orderStatus === 'DELIVERED' && (
+                        <div className="cust-header-center">
+                            <div className="cust-toggle-switch">
+                                <div
+                                    className={`cust-toggle-option ${activeTab === 'details' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('details')}
+                                >
+                                    Chi tiết
+                                </div>
+                                <div
+                                    className={`cust-toggle-option ${activeTab === 'reviews' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('reviews')}
+                                >
+                                    Đánh giá
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="cust-modal-actions">
                         <button className="cust-btn-close" onClick={onClose}>

@@ -125,10 +125,13 @@ export default function CurrentOrderOverlay({ isOpen, onClose, orders = [], driv
                                     lat: selectedOrder.deliveryLatitude,
                                     lng: selectedOrder.deliveryLongitude
                                 } : null;
-                                const driverLoc = driverLocations?.current ? {
-                                    lat: driverLocations.current.latitude,
-                                    lng: driverLocations.current.longitude
-                                } : null;
+                                const driverLoc = (selectedOrder?.driver?.id && driverLocations[selectedOrder.driver.id]) ? {
+                                    lat: driverLocations[selectedOrder.driver.id].latitude,
+                                    lng: driverLocations[selectedOrder.driver.id].longitude
+                                } : (selectedOrder?.driver?.latitude ? {
+                                    lat: selectedOrder.driver.latitude,
+                                    lng: selectedOrder.driver.longitude
+                                } : null);
 
                                 // Determine route points / waypoints
                                 let waypoints = []; // If empty, DeliveryMapView falls back to pickup->dropoff or whatever

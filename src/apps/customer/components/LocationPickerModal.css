@@ -338,8 +338,8 @@
     flex-direction: column;
     align-items: center;
     cursor: grab;
-    transform: translateY(-24px);
-    /* Shift up so the pin bottom point is at the coordinate */
+    position: relative;
+    /* Removed manual translateY to prevent zoom drift. Anchor prop handles this. */
 }
 
 .cust-marker-container:active {
@@ -365,11 +365,13 @@
 }
 
 .cust-marker-shadow {
+    position: absolute;
+    bottom: -5px;
+    /* Half of its height to center it on the anchor point */
     width: 10px;
     height: 10px;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 50%;
-    margin-top: 4px;
     transition: all 0.2s;
 }
 

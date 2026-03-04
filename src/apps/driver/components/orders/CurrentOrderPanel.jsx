@@ -10,7 +10,7 @@ const stageConfig = {
 
 const STAGE_ORDER = ["DRIVER_ASSIGNED", "READY", "PICKED_UP", "ARRIVED"];
 
-const CurrentOrderPanel = ({ order, onStageChange }) => {
+const CurrentOrderPanel = ({ order, onStageChange, isActionLoading }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const currentStage = order.orderStatus || "DRIVER_ASSIGNED";
     const { title, buttonText } = stageConfig[currentStage] || stageConfig.DRIVER_ASSIGNED;
@@ -120,10 +120,10 @@ const CurrentOrderPanel = ({ order, onStageChange }) => {
                         <button
                             className="order-panel-stage-btn"
                             onClick={handleAdvanceStage}
-                            disabled={currentStage === "DRIVER_ASSIGNED"}
-                            style={currentStage === "DRIVER_ASSIGNED" ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                            disabled={currentStage === "DRIVER_ASSIGNED" || isActionLoading}
+                            style={(currentStage === "DRIVER_ASSIGNED") ? { opacity: 0.5, cursor: "not-allowed" } : {}}
                         >
-                            {buttonText}
+                            {isActionLoading ? <div className="btn-spinner"></div> : buttonText}
                         </button>
                     </div>
                 )}

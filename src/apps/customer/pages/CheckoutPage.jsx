@@ -42,7 +42,7 @@ const MOCK_ITEMS = [
 ];
 
 const MOCK_PAYMENT_METHODS = [
-    { id: "eatzy_wallet", label: "EatzyPay", sub: "E-WALLET", balance: 930000, icon: <Wallet size={20} />, active: true },
+    { id: "wallet", label: "EatzyPay", sub: "E-WALLET", balance: 930000, icon: <Wallet size={20} />, active: true },
     { id: "vnpay", label: "VnPay", sub: "QR CODE", icon: <CreditCard size={20} />, active: false },
     { id: "cash", label: "By Cash", sub: "COD", icon: <Banknote size={20} />, active: false },
 ];
@@ -152,9 +152,10 @@ const CheckoutPage = () => {
         }
     }, [location]);
 
-    const [paymentMethod, setPaymentMethod] = useState("eatzy_wallet");
+    const [paymentMethod, setPaymentMethod] = useState("wallet");
     const [note, setNote] = useState("");
     const [walletBalance, setWalletBalance] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Vouchers State
     const [shippingVouchers, setShippingVouchers] = useState([]);
@@ -398,6 +399,7 @@ const CheckoutPage = () => {
             orderDTO.vouchers.push({ id: selectedDiscountVoucher.id });
         }
 
+        setIsSubmitting(true);
         try {
             console.log("Creating order with DTO:", orderDTO);
             const res = await customerApi.createOrder(orderDTO);
@@ -424,6 +426,8 @@ const CheckoutPage = () => {
             console.error("Failed to create order:", error);
             const errMsg = error.response?.data?.message || error.message || "Failed to create order.";
             alert(`Order creation failed: ${errMsg}`);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -565,7 +569,7 @@ const CheckoutPage = () => {
                                         <div className="ck-method-content">
                                             <div className="ck-method-label-row">
                                                 <p className="ck-method-label">{method.label}</p>
-                                                {method.id === "eatzy_wallet" && (
+                                                {method.id === "wallet" && (
                                                     <p className="ck-method-balance">{formatVnd(walletBalance)}</p>
                                                 )}
                                             </div>
@@ -768,8 +772,21 @@ const CheckoutPage = () => {
                     </div>
 
                     <div className="ck-right-footer-sticky">
-                        <button className="ck-complete-btn" onClick={handleCompleteOrder}>
-                            COMPLETE ORDER <span className="ck-btn-price">{formatVnd(totalAmount)}</span>
+                        <button
+                            className={`ck-complete-btn ${isSubmitting ? 'submitting' : ''}`}
+                            onClick={handleCompleteOrder}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <div className="ck-spinner"></div>
+                                    <span>ĐANG XỬ LÝ...</span>
+                                </>
+                            ) : (
+                                <>
+                                    COMPLETE ORDER <span className="ck-btn-price">{formatVnd(totalAmount)}</span>
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>

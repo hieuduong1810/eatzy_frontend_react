@@ -185,26 +185,28 @@ const ReportsPage = () => {
                     <h1 className="rp-title">Reports Center</h1>
                 </div>
                 <div className="rp-controls">
-                    <div style={{ position: 'relative' }}>
-                        <button
-                            className="rp-date-picker"
-                            onClick={() => setShowDatePicker(!showDatePicker)}
-                        >
-                            <Calendar size={18} />
-                            <span>tháng {dateRange.displayDate.getMonth() + 1} {dateRange.displayDate.getFullYear()}</span>
-                            <ChevronDown size={16} />
-                        </button>
-                        {showDatePicker && (
-                            <>
-                                <div className="rp-mp-overlay" onClick={() => setShowDatePicker(false)}></div>
-                                <MonthPicker
-                                    selectedDate={dateRange.displayDate}
-                                    onChange={handleDateChange}
-                                    onClose={() => setShowDatePicker(false)}
-                                />
-                            </>
-                        )}
-                    </div>
+                    {!["menu", "reviews"].includes(activeTab) && (
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                className="rp-date-picker"
+                                onClick={() => setShowDatePicker(!showDatePicker)}
+                            >
+                                <Calendar size={18} />
+                                <span>tháng {dateRange.displayDate.getMonth() + 1} {dateRange.displayDate.getFullYear()}</span>
+                                <ChevronDown size={16} />
+                            </button>
+                            {showDatePicker && (
+                                <>
+                                    <div className="rp-mp-overlay" onClick={() => setShowDatePicker(false)}></div>
+                                    <MonthPicker
+                                        selectedDate={dateRange.displayDate}
+                                        onChange={handleDateChange}
+                                        onClose={() => setShowDatePicker(false)}
+                                    />
+                                </>
+                            )}
+                        </div>
+                    )}
                     <button className="rp-btn-black">
                         Xuất Báo Cáo <ChevronDown size={16} />
                     </button>

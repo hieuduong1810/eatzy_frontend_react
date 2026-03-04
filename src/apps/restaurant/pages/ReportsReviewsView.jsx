@@ -69,19 +69,6 @@ const ReportsReviewsView = () => {
     const filteredReviews = reportData.recentReviews.filter(r => filterStar === 'all' || r.rating === parseInt(filterStar));
     const limitedReviews = filteredReviews.slice(0, 5); // Show top 5 for demo
 
-    // Mock dish tags generator
-    const getTags = (id) => {
-        if (!id) return [];
-        const strId = id.toString();
-        const tags = [
-            ["Cơm Tấm Sườn"],
-            ["Cơm Tấm Sườn", "Chả Trứng", "Canh Khổ Qua"],
-            ["Bún Bò Huế"],
-            ["Trà Đá"]
-        ];
-        return tags[strId.charCodeAt(strId.length - 1) % tags.length];
-    };
-
     if (loading) {
         return (
             <div className="rp-loading-container">
@@ -228,7 +215,7 @@ const ReportsReviewsView = () => {
                                     <div className="rrv-comment">"{review.comment}"</div>
 
                                     <div className="rrv-tags">
-                                        {getTags(review.id).map((tag, i) => (
+                                        {(review.dishNames || []).map((tag, i) => (
                                             <span key={i} className="rrv-tag">{tag}</span>
                                         ))}
                                     </div>

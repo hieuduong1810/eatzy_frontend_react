@@ -239,32 +239,36 @@
 }
 
 .cust-tab-link {
-    font-family: 'Oswald', sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: #BBB;
+    font-family: var(--font-family);
+    font-size: 20px;
+    /* Increased from 15px */
+    font-weight: 800;
+    color: var(--color-gray-400);
     text-transform: uppercase;
     cursor: pointer;
     background: none;
-    padding: 0;
+    padding: 12px 0;
     border: none;
     transition: all 0.2s;
     white-space: nowrap;
+    position: relative;
 }
 
 .cust-tab-link:hover {
-    color: #888;
+    color: var(--color-gray-600);
 }
 
 .cust-tab-link--active {
-    color: #1A1A1A;
-    font-weight: 700;
+    color: var(--color-dark);
+    /* Changed to black */
 }
+
+/* Removed active underline ::after */
 
 .cust-tabs-divider {
     width: 100%;
     border: 0;
-    border-top: 1px solid #DDD;
+    border-top: 1px solid var(--color-gray-200);
     margin-top: 0;
 }
 
@@ -281,9 +285,9 @@
 }
 
 .cust-menu-cat-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
+    font-family: var(--font-family);
+    font-size: 24px;
+    font-weight: 800;
     text-transform: uppercase;
     color: #1A1A1A;
     margin: 0;
@@ -750,12 +754,13 @@
 }
 
 .cust-opt-anchor {
-    font-family: 'Oswald', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-family: var(--font-family);
+    font-size: 17px;
+    /* Increased from 15px */
+    font-weight: 800;
     text-transform: uppercase;
-    color: #AAA;
-    padding-bottom: 16px;
+    color: var(--color-gray-400);
+    padding-bottom: 12px;
     text-decoration: none;
     position: relative;
     transition: color 0.2s;
@@ -763,8 +768,11 @@
 
 .cust-opt-anchor:hover,
 .cust-opt-anchor.active {
-    color: #1A1A1A;
+    color: var(--color-dark);
+    /* Changed to black */
 }
+
+/* Removed active underline ::after */
 
 .cust-dot-required {
     color: #EF4444;

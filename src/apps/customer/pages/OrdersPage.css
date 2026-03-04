@@ -209,11 +209,6 @@
 }
 
 /* Loading */
-.cust-loading-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
 
 .cust-toolbar-orders {
     background: #f8fafc;
