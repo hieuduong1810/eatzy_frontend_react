@@ -1,6 +1,7 @@
 # Stage 1: build với Node.js
 FROM node:20-alpine AS build
 ARG APP_NAME
+ARG VITE_MAPBOX_ACCESS_TOKEN
 WORKDIR /app
 
 # Cài pnpm
