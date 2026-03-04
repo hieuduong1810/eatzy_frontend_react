@@ -12,6 +12,7 @@ const OrderDetailModal = ({ isOpen, onClose, order }) => {
         driver: { rating: 0, comment: '' }
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [loadingReviews, setLoadingReviews] = useState(false);
 
     // Reset state when modal opens or order changes
     useEffect(() => {
@@ -34,10 +35,13 @@ const OrderDetailModal = ({ isOpen, onClose, order }) => {
 
     const fetchReviews = async () => {
         try {
+            setLoadingReviews(true);
             const response = await customerApi.getReviewsByOrderId(order.id);
             setReviews(response.data.data || []);
         } catch (error) {
             console.error("Failed to fetch reviews", error);
+        } finally {
+            setLoadingReviews(false);
         }
     };
 
@@ -334,97 +338,134 @@ const OrderDetailModal = ({ isOpen, onClose, order }) => {
                 ) : (
                     /* ── Review Layout ── */
                     <div className="cust-modal-body cust-modal-body-reviews">
-                        {/* Restaurant Review */}
-                        <div className="cust-review-col">
-                            <div className="cust-detail-card cust-review-card">
-                                <h3 className="cust-review-title">Đánh giá nhà hàng</h3>
-                                <div className="cust-review-target">
-                                    <img
-                                        src={restaurant.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"}
-                                        alt={restaurant.name}
-                                        className="cust-review-avatar"
-                                    />
-                                    <h4 className="cust-review-name">{restaurant.name}</h4>
-                                    <p className="cust-review-helper">Bạn thấy món ăn thế nào?</p>
+                        {loadingReviews ? (
+                            <>
+                                <div className="cust-review-col">
+                                    <div className="cust-detail-card cust-review-card">
+                                        <div className="skeleton-box" style={{ width: '150px', height: '24px', margin: '0 auto 24px' }} />
+                                        <div className="cust-review-target">
+                                            <div className="skeleton-box" style={{ width: '80px', height: '80px', borderRadius: '50%', margin: '0 auto 12px' }} />
+                                            <div className="skeleton-box" style={{ width: '120px', height: '20px', margin: '0 auto 4px' }} />
+                                            <div className="skeleton-box" style={{ width: '100px', height: '14px', margin: '0 auto' }} />
+                                        </div>
+                                        <div className="cust-review-form" style={{ width: '100%' }}>
+                                            <div className="skeleton-box" style={{ width: '160px', height: '30px', margin: '0 auto 24px' }} />
+                                            <div className="skeleton-box" style={{ width: '100%', height: '120px', borderRadius: '12px', marginBottom: '20px' }} />
+                                            <div className="skeleton-box" style={{ width: '100%', height: '48px', borderRadius: '12px' }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="cust-review-col">
+                                    <div className="cust-detail-card cust-review-card">
+                                        <div className="skeleton-box" style={{ width: '150px', height: '24px', margin: '0 auto 24px' }} />
+                                        <div className="cust-review-target">
+                                            <div className="skeleton-box" style={{ width: '64px', height: '64px', borderRadius: '50%', margin: '0 auto 12px' }} />
+                                            <div className="skeleton-box" style={{ width: '120px', height: '20px', margin: '0 auto 4px' }} />
+                                            <div className="skeleton-box" style={{ width: '100px', height: '14px', margin: '0 auto' }} />
+                                        </div>
+                                        <div className="cust-review-form" style={{ width: '100%' }}>
+                                            <div className="skeleton-box" style={{ width: '160px', height: '30px', margin: '0 auto 24px' }} />
+                                            <div className="skeleton-box" style={{ width: '100%', height: '120px', borderRadius: '12px', marginBottom: '20px' }} />
+                                            <div className="skeleton-box" style={{ width: '100%', height: '48px', borderRadius: '12px' }} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                {/* Restaurant Review */}
+                                <div className="cust-review-col">
+                                    <div className="cust-detail-card cust-review-card">
+                                        <h3 className="cust-review-title">Đánh giá nhà hàng</h3>
+                                        <div className="cust-review-target">
+                                            <img
+                                                src={restaurant.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"}
+                                                alt={restaurant.name}
+                                                className="cust-review-avatar"
+                                            />
+                                            <h4 className="cust-review-name">{restaurant.name}</h4>
+                                            <p className="cust-review-helper">Bạn thấy món ăn thế nào?</p>
+                                        </div>
+
+                                        {existingRestaurantReview ? (
+                                            <div className="cust-existing-review">
+                                                {renderStars(existingRestaurantReview.rating, null, true)}
+                                                <div className="cust-review-comment-display">
+                                                    "{existingRestaurantReview.comment}"
+                                                </div>
+                                                <div className="cust-review-done-badge">
+                                                    <CheckCircle size={14} /> Đã đánh giá
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="cust-review-form">
+                                                <div className="cust-stars-wrapper">
+                                                    {renderStars(reviewForm.restaurant.rating, (val) => handleRatingChange('restaurant', val))}
+                                                </div>
+                                                <textarea
+                                                    className="cust-review-textarea"
+                                                    placeholder="Chia sẻ cảm nhận của bạn về món ăn..."
+                                                    value={reviewForm.restaurant.comment}
+                                                    onChange={(e) => handleCommentChange('restaurant', e.target.value)}
+                                                />
+                                                <button
+                                                    className="cust-btn-primary cust-btn-submit-review"
+                                                    disabled={isSubmitting || reviewForm.restaurant.rating === 0}
+                                                    onClick={() => submitReview('RESTAURANT')}
+                                                >
+                                                    <span style={{ marginRight: '8px' }}>➤</span> COMPLETE REVIEW
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {existingRestaurantReview ? (
-                                    <div className="cust-existing-review">
-                                        {renderStars(existingRestaurantReview.rating, null, true)}
-                                        <div className="cust-review-comment-display">
-                                            "{existingRestaurantReview.comment}"
+                                {/* Driver Review */}
+                                <div className="cust-review-col">
+                                    <div className="cust-detail-card cust-review-card">
+                                        <h3 className="cust-review-title">Đánh giá tài xế</h3>
+                                        <div className="cust-review-target">
+                                            <div className="cust-driver-avatar-circle-large" style={{ width: '64px', height: '64px', fontSize: '24px', margin: '0 auto 12px' }}>
+                                                <Utensils size={28} strokeWidth={1.5} />
+                                            </div>
+                                            <h4 className="cust-review-name">{driver ? driver.name : "Driver"}</h4>
+                                            <p className="cust-review-helper">{driver ? driver.vehicleLicensePlate : "---"}</p>
                                         </div>
-                                        <div className="cust-review-done-badge">
-                                            <CheckCircle size={14} /> Đã đánh giá
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="cust-review-form">
-                                        <div className="cust-stars-wrapper">
-                                            {renderStars(reviewForm.restaurant.rating, (val) => handleRatingChange('restaurant', val))}
-                                        </div>
-                                        <textarea
-                                            className="cust-review-textarea"
-                                            placeholder="Chia sẻ cảm nhận của bạn về món ăn..."
-                                            value={reviewForm.restaurant.comment}
-                                            onChange={(e) => handleCommentChange('restaurant', e.target.value)}
-                                        />
-                                        <button
-                                            className="cust-btn-primary cust-btn-submit-review"
-                                            disabled={isSubmitting || reviewForm.restaurant.rating === 0}
-                                            onClick={() => submitReview('RESTAURANT')}
-                                        >
-                                            <span style={{ marginRight: '8px' }}>➤</span> COMPLETE REVIEW
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
 
-                        {/* Driver Review */}
-                        <div className="cust-review-col">
-                            <div className="cust-detail-card cust-review-card">
-                                <h3 className="cust-review-title">Đánh giá tài xế</h3>
-                                <div className="cust-review-target">
-                                    <div className="cust-driver-avatar-circle-large" style={{ width: '64px', height: '64px', fontSize: '24px', margin: '0 auto 12px' }}>
-                                        <Utensils size={28} strokeWidth={1.5} />
+                                        {existingDriverReview ? (
+                                            <div className="cust-existing-review">
+                                                {renderStars(existingDriverReview.rating, null, true)}
+                                                <div className="cust-review-comment-display">
+                                                    "{existingDriverReview.comment}"
+                                                </div>
+                                                <div className="cust-review-done-badge">
+                                                    <CheckCircle size={14} /> Đã đánh giá
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="cust-review-form">
+                                                <div className="cust-stars-wrapper">
+                                                    {renderStars(reviewForm.driver.rating, (val) => handleRatingChange('driver', val))}
+                                                </div>
+                                                <textarea
+                                                    className="cust-review-textarea"
+                                                    placeholder="Tài xế có thân thiện không?"
+                                                    value={reviewForm.driver.comment}
+                                                    onChange={(e) => handleCommentChange('driver', e.target.value)}
+                                                />
+                                                <button
+                                                    className="cust-btn-primary cust-btn-submit-review"
+                                                    disabled={isSubmitting || reviewForm.driver.rating === 0 || !driver}
+                                                    onClick={() => submitReview('DRIVER')}
+                                                >
+                                                    <span style={{ marginRight: '8px' }}>➤</span> COMPLETE REVIEW
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                    <h4 className="cust-review-name">{driver ? driver.name : "Driver"}</h4>
-                                    <p className="cust-review-helper">{driver ? driver.vehicleLicensePlate : "---"}</p>
                                 </div>
-
-                                {existingDriverReview ? (
-                                    <div className="cust-existing-review">
-                                        {renderStars(existingDriverReview.rating, null, true)}
-                                        <div className="cust-review-comment-display">
-                                            "{existingDriverReview.comment}"
-                                        </div>
-                                        <div className="cust-review-done-badge">
-                                            <CheckCircle size={14} /> Đã đánh giá
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="cust-review-form">
-                                        <div className="cust-stars-wrapper">
-                                            {renderStars(reviewForm.driver.rating, (val) => handleRatingChange('driver', val))}
-                                        </div>
-                                        <textarea
-                                            className="cust-review-textarea"
-                                            placeholder="Tài xế có thân thiện không?"
-                                            value={reviewForm.driver.comment}
-                                            onChange={(e) => handleCommentChange('driver', e.target.value)}
-                                        />
-                                        <button
-                                            className="cust-btn-primary cust-btn-submit-review"
-                                            disabled={isSubmitting || reviewForm.driver.rating === 0 || !driver}
-                                            onClick={() => submitReview('DRIVER')}
-                                        >
-                                            <span style={{ marginRight: '8px' }}>➤</span> COMPLETE REVIEW
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
