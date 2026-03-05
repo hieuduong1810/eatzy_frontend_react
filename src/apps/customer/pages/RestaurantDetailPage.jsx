@@ -6,7 +6,7 @@ import { useCart } from "../context/CartContext";
 import DishSelectionModal from "../components/DishSelectionModal"; // Import Modal
 import CartFloatingButton from "../components/CartFloatingButton";
 import CartModal from "../components/CartModal";
-import "../CustomerAppRedesign.css"; // Correct CSS import
+import "./RestaurantDetailPage.css"; // Page-specific CSS
 
 const RestaurantDetailSkeleton = () => (
     <div className="cust-detail-page-redesign">
@@ -160,44 +160,49 @@ export default function RestaurantDetailPage() {
         fetchRemoteData();
     }, [slug, location.state]);
 
-    // 2. Sticky Scroll Handler (Targeting Right Column)
+    // 2. Intersection Observer for Scroll Synchronization
     useEffect(() => {
-        const handleScroll = () => {
-            if (!rightColRef.current) return;
-
-            const container = rightColRef.current;
-            const scrollY = container.scrollTop + 200; // Offset
-            let current = null;
-
-            for (const catId of Object.keys(categoryRefs.current)) {
-                const el = categoryRefs.current[catId];
-                if (el) {
-                    // Calculate offset relative to container
-                    const offsetTop = el.offsetTop;
-                    if (offsetTop <= scrollY) {
-                        current = parseInt(catId);
-                    }
-                }
-            }
-            if (current) setActiveCategory(current);
-        };
+        if (isLoading || menuData.length === 0) return;
 
         const container = rightColRef.current;
-        if (container) {
-            container.addEventListener("scroll", handleScroll);
-            return () => container.removeEventListener("scroll", handleScroll);
-        }
-    }, [menuData]);
+        if (!container) return;
+
+        const observerOptions = {
+            root: container,
+            rootMargin: '-80px 0px -70% 0px', // Adjusted to trigger when section enters top area
+            threshold: 0
+        };
+
+        const observerCallback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // entry.target.id is 'group-123', extract 123
+                    const catId = entry.target.id.replace('cat-', '');
+                    setActiveCategory(Number(catId));
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+        // Observe all category sections
+        menuData.forEach(cat => {
+            const el = categoryRefs.current[cat.id];
+            if (el) observer.observe(el);
+        });
+
+        return () => observer.disconnect();
+    }, [menuData, isLoading]);
 
     const scrollToCategory = (catId) => {
-        setActiveCategory(catId);
         const element = categoryRefs.current[catId];
         const container = rightColRef.current;
 
         if (element && container) {
-            // Scroll container to element
-            const y = element.offsetTop - 80; // Adjusted offset for sticky header/tabs
+            // Scroll container so element is at top (minus tabs height)
+            const y = element.offsetTop - 180; // 100px to give more space below sticky header
             container.scrollTo({ top: y, behavior: 'smooth' });
+            setActiveCategory(catId);
         }
     };
 
@@ -317,6 +322,7 @@ export default function RestaurantDetailPage() {
                     {menuData.map(cat => (
                         <div
                             key={cat.id}
+                            id={`cat-${cat.id}`}
                             className="cust-menu-section"
                             ref={el => categoryRefs.current[cat.id] = el}
                         >

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { Home, History, Heart, User, Truck, ShoppingBag, Search, X, MapPin, Package, Menu, LogOut, ArrowLeft } from "lucide-react";
 import { useCart } from "../apps/customer/context/CartContext";
 import { useWebSocket } from "../contexts/WebSocketContext";
@@ -123,11 +123,11 @@ const CustomerLayout = ({ children }) => {
                 let type = "info";
 
                 if (notif.type === "ORDER_UPDATE") {
-                    title = "Cập nhật đơn hàng";
+                    title = "Order Update";
                     msg = notif.message;
                     type = "info";
                 } else if (notif.type === "ORDER_STATUS_CHANGED") {
-                    title = "Trạng thái đơn hàng";
+                    title = "Order Update";
                     const status = notif.data?.orderStatus;
                     msg = `Đơn hàng của bạn đã chuyển sang trạng thái: ${status}`;
                     type = "success";
@@ -381,7 +381,7 @@ const CustomerLayout = ({ children }) => {
 
             {/* ── Main Content ── */}
             <main className="cust-content">
-                {children}
+                <Outlet />
             </main>
 
             {/* ── Modals ── */}

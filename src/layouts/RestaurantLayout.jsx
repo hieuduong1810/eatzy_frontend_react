@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import RestaurantSidebar from "../apps/restaurant/components/RestaurantSidebar";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useNotification } from "../contexts/NotificationContext";
@@ -21,7 +22,7 @@ const RestaurantLayout = ({ children }) => {
                 if (notif.type === 'NEW_ORDER') {
                     showNotification("New Order!", notif.message, "success");
                 } else if (notif.type === 'ORDER_STATUS_CHANGED') {
-                    showNotification("Order Status Changed", notif.message, "info");
+                    showNotification("Order Update", notif.message, "info");
                 }
             }
         });
@@ -37,7 +38,7 @@ const RestaurantLayout = ({ children }) => {
 
             {/* Main content */}
             <div className="resto-main">
-                {children}
+                <Outlet />
             </div>
         </div>
     );

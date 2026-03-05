@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import { showToast } from "../../../utils/toastUtils";
 import { Clock, ShoppingBag, ChefHat, Truck, MapPin, X, CheckCircle, User, AlertCircle, Power, ClipboardList } from "lucide-react";
 import restaurantAppApi from "../../../api/restaurant/restaurantAppApi";
 import Modal from "../../../components/shared/Modal";
@@ -49,7 +49,7 @@ const OrdersPage = () => {
             }, 1000);
         } catch (error) {
             console.error("Failed to toggle restaurant status:", error);
-            toast.error("Không thể thay đổi trạng thái cửa hàng");
+            showToast.error("Không thể thay đổi trạng thái cửa hàng");
             setStatusModal(prev => ({ ...prev, loading: false }));
         }
     };
@@ -179,7 +179,7 @@ const OrdersPage = () => {
             // toast.success(`Order #${orderId} updated successfully!`);
         } catch (error) {
             console.error("Failed to update status:", error);
-            toast.error("Failed to update order status");
+            showToast.error("Failed to update order status");
         } finally {
             setIsActionLoading(false);
         }
@@ -194,10 +194,10 @@ const OrdersPage = () => {
             setRejectModal({ open: false, orderId: null });
             handleCloseModal();
             fetchOrders();
-            toast.success("Đơn hàng đã được từ chối");
+            showToast.success("Đơn hàng đã được từ chối");
         } catch (error) {
             console.error("Failed to reject order:", error);
-            toast.error("Không thể từ chối đơn hàng");
+            showToast.error("Không thể từ chối đơn hàng");
         } finally {
             setIsActionLoading(false);
         }

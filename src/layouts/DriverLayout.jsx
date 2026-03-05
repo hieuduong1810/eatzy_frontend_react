@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, Outlet } from "react-router-dom";
 import { Home, History, Wallet, User } from "lucide-react";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useNotification } from "../contexts/NotificationContext";
@@ -27,7 +27,7 @@ const DriverLayout = ({ children }) => {
                 if (notif.type === 'ORDER_ASSIGNED') {
                     showNotification("New Order Offer", notif.message, "info");
                 } else if (notif.type === 'ORDER_STATUS_CHANGED') {
-                    showNotification("Order Status Update", notif.message, "info");
+                    showNotification("Order Update", notif.message, "info");
                 }
             }
         });
@@ -40,7 +40,7 @@ const DriverLayout = ({ children }) => {
     return (
         <div className="driver-root">
 
-            <div className="driver-content">{children}</div>
+            <div className="driver-content"><Outlet /></div>
             <div className="driver-bottombar-wrapper">
                 <nav className="driver-bottombar">
                     {tabs.map(({ id, label, path, Icon }) => {

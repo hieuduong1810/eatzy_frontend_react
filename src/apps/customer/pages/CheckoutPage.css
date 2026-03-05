@@ -764,25 +764,67 @@
     margin-bottom: 6px;
 }
 
-.ck-right-title {
-    font-family: var(--font-family);
-    font-size: 24px;
-    font-weight: 800;
-    /* Reduced from 900 for better look */
-    color: #1A1A1A;
-    line-height: 1.2;
-    font-style: normal;
+.ck-title-pill-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 4px;
 }
 
-.ck-res-name {
-    font-family: var(--font-family);
-    font-weight: 500;
-    /* Increased from 400 */
-    color: #6B7280;
-    /* Adjusted gray */
+.ck-right-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1A1A1A;
+    line-height: 1;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.ck-res-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #88EA55;
+    /* Lime Green */
+    padding: 6px 20px 6px 8px;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    border: none;
+    box-shadow: 0 4px 12px rgba(136, 234, 85, 0.25);
+}
+
+.ck-res-pill:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(136, 234, 85, 0.35);
+    background: #78C841;
+}
+
+.ck-res-icon-box {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    backdrop-filter: blur(4px);
+}
+
+.ck-res-pill-name {
+    color: white;
     font-size: 16px;
-    margin-left: 8px;
-    font-style: normal;
+    font-weight: 700;
+    font-family: var(--font-family);
+}
+
+.ck-res-chevron {
+    color: white;
+    margin-left: 4px;
+    opacity: 0.8;
 }
 
 /* ── RIGHT COLUMN ── */

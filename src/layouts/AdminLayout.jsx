@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
 
 import AdminSidebar from "../components/shared/Sidebar";
 import "./AdminLayout.css";
@@ -46,7 +47,7 @@ const AdminLayout = ({ children }) => {
                 <header className="admin-header">
                 </header>
                 <div className="admin-content">
-                    {children}
+                    <Outlet />
                 </div>
             </div>
         </div>

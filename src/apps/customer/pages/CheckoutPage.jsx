@@ -431,6 +431,16 @@ const CheckoutPage = () => {
         }
     };
 
+    const handleRestaurantClick = () => {
+        if (!restaurant) return;
+        // In this project, slug is often the ID or name-based string. 
+        // RestaurantDetailPage handles slug from URL.
+        const target = restaurant.slug || restaurant.id;
+        if (target) {
+            navigate(`/restaurant/${target}`);
+        }
+    };
+
     return (
         <div className="ck-design-container">
             {/* ── Header (Custom with Back Button) ── */}
@@ -726,7 +736,16 @@ const CheckoutPage = () => {
                 <div className="ck-right-col">
                     <div className="ck-right-header">
                         <span className="ck-status-badge">CHECKOUT PROCESS</span>
-                        <h2 className="ck-right-title">FINAL STEP <span className="ck-res-name">{restaurant?.name || "Nhà hàng"}</span></h2>
+                        <div className="ck-title-pill-row">
+                            <h2 className="ck-right-title">FINAL STEP</h2>
+                            <button className="ck-res-pill" onClick={handleRestaurantClick}>
+                                <div className="ck-res-icon-box">
+                                    <Store size={18} strokeWidth={2.5} />
+                                </div>
+                                <span className="ck-res-pill-name">{restaurant?.name || "Nhà hàng"}</span>
+                                <ChevronRight size={18} className="ck-res-chevron" strokeWidth={3} />
+                            </button>
+                        </div>
                     </div>
 
                     <div className="ck-map-wrapper">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Plus, Minus, Info, AlertCircle, Check, User } from "lucide-react";
 import { useCart } from "../context/CartContext";
-import "../CustomerAppRedesign.css"; // Reuse existing CSS + new modal styles
+import "./DishSelectionModal.css"; // Modal-specific CSS
 
 export default function DishSelectionModal({ isOpen, onClose, dish, restaurantId }) {
     const { addItem } = useCart();
@@ -9,6 +9,7 @@ export default function DishSelectionModal({ isOpen, onClose, dish, restaurantId
     const [selectedOptions, setSelectedOptions] = useState({}); // { groupId: [optionId1, optionId2] }
     const [totalPrice, setTotalPrice] = useState(0);
     const [isValid, setIsValid] = useState(false);
+    const [activeTab, setActiveTab] = useState(null);
 
     // Reset state when dish changes
     useEffect(() => {
@@ -16,6 +17,9 @@ export default function DishSelectionModal({ isOpen, onClose, dish, restaurantId
             setQuantity(1);
             setSelectedOptions({});
             setTotalPrice(dish.price);
+            if (dish.menuOptionGroups && dish.menuOptionGroups.length > 0) {
+                setActiveTab(dish.menuOptionGroups[0].id);
+            }
         }
     }, [isOpen, dish]);
 
@@ -63,8 +67,8 @@ export default function DishSelectionModal({ isOpen, onClose, dish, restaurantId
 
             // Case 1: Radio (Max 1)
             if (group.maxChoices === 1) {
-                // If clicking same, allow deselect only if not required (min=0)
-                if (isSelected && group.minChoices === 0) {
+                // Always allow deselect if clicking the same option
+                if (isSelected) {
                     newSelected = [];
                 } else {
                     newSelected = [option.id];
@@ -114,6 +118,7 @@ export default function DishSelectionModal({ isOpen, onClose, dish, restaurantId
         const element = document.getElementById(`group-${groupId}`);
         if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActiveTab(groupId); // Update active tab when scrolling to it
         }
     };
 
@@ -164,17 +169,22 @@ export default function DishSelectionModal({ isOpen, onClose, dish, restaurantId
                         <div className="cust-options-scroll">
                             {/* Header for options? */}
                             <div className="cust-options-header-row">
-                                {dish.menuOptionGroups && dish.menuOptionGroups.map(group => (
-                                    <button
-                                        key={group.id}
-                                        onClick={(e) => handleScrollToGroup(e, group.id)}
-                                        className="cust-opt-anchor"
-                                        style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                                    >
-                                        {group.name}
-                                        {group.minChoices > 0 && <span className="cust-dot-required">•</span>}
-                                    </button>
-                                ))}
+                                {dish.menuOptionGroups && dish.menuOptionGroups.map(group => {
+                                    const selectedCount = (selectedOptions[group.id] || []).length;
+                                    const isSatisfied = selectedCount >= group.minChoices;
+                                    const showDot = group.minChoices > 0 && !isSatisfied;
+
+                                    return (
+                                        <button
+                                            key={group.id}
+                                            className={`cust-opt-anchor ${activeTab === group.id ? 'active' : ''}`}
+                                            onClick={(e) => handleScrollToGroup(e, group.id)}
+                                        >
+                                            {group.name}
+                                            {showDot && <span className="cust-dot-required"></span>}
+                                        </button>
+                                    );
+                                })}
                             </div>
 
                             {dish.menuOptionGroups && dish.menuOptionGroups.map(group => {

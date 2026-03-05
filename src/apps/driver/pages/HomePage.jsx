@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { LocateFixed, Bike } from "lucide-react";
-import { toast } from "react-toastify";
+import { showToast } from "../../../utils/toastUtils";
 import { useWebSocket } from "../../../contexts/WebSocketContext";
 import DriverMapView from "../components/map/DriverMapView";
 import ConnectToggle from "../components/online/ConnectToggle";
@@ -112,7 +112,7 @@ const HomePage = () => {
             }, 1000);
         } catch (error) {
             console.error("Failed to toggle status", error);
-            toast.error("Không thể thay đổi trạng thái");
+            showToast.error("Không thể thay đổi trạng thái");
             setStatusModal(prev => ({ ...prev, loading: false }));
         }
     };
@@ -150,9 +150,7 @@ const HomePage = () => {
                     setCountdown(30);
 
                     // Show notification
-                    toast.info(`New Order Offer! ${orderData.distance}km away`, {
-                        autoClose: 10000
-                    });
+                    showToast.info(`New Order Offer! ${orderData.distance}km away`, "Đơn hàng mới");
 
                     // Play sound
                     const audio = new Audio('/sounds/notification.mp3');
@@ -203,13 +201,13 @@ const HomePage = () => {
         if (!currentOffer) return;
         try {
             await driverAppApi.acceptOrder(currentOffer.id);
-            toast.success("Accepted order successfully!");
+            showToast.success("Accepted order successfully!");
             // Refresh valid active order
             const res = await driverAppApi.getOrderDetail(currentOffer.id);
             setActiveOrder(res.data);
         } catch (error) {
             console.error("Failed to accept order:", error);
-            toast.error("Failed to accept order. It may have been taken.");
+            showToast.error("Failed to accept order. It may have been taken.");
         } finally {
             setCurrentOffer(null);
         }
@@ -219,7 +217,7 @@ const HomePage = () => {
         if (!currentOffer) return;
         try {
             await driverAppApi.rejectOrder(currentOffer.id);
-            toast.info("Order rejected");
+            showToast.info("Order rejected", "Đã từ chối");
         } catch (error) {
             console.error("Failed to reject order:", error);
         } finally {
@@ -244,7 +242,7 @@ const HomePage = () => {
             setActiveOrder((prev) => prev ? { ...prev, orderStatus: newStage } : null);
         } catch (error) {
             console.error("Failed to update order stage:", error);
-            toast.error("Failed to update order status");
+            showToast.error("Failed to update order status");
         } finally {
             setIsActionLoading(false);
         }

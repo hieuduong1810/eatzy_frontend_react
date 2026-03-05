@@ -23,20 +23,21 @@ const ToastNotification = ({ closeToast, title, message, type = "info" }) => {
 
     const getIcon = () => {
         switch (type) {
-            case "success": return <CheckCircle size={28} color="#fff" strokeWidth={2.5} />;
-            case "error": return <AlertCircle size={28} color="#fff" strokeWidth={2.5} />;
-            default: return <Info size={28} color="#fff" strokeWidth={2.5} />;
+            case "success": return <CheckCircle size={24} color="#fff" strokeWidth={2.5} />;
+            case "error": return <AlertCircle size={24} color="#fff" strokeWidth={2.5} />;
+            default: return <Info size={24} color="#fff" strokeWidth={2.5} />;
         }
     };
 
     return (
         <div className={`cust-notif cust-notif--${type}`} style={{
-            boxShadow: 'none', // Toastify adds its own shadow, but we might disable it
-            background: 'rgba(255, 255, 255, 0.95)', // Slightly more opaque
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            background: 'white',
             margin: 0,
             width: '100%',
             maxWidth: '100%',
-            border: 'none',
+            borderRadius: '20px',
+            border: '1px solid #eee',
             pointerEvents: 'auto'
         }}>
             <div className="cust-notif-icon-box">

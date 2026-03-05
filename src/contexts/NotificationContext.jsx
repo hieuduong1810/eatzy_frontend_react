@@ -5,56 +5,46 @@ import '../components/shared/notifications/OrderNotification.css';
 const NotificationContext = createContext(null);
 
 export const NotificationProvider = ({ children }) => {
-    const [notification, setNotification] = useState(null);
-    const timeoutRef = useRef(null);
+    const [notifications, setNotifications] = useState([]);
+
+    const hideNotification = useCallback((id) => {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, []);
 
     const showNotification = useCallback((title, message, type = "info") => {
-        // Clear any existing timeout
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
+        const id = Date.now() + Math.random();
 
-        setNotification({
+        const newNotif = {
+            id,
             title,
             message,
             type,
             timestamp: Date.now()
-        });
+        };
+
+        setNotifications((prev) => [newNotif, ...prev]);
 
         // Auto hide after 5 seconds
-        timeoutRef.current = setTimeout(() => {
-            setNotification(null);
-            timeoutRef.current = null;
+        setTimeout(() => {
+            hideNotification(id);
         }, 5000);
-    }, []);
-
-    const hideNotification = useCallback(() => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-            timeoutRef.current = null;
-        }
-        setNotification(null);
-    }, []);
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        };
-    }, []);
+    }, [hideNotification]);
 
     return (
         <NotificationContext.Provider value={{ showNotification, hideNotification }}>
             {children}
-            {notification && (
-                <OrderNotification
-                    title={notification.title}
-                    message={notification.message}
-                    type={notification.type}
-                    timestamp={notification.timestamp}
-                    onClose={hideNotification}
-                />
-            )}
+            <div className="cust-notif-container">
+                {notifications.map((notif) => (
+                    <OrderNotification
+                        key={notif.id}
+                        title={notif.title}
+                        message={notif.message}
+                        type={notif.type}
+                        timestamp={notif.timestamp}
+                        onClose={() => hideNotification(notif.id)}
+                    />
+                ))}
+            </div>
         </NotificationContext.Provider>
     );
 };

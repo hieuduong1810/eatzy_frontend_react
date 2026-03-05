@@ -8,18 +8,6 @@ import HistoryPage from "./pages/HistoryPage";
 import WalletPage from "./pages/WalletPage";
 import ProfilePage from "./pages/ProfilePage";
 
-/**
- * DriverLayout uses {children} pattern (not <Outlet />),
- * so we wrap each page individually inside the layout.
- */
-const WithDriverLayout = ({ children }) => (
-    <ProtectedRoute loginPath="/login">
-        <DriverLayout>{children}</DriverLayout>
-    </ProtectedRoute>
-);
-
-// import { WebSocketProvider } from "../../contexts/WebSocketContext";
-
 const DriverApp = () => {
     console.log("DriverApp Render. Path:", window.location.pathname);
     return (
@@ -29,10 +17,13 @@ const DriverApp = () => {
             <Route path="register" element={<RegisterPage />} />
 
             {/* Protected routes with layout */}
-            <Route path="/home" element={<WithDriverLayout><HomePage /></WithDriverLayout>} />
-            <Route path="/history" element={<WithDriverLayout><HistoryPage /></WithDriverLayout>} />
-            <Route path="/wallet" element={<WithDriverLayout><WalletPage /></WithDriverLayout>} />
-            <Route path="/profile" element={<WithDriverLayout><ProfilePage /></WithDriverLayout>} />
+            <Route path="/" element={<ProtectedRoute loginPath="/login"><DriverLayout /></ProtectedRoute>}>
+                <Route index element={<Navigate to="home" replace />} />
+                <Route path="home" element={<HomePage />} />
+                <Route path="history" element={<HistoryPage />} />
+                <Route path="wallet" element={<WalletPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+            </Route>
             <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
     );

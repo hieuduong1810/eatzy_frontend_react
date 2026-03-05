@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useMemo, useEffect } from "react";
 import { mockDishes, mockRestaurants } from "../data/mockCustomerData";
 import customerApi from "../../../api/customer/customerApi";
+import { useNotification } from "../../../contexts/NotificationContext";
 
 const CartContext = createContext(null);
 
@@ -17,6 +18,7 @@ const CartContext = createContext(null);
  */
 export function CartProvider({ children }) {
     const [cart, setCart] = useState({});
+    const { showNotification } = useNotification();
 
     // Helper to sync with server
     const fetchCarts = useCallback(async () => {
@@ -185,6 +187,12 @@ export function CartProvider({ children }) {
 
             // Optimistic update omitted for brevity, relying on fetch.
 
+            // 5. Show Notification
+            const optionsStr = dish.selectedOptions?.length > 0
+                ? ` (${dish.selectedOptions.map(opt => opt.name).join(", ")})`
+                : "";
+            showNotification("Giỏ hàng", `Đã thêm ${dish.name}${optionsStr} vào giỏ hàng!`, "success");
+
         } catch (error) {
             console.error("Failed to add item", error);
         }
@@ -266,7 +274,9 @@ export function CartProvider({ children }) {
                     cartItems: newCartItemsPayload
                 };
 
+                const dishName = cart[restaurantId]?.items[dishId]?.dish?.name || "món ăn";
                 await customerApi.addToCart(payload);
+                showNotification("Giỏ hàng", `Đã giảm số lượng ${dishName}!`, "success");
                 // await fetchCarts(); // Optional: ensure strict sync
             }
         } catch (error) {
@@ -327,7 +337,9 @@ export function CartProvider({ children }) {
                     cartItems: newCartItemsPayload
                 };
 
+                const dishName = cart[restaurantId]?.items[dishId]?.dish?.name || "món ăn";
                 await customerApi.addToCart(payload);
+                showNotification("Giỏ hàng", `Đã xóa ${dishName} khỏi giỏ hàng!`, "success");
                 await fetchCarts(); // Sync
             }
         } catch (error) {
@@ -356,7 +368,9 @@ export function CartProvider({ children }) {
                     cartItems: []
                 };
 
+                const restaurantName = cart[restaurantId]?.restaurant?.name || "nhà hàng";
                 await customerApi.addToCart(payload);
+                showNotification("Giỏ hàng", `Đã xóa tất cả món từ ${restaurantName}!`, "success");
                 await fetchCarts();
             }
         } catch (error) {
